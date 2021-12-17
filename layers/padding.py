@@ -37,3 +37,7 @@ class ReflectionPadding2D(tf.keras.layers.Layer):
 
   def call(self, input_tensor, mask=None):
     return self.padding_func(input_tensor)
+  
+  def get_config(self):
+    config = {'padding': self.padding}
+    return config
