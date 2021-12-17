@@ -1,3 +1,5 @@
+import tensorflow as tf
+
 class ReflectionPadding2D(tf.keras.layers.Layer):
   def __init__(self, padding=(1, 1), **kwargs):
     super(ReflectionPadding2D, self).__init__(**kwargs)
