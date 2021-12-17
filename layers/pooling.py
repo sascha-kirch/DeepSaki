@@ -1,3 +1,5 @@
+import tensorflow as tf
+
 class GlobalSumPooling2D(tf.keras.layers.Layer):
   def __init__(self, data_format=None, **kwargs):
     super(GlobalSumPooling2D, self).__init__(**kwargs)
