@@ -1,3 +1,11 @@
+# The SWATS Optimizer is an optimizer that starts with ADAM and switches to SGD after a certain epoch. 
+# SWATS Paper: http://arxiv.org/abs/1712.07628 
+#
+# This implementation is based on tensorflow's ADAM, SGD and NADAM optimizer
+# TensorFlow ADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/adam.py
+# Tensorflow SGD: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/gradient_descent.py
+# Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/nadam.py 
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
