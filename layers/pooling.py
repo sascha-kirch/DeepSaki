@@ -7,9 +7,9 @@ class GlobalSumPooling2D(tf.keras.layers.Layer):
     self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
   def compute_output_shape(self, input_shape):
-    input_shape = tf.keras.TensorShape(input_shape).as_list()
+    input_shape = tf.TensorShape(input_shape).as_list()
     if self.data_format == 'channels_last':
-      return tensor_shape.TensorShape([input_shape[0], input_shape[3]])
+      return tf.TensorShape([input_shape[0], input_shape[3]])
 
   def call(self, inputs):
     return tf.reduce_sum(input_tensor=inputs, axis=[1,2], keepdims=False)
