@@ -25,6 +25,7 @@ not supported yet
 - regularization
   - CutMix
   - CutOut 
+  - GetMask
 - utils
   - DetectHw
   - EnableXlaAcceleration
