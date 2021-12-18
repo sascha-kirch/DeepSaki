@@ -22,3 +22,7 @@ not supported yet
 - optimizer
   - SWATS_ADAM
   - SWATS_NADAM
+- utils
+  - DetectHw
+  - EnableXlaAcceleration
+  - EnableMixedPrecision
