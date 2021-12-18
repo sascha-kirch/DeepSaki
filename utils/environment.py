@@ -55,7 +55,7 @@ def EnableXlaAcceleration():
   Enables compiler acceleration for linear algebra
   '''
   tf.config.optimizer.set_jit(True)
-  print('Accelerated Linear Algebra enabled')
+  print('Linear algebra acceleration enabled')
   
   
 def EnableMixedPrecision():
