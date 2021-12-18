@@ -22,6 +22,9 @@ not supported yet
 - optimizer
   - SWATS_ADAM
   - SWATS_NADAM
+- regularization
+  - CutMix
+  - CutOut 
 - utils
   - DetectHw
   - EnableXlaAcceleration
