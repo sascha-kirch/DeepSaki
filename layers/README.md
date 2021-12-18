@@ -1,5 +1,7 @@
 # DeepSaki.layers
 
-## ReflectionPadding2D
+## ReflectionPadding
+![Padding comparison](/appendix/ReflectionPadding.png)
 
-## GlobalSumPooling
+## GlobalSumPooling2D
+![GlobalSumPooling2D](/appendix/GlobalSumPooling2D.png)
