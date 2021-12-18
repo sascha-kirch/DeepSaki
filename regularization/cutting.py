@@ -16,7 +16,7 @@ def _random_boundingbox(height, width, lam):
 
   return x1, y1, x2, y2
 
-def _GetMask(maskShape):
+def GetMask(maskShape):
   '''generates a mask for a given image dimensions (batch_size, height, width,channel)'''
   mask = np.ones(shape=maskShape)
   for element in range(maskShape[0]):
@@ -45,7 +45,7 @@ def CutMix(batch1, batch2, ignoreBackground = False, invert_mask = False, mask =
   batch2 = tf.cast(batch2,tf.float32)
   
   if mask == None: # generate mask
-    mask = _GetMask(maskShape=batch1.shape)
+    mask = GetMask(maskShape=batch1.shape)
     
   if ignoreBackground: #check where in image are no background pixels (value = 1)
     batch1_mask = tf.cast(tf.where(batch1 > 0 ,1 , 0), tf.int32)
@@ -79,7 +79,7 @@ def CutOut(batch, invert_mask = False, mask = None):
   batch = tf.cast(batch,tf.float32)
   
   if mask == None: # generate mask
-    mask = _GetMask(maskShape=batch.shape)
+    mask = GetMask(maskShape=batch.shape)
 
   if invert_mask:
     mask = 1 - mask
