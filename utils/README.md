@@ -3,6 +3,16 @@
 # environment
 
 ## DetectHw
+Depending on the hardware available, different distribution strategies will be applied.
+
+- If the TPU is available, the TPU Strategy is used.
+Otherwise:
+- If more than one GPU is available, then the Mirrored Strategy is applied
+- If one GPU is available or if just the CPU is available, the default strategy is applied.
+
+> Overview Distribution: https://www.tensorflow.org/api_docs/python/tf/distribute
+
+> Tutorial of using td.distrubute on custom training: https://www.tensorflow.org/tutorials/distribute/custom_training
 
 ## EnableMixedPrecision
 Mixed precision allows to set the preccison of the processing hardware. 
