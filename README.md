@@ -1,6 +1,8 @@
 # DeepSaki
 Welcome AI enthuisiasts to DeepSaki, a collection reusable machine learning code. :muscle::robot::metal:
 
+The ML framework used is tensorflow and the entire code is suitable to run Google's TPUs.
+
 # Installation
 
 ## Git
