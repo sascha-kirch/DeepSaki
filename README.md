@@ -21,6 +21,8 @@ not supported yet
   - GlobalSumPooling2D
   - ReflectionPadding (suitable for TPU)
 - loss
+  - PixelDistanceLoss
+  - StructuralSimilarityLoss
 - optimizer
   - SWATS_ADAM
   - SWATS_NADAM
