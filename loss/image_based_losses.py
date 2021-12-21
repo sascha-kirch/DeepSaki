@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 
 class PixelDistanceLoss(tf.keras.losses.Loss):
-'''
+  '''
   calculates the pixel distance loss (per pixel loss) of two images of the shape (batch, height, width, channels)
   args:
     globalBatchSize: Batchsize of the training data to manually reduce the loss. When following a distributed strategy globalBatchSize = Num_worker * batchSizePerWorker
