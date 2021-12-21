@@ -21,6 +21,7 @@ class PixelDistanceLoss(tf.keras.losses.Loss):
   def call(self, img1, img2):
     img1 = tf.cast(img1, tf.dtypes.float32)
     img2 = tf.cast(img2, tf.dtypes.float32)
+    loss = 0
 
     if self.MAE_MSE == "mae":
       errorFunc = tf.abs
@@ -91,6 +92,7 @@ class StructuralSimilarityLoss(tf.keras.losses.Loss):
   def call(self, img1, img2):
     img1 = tf.cast(img1, tf.dtypes.float32)
     img2 = tf.cast(img2, tf.dtypes.float32)
+    ssim = 0
 
     if self.calculationType == "per_image":
       ssim = self.SSIM(img1,img2)
