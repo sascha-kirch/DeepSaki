@@ -43,7 +43,7 @@ def pad_func(padValues=(1, 1), padding = "zero"):
   else:
     raise Exception("Undefined padding type provided: {}".format(padding))
     
-  def activation_func(activationFuncString):
+def activation_func(activationFuncString):
   '''
   Wrapper to obtain a activation layer by string
   args:
