@@ -1,5 +1,5 @@
 import tensorflow as tf
-from DeepSaki import initializers
+from DeepSaki import initializer
 from DeepSaki import layers
 
 def GetInitializer(initializerString, seed = None):
