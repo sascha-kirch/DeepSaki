@@ -43,33 +43,6 @@ def pad_func(padValues=(1, 1), padding = "zero"):
   else:
     raise Exception("Undefined padding type provided: {}".format(padding))
     
-def activation_func(activationFuncString):
-  '''
-  Wrapper to obtain a activation layer by string
-  args:
-    - activationFuncString: string to describe activation
-  '''
-  if activationFuncString == "relu":
-    return tf.keras.layers.ReLU()
-  elif activationFuncString == "leaky_relu":
-    return tf.keras.layers.LeakyReLU()
-  elif activationFuncString == "elu":
-    return tf.keras.layers.ELU()
-  elif activationFuncString == "prelu":
-    return tf.keras.layers.PReLU(shared_axes=[1, 2]) #each filter has only one param!
-  elif activationFuncString == "tanh":
-    return tf.keras.activations.tanh
-  elif activationFuncString == "sigmoid":
-    return tf.keras.activations.sigmoid
-  elif activationFuncString == "hard_sigmoid":
-    return tf.keras.activations.hard_sigmoid
-  elif activationFuncString == "gelu":
-    return tf.keras.activations.gelu
-  elif activationFuncString == "none":
-    return tf.keras.activations.get(None)
-  else:
-    raise Exception("Undefined activation type provided: {}".format(activationFuncString))
-    
 def dropout_func(filters, dropout_rate):
   '''
   Wrapper to obtain a dropout layer depending on the size of the preceeding feature map
