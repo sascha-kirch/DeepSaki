@@ -29,7 +29,7 @@ def GetInitializer(initializerString, seed = None):
     raise Exception("Undefined initializerString provided: {}".format(initializerString))
     
     
-  def pad_func(padValues=(1, 1), padding = "zero"):
+def pad_func(padValues=(1, 1), padding = "zero"):
   '''
   Wrapper to obtain a padding layer by string
   args:
@@ -70,7 +70,7 @@ def GetInitializer(initializerString, seed = None):
   else:
     raise Exception("Undefined activation type provided: {}".format(activationFuncString))
     
-  def dropout_func(filters, dropout_rate):
+def dropout_func(filters, dropout_rate):
   '''
   Wrapper to obtain a dropout layer depending on the size of the preceeding feature map
   args:
@@ -82,7 +82,7 @@ def GetInitializer(initializerString, seed = None):
   else:
     return tf.keras.layers.Dropout(dropout_rate)
   
-  def PlotLayer(layer, inputShape):
+def PlotLayer(layer, inputShape):
   '''
   Creates an model from a given layer to be able to call model.summary() and to plot a graphic
   args:
