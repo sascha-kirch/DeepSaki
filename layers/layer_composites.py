@@ -1,6 +1,9 @@
 import tensorflow as tf
 import tensorflow_addons as tfa
 import numpy as np
+from DeepSaki import layers
+from DeepSaki import initializer
+from DeepSaki.layers import helper
 
 class Conv2DSplitted(tf.keras.layers.Layer):
   '''
@@ -19,7 +22,7 @@ class Conv2DSplitted(tf.keras.layers.Layer):
                 useSpecNorm = False, 
                 strides = (1,1),
                 use_bias = True,
-                kernel_initializer = KERNEL_INIT #DeepSaki.initializer.HeAlphaUniform(seed=seed)
+                kernel_initializer = DeepSaki.initializer.HeAlphaUniform()
                ):
     super(Conv2DSplitted, self).__init__()
     self.filters = filters 
@@ -87,8 +90,8 @@ class Conv2DBlock(tf.keras.layers.Layer):
                 padding = "zero", 
                 applyFinalNormalization = True,
                 use_bias = True,
-                kernel_initializer = KERNEL_INIT, #DeepSaki.initializer.HeAlphaUniform(seed=seed)
-                gamma_initializer = GAMMA_INIT
+                kernel_initializer = DeepSaki.initializer.HeAlphaUniform()
+                gamma_initializer = DeepSaki.initializer.HeAlphaUniform()
                ):
     super(Conv2DBlock, self).__init__()
     self.filters = filters 
