@@ -1,9 +1,9 @@
 import tensorflow as tf
 import tensorflow_addons as tfa
 import numpy as np
-from DeepSaki import layers
-from DeepSaki import initializer
-from DeepSaki.layers import helper
+import DeepSaki.layers
+import DeepSaki.initializer
+import DeepSaki.layers.helper
 
 class Conv2DSplitted(tf.keras.layers.Layer):
   '''
