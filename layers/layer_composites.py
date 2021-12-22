@@ -158,7 +158,7 @@ class Conv2DBlock(tf.keras.layers.Layer):
         x = self.IN_blocks[block](x)
 
       if block != (self.numberOfConvs - 1) or self.final_activation:
-        x = DeepSaki.layers.helper.activation_func(self.activation)(x)
+        x = tf.keras.layers.Activation(self.activation)(x)
     
     if self.dropout_rate > 0:
       x = self.dropout(x)
@@ -254,7 +254,7 @@ class DenseBlock(tf.keras.layers.Layer):
         x = self.IN_blocks[block](x)
 
       if block != (self.numberOfLayers - 1) or self.final_activation:
-        x = DeepSaki.layers.helper.activation_func(self.activation)(x)
+        x = tf.keras.layers.Activation(self.activation)(x)
     
     if self.dropout_rate > 0:
       x = self.dropout(x)
@@ -406,7 +406,7 @@ class UpSampleBlock(tf.keras.layers.Layer):
     elif self.upsampling == "transpose_conv":
       self.layers.append(tf.keras.layers.Conv2DTranspose(input_shape[-1],kernel_size = (self.kernels, self.kernels),strides=(2,2),kernel_initializer = self.kernel_initializer,padding='same',use_bias = self.use_bias))
       self.layers.append(tfa.layers.InstanceNormalization(gamma_initializer = self.gamma_initializer))
-      self.layers.append(DeepSaki.layers.helper.activation_func(self.activation))
+      self.layers.append(tf.keras.layers.Activation(self.activation))
     elif self.upsampling =="depth_to_space":
       self.layers.append(DeepSaki.layers.Conv2DBlock(filters = 4 * input_shape[-1], useResidualConv2DBlock = False, kernels = 1, split_kernels = False, numberOfConvs = 1, activation = self.activation,useSpecNorm=self.useSpecNorm, use_bias = self.use_bias,padding = self.padding, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer))
     else:
@@ -755,10 +755,10 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
     if self.intermediateChannel == None:
       self.intermediateChannel = int(numChannel/8)
 
-    self.w_f = DeepSaki.layers.DenseBlock(units = self.intermediateChannel, useSpecNorm = self.useSpecNorm, numberOfLayers = 1, activation = "none", applyFinalNormalization = False, use_bias = False, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer)
-    self.w_g = DeepSaki.layers.DenseBlock(units = self.intermediateChannel, useSpecNorm = self.useSpecNorm, numberOfLayers = 1, activation = "none", applyFinalNormalization = False, use_bias = False, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer)
-    self.w_h = DeepSaki.layers.DenseBlock(units = self.intermediateChannel, useSpecNorm = self.useSpecNorm, numberOfLayers = 1, activation = "none", applyFinalNormalization = False, use_bias = False, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer)
-    self.w_fgh = DeepSaki.layers.DenseBlock(units = numChannel, useSpecNorm = self.useSpecNorm, numberOfLayers = 1, activation = "none", applyFinalNormalization = False, use_bias = False, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer)
+    self.w_f = DeepSaki.layers.DenseBlock(units = self.intermediateChannel, useSpecNorm = self.useSpecNorm, numberOfLayers = 1, activation = None, applyFinalNormalization = False, use_bias = False, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer)
+    self.w_g = DeepSaki.layers.DenseBlock(units = self.intermediateChannel, useSpecNorm = self.useSpecNorm, numberOfLayers = 1, activation = None, applyFinalNormalization = False, use_bias = False, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer)
+    self.w_h = DeepSaki.layers.DenseBlock(units = self.intermediateChannel, useSpecNorm = self.useSpecNorm, numberOfLayers = 1, activation = None, applyFinalNormalization = False, use_bias = False, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer)
+    self.w_fgh = DeepSaki.layers.DenseBlock(units = numChannel, useSpecNorm = self.useSpecNorm, numberOfLayers = 1, activation = None, applyFinalNormalization = False, use_bias = False, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer)
 
     self.LN_f = tf.keras.layers.LayerNormalization(gamma_initializer = self.gamma_initializer)
     self.LN_g = tf.keras.layers.LayerNormalization(gamma_initializer = self.gamma_initializer)
