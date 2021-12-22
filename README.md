@@ -20,6 +20,14 @@ not supported yet
 - layer
   - GlobalSumPooling2D
   - ReflectionPadding (suitable for TPU)
+  - Conv2DBlock
+  - Conv2DSplitted
+  - helper
+    - GetInitializer
+    - pad_func
+    - activation_func
+    - dropout_func
+    - PlotLayer
 - loss
   - PixelDistanceLoss
   - StructuralSimilarityLoss
