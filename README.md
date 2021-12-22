@@ -36,12 +36,13 @@ not supported yet
   - helper
     - GetInitializer
     - pad_func
-    - activation_func
     - dropout_func
     - PlotLayer
 - loss
   - PixelDistanceLoss
   - StructuralSimilarityLoss
+- models
+  - LayoutContentDiscriminator 
 - optimizer
   - SWATS_ADAM
   - SWATS_NADAM
