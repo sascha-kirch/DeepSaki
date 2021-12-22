@@ -191,3 +191,93 @@ class Conv2DBlock(tf.keras.layers.Layer):
 #layer = Conv2DBlock(filters = 128, useResidualConv2DBlock = True, kernels = 3, split_kernels  = True, useSpecNorm = True, numberOfConvs = 3, activation = "relu", dropout_rate =0.1, final_activation = False, applyFinalNormalization = True)
 #print(layer.get_config())
 #DeepSaki.layers.helper.PlotLayer(layer,inputShape=(256,256,64))
+
+
+class DenseBlock(tf.keras.layers.Layer):
+  '''
+  Wraps a two-dimensional convolution into a more complex building block
+  args:
+    - units: number of units of each dense block
+    - numberOfLayers (optional, default: 1): number of consecutive convolutional building blocks, i.e. Conv2DBlock.
+    - activation (optional, default: "leaky_relu"): string literal to obtain activation function
+    - dropout_rate (optional, default: 0): probability of the dropout layer. If the preceeding layer has more than one channel, spatial dropout is applied, otherwise standard dropout 
+    - final_activation (optional, default: True): whether or not to activate the output of this layer
+    - useSpecNorm (optional, default: False): applies spectral normalization to convolutional and dense layers
+    - applyFinalNormalization (optional, default: True): Whether or not to place a normalization on the layer's output
+    - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
+    - kernel_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the convolutions kernels.
+    - gamma_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the normalization layers.
+  '''
+  def __init__(self,
+               units, 
+               numberOfLayers = 1, 
+               activation = "leaky_relu", 
+               dropout_rate=0, 
+               final_activation = True, 
+               useSpecNorm = False, 
+               applyFinalNormalization = True, 
+               use_bias = True,
+               kernel_initializer = DeepSaki.initializer.HeAlphaUniform(),
+               gamma_initializer =  DeepSaki.initializer.HeAlphaUniform()
+               ):
+    super(DenseBlock, self).__init__()
+    self.units = units 
+    self.numberOfLayers = numberOfLayers 
+    self.dropout_rate = dropout_rate
+    self.activation = activation 
+    self.final_activation = final_activation 
+    self.useSpecNorm = useSpecNorm
+    self.applyFinalNormalization = applyFinalNormalization 
+    self.use_bias = use_bias
+    self.kernel_initializer = kernel_initializer
+    self.gamma_initializer = gamma_initializer
+
+    if useSpecNorm:
+      self.DenseBlocks = [tfa.layers.SpectralNormalization(tf.keras.layers.Dense(units=units,use_bias =use_bias,kernel_initializer = kernel_initializer)) for _ in range(numberOfLayers)]
+    else:
+      self.DenseBlocks = [tf.keras.layers.Dense(units=units,use_bias =use_bias,kernel_initializer = kernel_initializer) for _ in range(numberOfLayers)]
+    
+    if applyFinalNormalization:
+      num_instancenorm_blocks = numberOfLayers 
+    else:
+      num_instancenorm_blocks = numberOfLayers - 1
+    self.IN_blocks = [tfa.layers.InstanceNormalization(gamma_initializer = gamma_initializer) for _ in range(num_instancenorm_blocks)]
+    self.dropout = tf.keras.layers.Dropout(dropout_rate)
+
+  def call(self, inputs):
+    x = inputs
+
+    for block in range(self.numberOfLayers):
+      x = self.DenseBlocks[block](x)
+
+      if block != (self.numberOfLayers - 1) or self.applyFinalNormalization:
+        x = self.IN_blocks[block](x)
+
+      if block != (self.numberOfLayers - 1) or self.final_activation:
+        x = DeepSaki.layers.helper.activation_func(self.activation)(x)
+    
+    if self.dropout_rate > 0:
+      x = self.dropout(x)
+    return x
+
+  def get_config(self):
+    config = super(DenseBlock, self).get_config()
+    config.update({
+        "units":self.units,
+        "numberOfLayers":self.numberOfLayers,
+        "dropout_rate":self.dropout_rate,
+        "activation":self.activation,
+        "activation":self.activation,
+        "final_activation":self.final_activation,
+        "useSpecNorm":self.useSpecNorm,
+        "applyFinalNormalization":self.applyFinalNormalization,
+        "use_bias":self.use_bias,
+        "kernel_initializer":self.kernel_initializer,
+        "gamma_initializer":self.gamma_initializer
+        })
+    return config
+
+#testcode
+#layer = DenseBlock(units = 512, numberOfLayers = 3, activation = "leaky_relu", applyFinalNormalization=False)
+#print(layer.get_config())
+#DeepSaki.layers.helper.PlotLayer(layer,inputShape=(256,256,64))
