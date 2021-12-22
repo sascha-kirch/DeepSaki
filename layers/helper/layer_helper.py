@@ -1,6 +1,6 @@
 import tensorflow as tf
-import DeepSaki.initializers
-import DeepSaki.layers
+from DeepSaki import initializers
+from DeepSaki import layers
 
 def GetInitializer(initializerString, seed = None):
   '''
