@@ -90,7 +90,7 @@ class Conv2DBlock(tf.keras.layers.Layer):
                 padding = "zero", 
                 applyFinalNormalization = True,
                 use_bias = True,
-                kernel_initializer = DeepSaki.initializer.HeAlphaUniform()
+                kernel_initializer = DeepSaki.initializer.HeAlphaUniform(),
                 gamma_initializer = DeepSaki.initializer.HeAlphaUniform()
                ):
     super(Conv2DBlock, self).__init__()
