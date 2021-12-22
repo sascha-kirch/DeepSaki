@@ -17,11 +17,22 @@ not supported yet
 - initializer
   - HeAlphaNormal
   - HeAlphaUniform
-- layer
+- layers
   - GlobalSumPooling2D
   - ReflectionPadding (suitable for TPU)
   - Conv2DBlock
   - Conv2DSplitted
+  - DenseBlock
+  - DownSampleBlock
+  - UpSampleBlock
+  - ResidualIdentityBlock
+  - ResBlockDown
+  - ResBlockUp
+  - ScaleLayer
+  - ScalarGatedSelfAttention
+  - Encoder
+  - Bottleneck
+  - Decoder
   - helper
     - GetInitializer
     - pad_func
