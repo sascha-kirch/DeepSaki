@@ -160,3 +160,113 @@ class Encoder(tf.keras.layers.Layer):
 #layer = Encoder( number_of_levels = 5, filters = 64, limit_filters = 512, useSelfAttention = True,useResidualConv2DBlock = True, downsampling="max_pooling", kernels=3, split_kernels = True,  numberOfConvs = 2,activation = "leaky_relu", first_kernel=3,useResidualIdentityBlock = True,useSpecNorm=True, omit_skips=2)
 #print(layer.get_config())
 #DeepSaki.layers.helper.PlotLayer(layer,inputShape=(256,256,4))
+
+
+class Bottleneck(tf.keras.layers.Layer):
+  '''
+  Bottlenecks are sub-model blocks in auto-encoder-like models such as UNet or ResNet. It is composed of multiple convolution blocks which might have residuals
+  args:
+    - n_bottleneck_blocks (optional, default: 3): Number of consecutive convolution blocks
+    - kernels: size of the convolutions kernels
+    - split_kernels (optional, default: False): to decrease the number of parameters, a convolution with the kernel_size (kernel,kernel) can be splitted into two consecutive convolutions with the kernel_size (kernel,1) and (1,kernel) respectivly
+    - numberOfConvs (optional, default: 2): number of consecutive convolutional building blocks, i.e. Conv2DBlock.
+    - useResidualConv2DBlock (optional, default: True): ads a residual connection in parallel to the Conv2DBlock
+    - useResidualIdentityBlock (optional, default: False): Whether or not to use the ResidualIdentityBlock instead of the Conv2DBlock
+    - activation (optional, default: "leaky_relu"): string literal to obtain activation function
+    - dropout_rate (optional, default: 0): probability of the dropout layer. If the preceeding layer has more than one channel, spatial dropout is applied, otherwise standard dropout
+    - channelList (optional, default:None): alternativly to number_of_layers and filters, a list with the disired filters for each block can be provided. e.g. channel_list = [64, 128, 256] results in a 3-staged Bottleneck with 64, 128, 256 filters for stage 1, 2 and 3 respectivly.
+    - useSpecNorm (optional, default: False): applies spectral normalization to convolutional and dense layers
+    - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
+    - residual_cardinality (optional, default: 1): cardinality for the ResidualIdentityBlock
+    - padding (optional, default: "none"): padding type. Options are "none", "zero" or "reflection"
+    - kernel_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the convolutions kernels.
+    - gamma_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the normalization layers.
+  '''
+  def __init__(self,
+               n_bottleneck_blocks = 3, 
+               kernels = 3,
+               split_kernels = False,
+               numberOfConvs = 2, 
+               useResidualConv2DBlock = True, 
+               useResidualIdentityBlock = False, 
+               activation = "leaky_relu", 
+               dropout_rate = 0.2, 
+               channelList = None,
+               useSpecNorm = False,
+               use_bias = True,
+               residual_cardinality = 1,
+               padding = "zero",
+               kernel_initializer = DeepSaki.initializer.HeAlphaUniform(),
+               gamma_initializer =  DeepSaki.initializer.HeAlphaUniform()
+               ):
+    super(Bottleneck, self).__init__()
+    self.useResidualIdentityBlock = useResidualIdentityBlock 
+    self.n_bottleneck_blocks = n_bottleneck_blocks
+    self.useResidualConv2DBlock = useResidualConv2DBlock 
+    self.kernels = kernels
+    self.split_kernels = split_kernels 
+    self.numberOfConvs = numberOfConvs
+    self.activation = activation
+    self.dropout_rate = dropout_rate
+    self.channelList = channelList
+    self.useSpecNorm = useSpecNorm
+    self.use_bias = use_bias
+    self.residual_cardinality = residual_cardinality
+    self.padding = padding
+    self.kernel_initializer = kernel_initializer
+    self.gamma_initializer = gamma_initializer
+
+  def build(self, input_shape):
+    super(Bottleneck, self).build(input_shape)
+
+    if self.channelList == None:
+      ch = input_shape[-1]
+      self.channelList = [ch for i in range(self.n_bottleneck_blocks)]
+
+    self.layers = []
+    for ch in self.channelList:
+      if self.useResidualIdentityBlock:
+        self.layers.append(DeepSaki.layers.ResidualIdentityBlock(activation = self.activation,filters=ch, kernels = self.kernels,numberOfBlocks=self.numberOfConvs,useSpecNorm=self.useSpecNorm, use_bias = self.use_bias,residual_cardinality = self.residual_cardinality,padding = self.padding, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer))  
+      else:
+        self.layers.append(DeepSaki.layers.Conv2DBlock(filters=ch, useResidualConv2DBlock = self.useResidualConv2DBlock, kernels = self.kernels, split_kernels = self.split_kernels,numberOfConvs=self.numberOfConvs,activation=self.activation,useSpecNorm=self.useSpecNorm, use_bias = self.use_bias,padding = self.padding, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer))
+
+    self.dropout = DeepSaki.layers.helper.dropout_func(self.channelList[-1], self.dropout_rate)
+
+  def call(self, inputs):
+    if not self.built:
+      raise ValueError('This model has not yet been built.')
+    x = inputs
+
+    for layer in self.layers:
+      x = layer(x)
+
+    if self.dropout_rate > 0:
+      x = self.dropout(x)
+
+    return x
+
+  def get_config(self):
+    config = super(Bottleneck, self).get_config()
+    config.update({
+        "useResidualIdentityBlock":self.useResidualIdentityBlock,
+        "n_bottleneck_blocks":self.n_bottleneck_blocks,
+        "useResidualConv2DBlock":self.useResidualConv2DBlock,
+        "kernels":self.kernels,
+        "split_kernels":self.split_kernels,
+        "numberOfConvs":self.numberOfConvs,
+        "activation":self.activation,
+        "dropout_rate":self.dropout_rate,
+        "useSpecNorm":self.useSpecNorm,
+        "use_bias":self.use_bias,
+        "channelList":self.channelList,
+        "residual_cardinality":self.residual_cardinality,
+        "padding": self.padding,
+        "kernel_initializer":self.kernel_initializer,
+        "gamma_initializer":self.gamma_initializer
+        })
+    return config
+
+#Testcode
+#layer = Bottleneck(True, 3, False, 3,False,1, "leaky_relu" , dropout_rate = 0.2, channelList = None)
+#print(layer.get_config())
+#DeepSaki.layers.helper.PlotLayer(layer,inputShape=(256,256,64))
