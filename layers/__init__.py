@@ -15,6 +15,7 @@ from DeepSaki.layers.layer_composites import ScalarGatedSelfAttention
 
 from DeepSaki.layers.sub_model_composites import Encoder
 from DeepSaki.layers.sub_model_composites import Bottleneck
+from DeepSaki.layers.sub_model_composites import Decoder
 
 
 from DeepSaki.layers import helper
