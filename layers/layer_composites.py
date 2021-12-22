@@ -70,7 +70,7 @@ class Conv2DBlock(tf.keras.layers.Layer):
     - final_activation (optional, default: True): whether or not to activate the output of this layer
     - useSpecNorm (optional, default: False): applies spectral normalization to convolutional and dense layers
     - strides (optional, default: (1,1)): stride of the filter
-    - padding (optional, default: "none"): padding type. Options are "none", "zero" or "reflection"
+    - padding (optional, default: "zero"): padding type. Options are "none", "zero" or "reflection"
     - applyFinalNormalization (optional, default: True): Whether or not to place a normalization on the layer's output
     - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
     - kernel_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the convolutions kernels.
@@ -195,7 +195,7 @@ class Conv2DBlock(tf.keras.layers.Layer):
 
 class DenseBlock(tf.keras.layers.Layer):
   '''
-  Wraps a two-dimensional convolution into a more complex building block
+  Wraps a dense layer into a more complex building block
   args:
     - units: number of units of each dense block
     - numberOfLayers (optional, default: 1): number of consecutive convolutional building blocks, i.e. Conv2DBlock.
@@ -279,5 +279,163 @@ class DenseBlock(tf.keras.layers.Layer):
 
 #testcode
 #layer = DenseBlock(units = 512, numberOfLayers = 3, activation = "leaky_relu", applyFinalNormalization=False)
+#print(layer.get_config())
+#DeepSaki.layers.helper.PlotLayer(layer,inputShape=(256,256,64))
+
+class DownSampleBlock(tf.keras.layers.Layer):
+  '''
+   Spatial down-sampling for grid-like data
+   args:
+     - downsampling (optional, default: "average_pooling"): 
+     - activation (optional, default: "leaky_relu"): string literal to obtain activation function
+     - kernels (optional, default: 3): size of the convolution's kernels when using downsampling = "conv_stride_2"
+     - useSpecNorm (optional, default: False): applies spectral normalization to convolutional and dense layers
+     - padding (optional, default: "zero"): padding type. Options are "none", "zero" or "reflection"
+     - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
+     - kernel_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the convolutions kernels.
+     - gamma_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the normalization layers.
+  '''
+  def __init__(self,
+               downsampling = "average_pooling", 
+               activation = "leaky_relu", 
+               kernels = 3, 
+               useSpecNorm = False, 
+               padding = "zero",
+               use_bias = True,
+               kernel_initializer = DeepSaki.initializer.HeAlphaUniform(),
+               gamma_initializer =  DeepSaki.initializer.HeAlphaUniform()
+               ):
+    super(DownSampleBlock, self).__init__()
+    self.kernels = kernels 
+    self.downsampling = downsampling
+    self.activation = activation
+    self.useSpecNorm = useSpecNorm
+    self.padding = padding 
+    self.use_bias = use_bias
+    self.kernel_initializer = kernel_initializer
+    self.gamma_initializer = gamma_initializer
+
+  def build(self, input_shape):
+    super(DownSampleBlock, self).build(input_shape)
+
+    self.layers = []
+    if self.downsampling == "conv_stride_2":
+      self.layers.append(DeepSaki.layers.Conv2DBlock(input_shape[-1], self.kernels, activation = self.activation, strides = (2,2), useSpecNorm=self.useSpecNorm,padding=self.padding,use_bias = self.use_bias, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer))
+    elif self.downsampling == "max_pooling":
+      #Only spatial downsampling, increase in features is done by the conv2D_block specified later!
+      self.layers.append(tf.keras.layers.MaxPooling2D(pool_size=(2,2)))
+    elif self.downsampling =="average_pooling":
+      self.layers.append(tf.keras.layers.AveragePooling2D(pool_size=(2,2)))
+    elif self.downsampling =="space_to_depth":
+      pass
+    else:
+      raise Exception("Undefined downsampling provided")
+
+  def call(self, inputs):
+    x = inputs
+    if self.downsampling == "space_to_depth":
+      x = tf.nn.space_to_depth(x, block_size = 2)
+    else:
+      for layer in self.layers:
+        x = layer(x)
+
+    return x
+
+  def get_config(self):
+    config = super(DownSampleBlock, self).get_config()
+    config.update({
+        "kernels":self.kernels,
+        "downsampling":self.downsampling,
+        "activation":self.activation,
+        "useSpecNorm":self.useSpecNorm,
+        "padding":self.padding,
+        "use_bias":self.use_bias,
+        "kernel_initializer":self.kernel_initializer,
+        "gamma_initializer":self.gamma_initializer
+        })
+    return config
+
+#layer = DownSampleBlock(numOfChannels = 3, kernels = 3, downsampling = "conv_stride_2", activation = "leaky_relu", useSpecNorm = True)
+#print(layer.get_config())
+#DeepSaki.layers.helper.PlotLayer(layer,inputShape=(256,256,64))
+
+
+class UpSampleBlock(tf.keras.layers.Layer):
+  '''
+   Spatial down-sampling for grid-like data
+   args:
+     - upsampling (optional, default: "2D_upsample_and_conv"): 
+     - activation (optional, default: "leaky_relu"): string literal to obtain activation function
+     - kernels (optional, default: 3): size of the convolution's kernels when using upsampling = "2D_upsample_and_conv" or "transpose_conv"
+     - split_kernels (optional, default: False): to decrease the number of parameters, a convolution with the kernel_size (kernel,kernel) can be splitted into two consecutive convolutions with the kernel_size (kernel,1) and (1,kernel) respectivly. applies to upsampling = "2D_upsample_and_conv"
+     - useSpecNorm (optional, default: False): applies spectral normalization to convolutional and dense layers
+     - padding (optional, default: "zero"): padding type. Options are "none", "zero" or "reflection"
+     - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
+     - kernel_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the convolutions kernels.
+     - gamma_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the normalization layers.
+  '''
+  def __init__(self,
+               upsampling ="2D_upsample_and_conv",
+               activation = "leaky_relu", 
+               kernels = 3,
+               split_kernels = False, 
+               useSpecNorm = False,
+               use_bias = True,
+               padding = "zero",
+               kernel_initializer = DeepSaki.initializer.HeAlphaUniform(),
+               gamma_initializer =  DeepSaki.initializer.HeAlphaUniform()
+               ):
+    super(UpSampleBlock, self).__init__()
+    self.kernels = kernels 
+    self.split_kernels = split_kernels
+    self.activation = activation 
+    self.useSpecNorm = useSpecNorm
+    self.upsampling = upsampling
+    self.use_bias = use_bias
+    self.kernel_initializer = kernel_initializer
+    self.gamma_initializer = gamma_initializer
+    self.padding = padding
+
+  def build(self, input_shape):
+    super(UpSampleBlock, self).build(input_shape)
+    self.layers = []
+
+    if self.upsampling == "2D_upsample_and_conv":
+      self.layers.append(tf.keras.layers.UpSampling2D(interpolation='bilinear'))
+      self.layers.append(DeepSaki.layers.Conv2DBlock(filters = input_shape[-1], useResidualConv2DBlock = False, kernels = 1, split_kernels = self.split_kernels, numberOfConvs = 1, activation = self.activation,useSpecNorm=self.useSpecNorm, use_bias = self.use_bias,padding = self.padding, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer))
+    elif self.upsampling == "transpose_conv":
+      self.layers.append(tf.keras.layers.Conv2DTranspose(input_shape[-1],kernel_size = (self.kernels, self.kernels),strides=(2,2),kernel_initializer = self.kernel_initializer,padding='same',use_bias = self.use_bias))
+      self.layers.append(tfa.layers.InstanceNormalization(gamma_initializer = self.gamma_initializer))
+      self.layers.append(DeepSaki.layers.helper.activation_func(self.activation))
+    elif self.upsampling =="depth_to_space":
+      self.layers.append(DeepSaki.layers.Conv2DBlock(filters = 4 * input_shape[-1], useResidualConv2DBlock = False, kernels = 1, split_kernels = False, numberOfConvs = 1, activation = self.activation,useSpecNorm=self.useSpecNorm, use_bias = self.use_bias,padding = self.padding, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer))
+    else:
+      raise Exception("Undefined upsampling provided")
+
+  def call(self, inputs):
+    x = inputs
+    for layer in self.layers:
+      x = layer(x)
+    if self.upsampling == "depth_to_space":
+      x = tf.nn.depth_to_space(x, block_size = 2)
+    return x
+
+  def get_config(self):
+    config = super(UpSampleBlock, self).get_config()
+    config.update({
+        "kernels":self.kernels,
+        "split_kernels":self.split_kernels,
+        "activation":self.activation,
+        "useSpecNorm":self.useSpecNorm,
+        "upsampling":self.upsampling,
+        "use_bias":self.use_bias,
+        "padding": self.padding,
+        "kernel_initializer": self.kernel_initializer,
+        "gamma_initializer": self.gamma_initializer
+        })
+    return config
+
+#Testcode
+#layer = UpSampleBlock(kernels = 3, upsampling = "transpose_conv", activation = "leaky_relu", useSpecNorm = True, split_kernels = False)
 #print(layer.get_config())
 #DeepSaki.layers.helper.PlotLayer(layer,inputShape=(256,256,64))
