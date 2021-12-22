@@ -764,7 +764,7 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
     self.LN_g = tf.keras.layers.LayerNormalization(gamma_initializer = self.gamma_initializer)
     self.LN_h = tf.keras.layers.LayerNormalization(gamma_initializer = self.gamma_initializer)
     self.LN_fgh = tf.keras.layers.LayerNormalization(gamma_initializer = self.gamma_initializer)
-    self.scale = ScaleLayer()
+    self.scale = DeepSaki.layers.ScaleLayer()
 
   def call(self, inputs):
     if not self.built:
