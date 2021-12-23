@@ -6,4 +6,6 @@ from DeepSaki import loss
 from DeepSaki import utils
 from DeepSaki import regularization
 
+from DeepSaki.version import __version__
+
 __author__ = 'Sascha Kirch'
