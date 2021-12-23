@@ -22,6 +22,8 @@ class LayoutContentDiscriminator(tf.keras.Model):
     - padding (optional, default: "none"): padding type. Options are "none", "zero" or "reflection"
     - FullyConected (optional, default: "MLP"): determines whether 1x1 convolutions are replaced by linear layers, which gives the same result, but linear layers are faster. Option: "MLP" or "1x1_conv"
     - useSelfAttention (optional, default: False): Determines whether to apply self-attention after the encoder before branching.
+    - kernel_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the convolutions kernels.
+    - gamma_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the normalization layers.
   
   output call():
     - out1: content output
@@ -91,3 +93,64 @@ class LayoutContentDiscriminator(tf.keras.Model):
 #model = tf.keras.Model(inputs=inputs, outputs=LayoutContentDiscriminator((256,256,4)).call(inputs))
 #model.summary()
 #tf.keras.utils.plot_model(model, show_shapes=True, expand_nested=True, show_dtype=True, to_file='Unet_discriminator_model.png')
+
+class PatchDiscriminator(tf.keras.Model):
+  '''
+  Discriminator/critic model with patched output.
+  args:
+    - filters (optional, default:64): defines the number of filters to which the input is exposed.
+    - downsampling(optional, default: "conv_stride_2"): describes the downsampling method 
+    - kernels (optional, default: 3): size of the kernel for convolutional layers
+    - first_kernel (optional, default: 5): The first convolution can have a different kernel size, to e.g. increase the perceptive field, while the channel depth is still low.
+    - split_kernels (optional, default: False): to decrease the number of parameters, a convolution with the kernel_size (kernel,kernel) can be splitted into two consecutive convolutions with the kernel_size (kernel,1) and (1,kernel) respectivly
+    - numberOfConvs (optional, default: 2): number of consecutive convolutional building blocks, i.e. Conv2DBlock.
+    - activation (optional, default: "leaky_relu"): string literal to obtain activation function
+    - num_down_blocks (optional, default: 3): Number of downsampling blocks in the encoder
+    - dropout_rate (optional, default: 0.2): probability of the dropout layer. If the preceeding layer has more than one channel, spatial dropout is applied, otherwise standard dropout
+    - useSpecNorm (optional, default: False): applies spectral normalization to convolutional and dense layers
+    - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
+    - padding (optional, default: "none"): padding type. Options are "none", "zero" or "reflection"
+    - useSelfAttention (optional, default: False): Determines whether to apply self-attention after the encoder before branching.
+    - kernel_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the convolutions kernels.
+    - gamma_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the normalization layers.
+  
+  output call():
+    - out1: content output
+    - out2: layout output
+  '''
+  def __init__(self,
+            filters = 64,
+            downsampling = "average_pooling", 
+            kernels = 3,
+            first_kernel = 5,
+            split_kernels = False,
+            numberOfConvs = 2,
+            activation = "leaky_relu",
+            num_down_blocks = 3,
+            dropout_rate = 0.2,
+            useSpecNorm= False,
+            use_bias = True,
+            useSelfAttention=False,
+            padding = "none",
+            kernel_initializer = DeepSaki.initializer.HeAlphaUniform(),
+            gamma_initializer =  DeepSaki.initializer.HeAlphaUniform()
+            ):
+    super(PatchDiscriminator, self).__init__()
+
+    self.encoder = DeepSaki.layers.Encoder(number_of_levels=num_down_blocks, filters=filters, limit_filters=512, useResidualConv2DBlock=False, downsampling=downsampling, kernels=kernels, split_kernels=split_kernels,numberOfConvs=numberOfConvs,activation=activation,first_kernel=first_kernel,useSpecNorm=useSpecNorm,useSelfAttention=useSelfAttention, use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+    self.conv1 = DeepSaki.layers.Conv2DBlock(filters = filters * (2**(num_down_blocks)), useResidualConv2DBlock = False, kernels = kernels, split_kernels = split_kernels, numberOfConvs = numberOfConvs, activation = activation,dropout_rate=dropout_rate,useSpecNorm=useSpecNorm, use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+    self.conv2 = DeepSaki.layers.Conv2DBlock(filters = 1,useResidualConv2DBlock = False, kernels = 5, split_kernels  = False, numberOfConvs = 1, activation = None,useSpecNorm=useSpecNorm, applyFinalNormalization = False, use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+
+  def call(self, inputs):
+    x = inputs
+    x = self.encoder(x)
+    x = self.conv1(x)
+    x = self.conv2(x)
+
+    return x
+
+#Testcode
+#inputs = tf.keras.layers.Input(shape = (256,256,4))
+#model = tf.keras.Model(inputs=inputs, outputs=PatchDiscriminator((256,256,4)).call(inputs))
+#model.summary()
+#tf.keras.utils.plot_model(model, show_shapes=True, expand_nested=True, show_dtype=True, to_file='PatchDiscriminator_model.png')
