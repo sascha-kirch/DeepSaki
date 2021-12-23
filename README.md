@@ -43,6 +43,10 @@ not supported yet
   - StructuralSimilarityLoss
 - models
   - LayoutContentDiscriminator 
+  - PatchDiscriminator
+  - ResNet
+  - UNet
+  - UNetDiscriminator
 - optimizer
   - SWATS_ADAM
   - SWATS_NADAM
