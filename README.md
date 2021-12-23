@@ -7,11 +7,13 @@ The ML framework used is tensorflow and the entire code is suitable to run Googl
 
 ## Git
 ```
-!git clone https://github.com/SaKi1309/DeepSaki.git
+git clone https://github.com/SaKi1309/DeepSaki.git
 ```
 
 ## Pip
-not supported yet
+```
+pip install DeepSaki
+```
 
 # Content
 - initializer
