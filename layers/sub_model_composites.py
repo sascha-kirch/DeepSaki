@@ -13,7 +13,7 @@ class Encoder(tf.keras.layers.Layer):
     - downsampling(optional, default: "conv_stride_2"): describes the downsampling method used
     - split_kernels (optional, default: False): to decrease the number of parameters, a convolution with the kernel_size (kernel,kernel) can be splitted into two consecutive convolutions with the kernel_size (kernel,1) and (1,kernel) respectivly
     - numberOfConvs (optional, default: 1): number of consecutive convolutional building blocks, i.e. Conv2DBlock.
-    - activation (optional, default: "leaky_relu"): string literal to obtain activation function
+    - activation (optional, default: "leaky_relu"): string literal or tensorflow activation function object to obtain activation function
     - first_kernel (optional, default: 5): The first convolution can have a different kernel size, to e.g. increase the perceptive field, while the channel depth is still low.
     - useResidualIdentityBlock (optional, default: False): Whether or not to use the ResidualIdentityBlock instead of the Conv2DBlock
     - residual_cardinality (optional, default: 1): cardinality for the ResidualIdentityBlock
@@ -172,7 +172,7 @@ class Bottleneck(tf.keras.layers.Layer):
     - numberOfConvs (optional, default: 2): number of consecutive convolutional building blocks, i.e. Conv2DBlock.
     - useResidualConv2DBlock (optional, default: True): ads a residual connection in parallel to the Conv2DBlock
     - useResidualIdentityBlock (optional, default: False): Whether or not to use the ResidualIdentityBlock instead of the Conv2DBlock
-    - activation (optional, default: "leaky_relu"): string literal to obtain activation function
+    - activation (optional, default: "leaky_relu"): string literal or tensorflow activation function object to obtain activation function
     - dropout_rate (optional, default: 0): probability of the dropout layer. If the preceeding layer has more than one channel, spatial dropout is applied, otherwise standard dropout
     - channelList (optional, default:None): alternativly to number_of_layers and filters, a list with the disired filters for each block can be provided. e.g. channel_list = [64, 128, 256] results in a 3-staged Bottleneck with 64, 128, 256 filters for stage 1, 2 and 3 respectivly.
     - useSpecNorm (optional, default: False): applies spectral normalization to convolutional and dense layers
@@ -276,14 +276,14 @@ class Decoder(tf.keras.layers.Layer):
   Decoder sub-model combines convolutional blocks with up sample blocks. The spatial width is double with every level while the channel depth is halfed.
   args:
     - number_of_levels (optional, default:3): number of conv2D -> Upsampling pairs
-    - upsampling(optional, default: "conv_stride_2"): describes the upsampling method used
+    - upsampling(optional, default: "2D_upsample_and_conv"): describes the upsampling method used
     - filters (optional, default:64): defines the number of filters to which the input is exposed.
     - limit_filters (optional, default:1024): limits the number of filters 
     - useResidualConv2DBlock (optional, default: False): ads a residual connection in parallel to the Conv2DBlock
     - kernels: size of the convolutions kernels
     - split_kernels (optional, default: False): to decrease the number of parameters, a convolution with the kernel_size (kernel,kernel) can be splitted into two consecutive convolutions with the kernel_size (kernel,1) and (1,kernel) respectivly
     - numberOfConvs (optional, default: 1): number of consecutive convolutional building blocks, i.e. Conv2DBlock.
-    - activation (optional, default: "leaky_relu"): string literal to obtain activation function
+    - activation (optional, default: "leaky_relu"): string literal or tensorflow activation function object to obtain activation function
     - dropout_rate (optional, default: 0): probability of the dropout layer. If the preceeding layer has more than one channel, spatial dropout is applied, otherwise standard dropout. In the decoder only applied to the first half of levels. 
     - useResidualIdentityBlock (optional, default: False): Whether or not to use the ResidualIdentityBlock instead of the Conv2DBlock
     - residual_cardinality (optional, default: 1): cardinality for the ResidualIdentityBlock
