@@ -27,7 +27,7 @@ setup(
                       'tensorflow_addons',
                       'pandas',
                       ],
-    extra_requires=['matplotlib'
+    extras_require=['matplotlib'
                     ],
   
     # https://pypi.org/pypi?%3Aaction=list_classifiers
