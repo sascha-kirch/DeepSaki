@@ -27,8 +27,6 @@ setup(
                       'tensorflow_addons',
                       'pandas',
                       ],
-    extras_require=['matplotlib'
-                    ],
     extras_require={
         'extras': ['matplotlib',],
         },
