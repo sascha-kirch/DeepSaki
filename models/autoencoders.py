@@ -43,7 +43,7 @@ class UNet(tf.keras.Model):
     >>> import DeepSaki
     >>> import tensorflow as tf
     >>> inputs = tf.keras.layers.Input(shape = (256,256,4))
-    >>> model = tf.keras.Model(inputs=inputs, outputs=UNet((256,256,4),5).call(inputs))
+    >>> model = tf.keras.Model(inputs=inputs, outputs=DeepSaki.model.UNet((256,256,4),5).call(inputs))
     >>> model.summary()
     >>> tf.keras.utils.plot_model(model, show_shapes=True, expand_nested=True, show_dtype=True, to_file='Unet_model.png')
   '''
@@ -131,7 +131,7 @@ class ResNet(tf.keras.Model):
     >>> import DeepSaki
     >>> import tensorflow as tf
     >>> inputs = tf.keras.layers.Input(shape = (256,256,4))
-    >>> model = tf.keras.Model(inputs=inputs, outputs=ResNet((256,256,4), 5,residual_cardinality=1).call(inputs))
+    >>> model = tf.keras.Model(inputs=inputs, outputs=DeepSaki.model.ResNet((256,256,4), 5,residual_cardinality=1).call(inputs))
     >>> model.summary()
     >>> tf.keras.utils.plot_model(model, show_shapes=True, expand_nested=True, show_dtype=True, to_file='ResNet_model.png')
   '''
