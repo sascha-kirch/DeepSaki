@@ -1,0 +1,5 @@
+include setup.py
+include *.md
+include license.txt
+
+recursive-include DeepSaki *
