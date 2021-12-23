@@ -485,9 +485,9 @@ class ResidualIdentityBlock(tf.keras.layers.Layer):
     self.pad = int((kernels-1)/2) # assumes odd kernel size, which is typical!
 
     if residual_cardinality > 1:
-      self.intermediateFilters = int(filters/32)
+      self.intermediateFilters = int(max(filters/32, max(filters/16, max(filters/8, max(filters/4, max(filters/2, 1))))))
     else:
-      self.intermediateFilters = int(filters/4)
+      self.intermediateFilters = int(max(filters/4, max(filters/2, 1))) 
 
     # for each block, add several con
     self.blocks = []
