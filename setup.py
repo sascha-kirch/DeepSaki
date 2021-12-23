@@ -29,6 +29,9 @@ setup(
                       ],
     extras_require=['matplotlib'
                     ],
+    extras_require={
+        'extras': ['matplotlib',],
+        },
   
     # https://pypi.org/pypi?%3Aaction=list_classifiers
     classifiers=[
