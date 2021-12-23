@@ -1,1 +1,2 @@
 from DeepSaki.models.discriminators import LayoutContentDiscriminator
+from DeepSaki.models.discriminators import PatchDiscriminator
