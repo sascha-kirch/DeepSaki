@@ -703,6 +703,7 @@ class NonNegative(tf.keras.constraints.Constraint):
   def __call__(self, w):
     return w * tf.cast(tf.math.greater_equal(w, 0.), w.dtype)
 
+@tf.keras.utils.register_keras_serializable(package='Custom', name='scale')
 class ScaleLayer(tf.keras.layers.Layer):
   '''
   trainable scalar that can act as trainable gate
@@ -727,7 +728,7 @@ class ScaleLayer(tf.keras.layers.Layer):
         "initializer":self.initializer
         })
     return config
-  
+ 
 class ScalarGatedSelfAttention(tf.keras.layers.Layer):
   '''
   Scaled dot-product self attention that is gated by a learnable scalar.
