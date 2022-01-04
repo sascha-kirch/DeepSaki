@@ -14,6 +14,7 @@ git clone https://github.com/SaKi1309/DeepSaki.git
 
 ## Pip
 ![PyPI](https://img.shields.io/pypi/v/deepsaki)
+![PyPI - Status](https://img.shields.io/pypi/status/deepsaki)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/deepsaki?label=downloads%20pip)
 ```
 pip install DeepSaki
