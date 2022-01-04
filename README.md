@@ -3,6 +3,8 @@ Welcome AI enthuisiasts to DeepSaki, a collection reusable machine learning code
 
 The ML framework used is tensorflow and the entire code is suitable to run Google's TPUs.
 
+![GitHub](https://img.shields.io/github/license/saki1309/deepsaki)
+
 # Installation
 
 ## Git
@@ -11,6 +13,8 @@ git clone https://github.com/SaKi1309/DeepSaki.git
 ```
 
 ## Pip
+![PyPI](https://img.shields.io/pypi/v/deepsaki)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/deepsaki?label=downloads%20pip)
 ```
 pip install DeepSaki
 ```
