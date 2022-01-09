@@ -3,11 +3,11 @@ from tensorflow.python.client import device_lib
 import tensorflow as tf
 from tensorflow.keras.mixed_precision import Policy as mixed_precision
 
-def DetectHw():
+def DetectHw(gpu_memory_groth = False):
   '''
   detects HW accelerators if present, initializes them and configures the distribution strategy
   args:
-    None
+    gpu_memory_groth: Bool, if true and accelerator is GPU, memory groth is activated
   return:
     strategy: pointer to the distribution strategy configuration object
     runtime_environment: Info string describing the HW that might be used for conditions, i.e. "TPU, "GPU", "CPU"
@@ -19,6 +19,9 @@ def DetectHw():
     hw_accelerator_handle = tpu
   except ValueError:
     tpu = None
+    if gpu_memory_groth:
+      for gpu in tf.config.experimental.list_physical_devices("GPU"):
+        tf.config.experimental.set_memory_growth(gpu, True)
     gpus = tf.config.experimental.list_logical_devices("GPU")
     hw_accelerator_handle = gpus
       
