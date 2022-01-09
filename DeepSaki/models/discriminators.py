@@ -77,6 +77,8 @@ class LayoutContentDiscriminator(tf.keras.Model):
     self.lay2 = DeepSaki.layers.Conv2DBlock(filters=1, kernels = kernels, activation = activation, split_kernels = split_kernels,numberOfConvs=numberOfConvs, useResidualConv2DBlock=False,dropout_rate=dropout_rate,useSpecNorm=useSpecNorm, padding=padding,use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     self.lay3 = DeepSaki.layers.Conv2DBlock(filters=1, kernels = kernels, activation = activation, split_kernels = split_kernels,numberOfConvs=numberOfConvs, useResidualConv2DBlock=False,dropout_rate=dropout_rate,useSpecNorm=useSpecNorm, padding=padding,use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     self.lay4 = DeepSaki.layers.Conv2DBlock(filters=1, kernels = kernels, activation = activation, split_kernels = split_kernels,numberOfConvs=numberOfConvs, useResidualConv2DBlock=False,dropout_rate=0,useSpecNorm=useSpecNorm,final_activation=False, applyFinalNormalization = False, padding=padding,use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+    #To enable mixed precission support for matplotlib and distributed training and to increase training stability
+    self.linear_dtype = tf.keras.layers.Activation("linear", dtype = tf.float32)
 
   def call(self, inputs):
     x = inputs
@@ -89,11 +91,13 @@ class LayoutContentDiscriminator(tf.keras.Model):
     out1 = self.cont1(F_cont)
     out1 = self.cont2(out1)
     out1 = self.cont3(out1)
+    out1 = self.linear_dtype(out1)
 
     out2 = self.lay1(F)
     out2 = self.lay2(out2)
     out2 = self.lay3(out2)
     out2 = self.lay4(out2)
+    out2 = self.linear_dtype(out2)
 
     return [out1, out2]
 
@@ -152,12 +156,15 @@ class PatchDiscriminator(tf.keras.Model):
     self.encoder = DeepSaki.layers.Encoder(number_of_levels=num_down_blocks, filters=filters, limit_filters=512, useResidualConv2DBlock=False, downsampling=downsampling, kernels=kernels, split_kernels=split_kernels,numberOfConvs=numberOfConvs,activation=activation,first_kernel=first_kernel,useSpecNorm=useSpecNorm,useSelfAttention=useSelfAttention, use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     self.conv1 = DeepSaki.layers.Conv2DBlock(filters = filters * (2**(num_down_blocks)), useResidualConv2DBlock = False, kernels = kernels, split_kernels = split_kernels, numberOfConvs = numberOfConvs, activation = activation,dropout_rate=dropout_rate,useSpecNorm=useSpecNorm, use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     self.conv2 = DeepSaki.layers.Conv2DBlock(filters = 1,useResidualConv2DBlock = False, kernels = 5, split_kernels  = False, numberOfConvs = 1, activation = None,useSpecNorm=useSpecNorm, applyFinalNormalization = False, use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+    #To enable mixed precission support for matplotlib and distributed training and to increase training stability
+    self.linear_dtype = tf.keras.layers.Activation("linear", dtype = tf.float32)
 
   def call(self, inputs):
     x = inputs
     x = self.encoder(x)
     x = self.conv1(x)
     x = self.conv2(x)
+    x = self.linear_dtype(x)
     return x
 
   
@@ -238,6 +245,8 @@ class UNetDiscriminator(tf.keras.Model):
     elif FullyConected == "1x1_conv": 
       self.img_reconstruction =DeepSaki.layers.Conv2DBlock(filters = 1, useResidualConv2DBlock = False, kernels = 1, split_kernels  = False, numberOfConvs = 1, activation = None,useSpecNorm=useSpecNorm, applyFinalNormalization = False, use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer) 
     self.linear = DeepSaki.layers.DenseBlock(units = 1, useSpecNorm = useSpecNorm, numberOfLayers = 1, activation = None, applyFinalNormalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+    #To enable mixed precission support for matplotlib and distributed training and to increase training stability
+    self.linear_dtype = tf.keras.layers.Activation("linear", dtype = tf.float32)
 
 
   def call(self, inputs):
@@ -248,6 +257,8 @@ class UNetDiscriminator(tf.keras.Model):
 
     out1 = DeepSaki.layers.GlobalSumPooling2D()(bottleNeckOutput)  
     out1 = self.linear(out1)
+    out1 = self.linear_dtype(out1)
 
     out2 = self.img_reconstruction(decoderOutput)
+    out2 = self.linear_dtype(out2)
     return [out1, out2]

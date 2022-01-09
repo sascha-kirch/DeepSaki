@@ -83,6 +83,8 @@ class UNet(tf.keras.Model):
       self.img_reconstruction = DeepSaki.layers.DenseBlock(units = inputShape[-1], useSpecNorm = useSpecNorm, numberOfLayers = 1, activation = final_activation, applyFinalNormalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     elif FullyConected == "1x1_conv": 
       self.img_reconstruction = DeepSaki.layers.Conv2DBlock(filters = inputShape[-1],useResidualConv2DBlock = False, kernels = 1, split_kernels  = False, numberOfConvs = 1, activation = final_activation, useSpecNorm=useSpecNorm, applyFinalNormalization = False, use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer) 
+    #To enable mixed precission support for matplotlib and distributed training and to increase training stability
+    self.linear_dtype = tf.keras.layers.Activation("linear", dtype = tf.float32)
 
   def call(self, inputs):
     x = inputs
@@ -90,6 +92,7 @@ class UNet(tf.keras.Model):
     x = self.bottleNeck(x)
     x = self.decoder([x,skipConnections])
     x = self.img_reconstruction(x)
+    x = self.linear_dtype(x)
     return x
 
 class ResNet(tf.keras.Model):
@@ -170,6 +173,8 @@ class ResNet(tf.keras.Model):
       self.img_reconstruction = DeepSaki.layers.DenseBlock(units = inputShape[-1], useSpecNorm = useSpecNorm, numberOfLayers = 1, activation = final_activation, applyFinalNormalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     elif FullyConected == "1x1_conv": 
       self.img_reconstruction = DeepSaki.layers.Conv2DBlock(filters = inputShape[-1],useResidualConv2DBlock = False, kernels = 1, split_kernels  = False, numberOfConvs = 1, activation = final_activation, useSpecNorm=useSpecNorm, applyFinalNormalization = False,use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer) 
+    #To enable mixed precission support for matplotlib and distributed training and to increase training stability
+    self.linear_dtype = tf.keras.layers.Activation("linear", dtype = tf.float32)
 
   def call(self, inputs):
     x = inputs
@@ -177,4 +182,5 @@ class ResNet(tf.keras.Model):
     x = self.bottleNeck(x)
     x = self.decoder(x)
     x = self.img_reconstruction(x)
+    x = self.linear_dtype(x)
     return x
