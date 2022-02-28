@@ -11,8 +11,8 @@ class PixelDistanceLoss(tf.keras.losses.Loss):
     MAE_MSE (optional, default:"mae"): determines whether use MAE (mean absolut error) or MSE (mean squared error) for the pixel distance. Options: "mae", "mse". 
   '''
 
-  def __init__(self,globalBatchSize, calculationType = "per_image", normalizeDepthChannel = False, MAE_MSE = "mae"):
-    super(PixelDistanceLoss, self).__init__()
+  def __init__(self,globalBatchSize, calculationType = "per_image", normalizeDepthChannel = False, MAE_MSE = "mae", reduction = tf.keras.losses.Reduction.AUTO):
+    super(PixelDistanceLoss, self).__init__(reduction = reduction)
     self.globalBatchSize=globalBatchSize
     self.calculationType=calculationType
     self.normalizeDepthChannel=normalizeDepthChannel
@@ -61,8 +61,8 @@ class StructuralSimilarityLoss(tf.keras.losses.Loss):
     c1 (optional, default: 0.0001): Constant considered in contrast calculation. 
     c2 (optional, default: 0.0009): Constant considered in luminance calculation.
   '''
-  def __init__(self,globalBatchSize, calculationType = "per_image", normalizeDepthChannel = False, alpha = 1, beta = 1, gamma = 1, c1=0.0001, c2 =0.0009):
-    super(StructuralSimilarityLoss, self).__init__()
+  def __init__(self,globalBatchSize, calculationType = "per_image", normalizeDepthChannel = False, alpha = 1, beta = 1, gamma = 1, c1=0.0001, c2 =0.0009, reduction = tf.keras.losses.Reduction.AUTO):
+    super(StructuralSimilarityLoss, self).__init__(reduction = reduction)
     self.globalBatchSize=globalBatchSize
     self.calculationType=calculationType
     self.normalizeDepthChannel=normalizeDepthChannel
