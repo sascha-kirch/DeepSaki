@@ -65,3 +65,6 @@ pip install DeepSaki
   - DetectHw
   - EnableXlaAcceleration
   - EnableMixedPrecision
+
+# Repo Stats
+![](https://komarev.com/ghpvc/?username=saschakirchdeepsaki&color=yellow) since 16.04.2022
