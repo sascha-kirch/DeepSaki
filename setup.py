@@ -32,6 +32,7 @@ setup(
     extras_require={
         'extras': ['matplotlib',],
         },
+    keywords = ['deeplearning', 'machinelearning', 'tensorflow','TPU'],
   
     # https://pypi.org/pypi?%3Aaction=list_classifiers
     classifiers=[
