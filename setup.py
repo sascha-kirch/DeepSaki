@@ -1,3 +1,4 @@
+import pathlib
 from setuptools import setup
 
 exec(open('DeepSaki/version.py').read())
