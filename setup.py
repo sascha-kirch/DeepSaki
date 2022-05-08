@@ -4,10 +4,15 @@ exec(open('DeepSaki/version.py').read())
 
 # https://setuptools.pypa.io/en/latest/references/keywords.html
 
+# The text of the README file
+README = (HERE / "README.md").read_text()
+
 setup(
     name='DeepSaki',
     version=__version__,    
-    description='Reusable machine learning code',
+    description='Custom deep learning code for TensorFlow',
+    long_description=README,
+    long_description_content_type="text/markdown",
     url='https://github.com/sascha-kirch/DeepSaki',
     author='Sascha Kirch',
     author_email='susch130993@googlemail.com',
