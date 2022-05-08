@@ -4,6 +4,8 @@ exec(open('DeepSaki/version.py').read())
 
 # https://setuptools.pypa.io/en/latest/references/keywords.html
 
+# The directory containing this file
+HERE = pathlib.Path(__file__).parent
 # The text of the README file
 README = (HERE / "README.md").read_text()
 
