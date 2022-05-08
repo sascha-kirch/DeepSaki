@@ -239,13 +239,13 @@ class FFT2D(tf.keras.layers.Layer):
     
     if self.applyRealFFT:
         x = tf.signal.rfft2d(inputs)
-        if shiftFFT:
+        if self.shiftFFT:
             x = tf.signal.fftshift(x, axes=[-2])
     else:
         imag = tf.zeros_like(inputs)
         inputs = tf.complex(inputs,imag) #fft2d requires complex inputs -> create complex with 0 imaginary
         x = tf.signal.fft2d(inputs)
-        if shiftFFT:
+        if self.shiftFFT:
             x = tf.signal.fftshift(x)
     
     if not self.isChannelFirst: #reverse the channel configuration to its initial config 
@@ -257,7 +257,7 @@ class FFT2D(tf.keras.layers.Layer):
     config.update({
         "isChannelFirst":self.isChannelFirst,
         "applyRealFFT":self.applyRealFFT,
-        "shiftFFT":shiftFFT
+        "shiftFFT":self.shiftFFT
         })
     return config
     
@@ -289,11 +289,11 @@ class iFFT2D(tf.keras.layers.Layer):
     x = inputs
     
     if self.applyRealFFT:
-        if shiftFFT:
+        if self.shiftFFT:
             x = tf.signal.ifftshift(x, axes=[-2])
         x = tf.signal.irfft2d(x)
     else:
-        if shiftFFT:
+        if self.shiftFFT:
             x = tf.signal.ifftshift(x)
         x = tf.signal.ifft2d(x)
         
@@ -308,6 +308,6 @@ class iFFT2D(tf.keras.layers.Layer):
     config.update({
         "isChannelFirst":self.isChannelFirst,
         "applyRealFFT":self.applyRealFFT,
-        "shiftFFT":shiftFFT
+        "shiftFFT":self.shiftFFT
         })
     return config
