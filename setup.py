@@ -24,7 +24,7 @@ setup(
               'DeepSaki.utils',
               'DeepSaki.regularization',
              ],
-    install_requires=['tensorflow >= 2.7',
+    install_requires=['tensorflow >= 2.8',
                       'numpy',
                       'tensorflow_addons',
                       'pandas',
