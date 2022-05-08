@@ -21,12 +21,22 @@ pip install DeepSaki
 ```
 
 # Content
+- activations
+  - ComplexActivation
 - initializer
   - HeAlphaNormal
   - HeAlphaUniform
+  - helper
+    - MakeInitializerComplex
 - layers
   - GlobalSumPooling2D
   - ReflectionPadding (suitable for TPU)
+  - FourierConvolution2D
+  - rFFTPooling2D
+  - FourierFilter2D
+  - FourierPooling2D
+  - FFT2D
+  - iFFT2D
   - Conv2DBlock
   - Conv2DSplitted
   - DenseBlock
