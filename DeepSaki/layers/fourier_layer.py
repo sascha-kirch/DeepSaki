@@ -107,15 +107,15 @@ class FourierConvolution2D(tf.keras.layers.Layer):
       '''
       Calculates the elementwise product for all batches and filters, by reshaping and taking the matrix product. Is much faster, but requires more memory!
       '''
-      a = tf.experimental.numpy.moveaxis(a, [1], [tf.rank(a) - 1]) # [8,1,64,64,16][b,w,h,c] width is now first!
-      a = tf.expand_dims(a,-2)# [8,64,64,1,16][b,w,h,1,c]
+      a = tf.einsum("bchw->bhwc",a)
+      a = tf.expand_dims(a,-2)# [b,w,h,1,c]
 
-      b = tf.experimental.numpy.moveaxis(b, [0,1], [tf.rank(b) - 1,tf.rank(b) - 2]) #[64,64,16,32][k, k, in, out/g]
+      b = tf.einsum("oihw->hwio",b) 
 
       # Matrix Multiplication
       c = a@b
-      c = tf.squeeze(c)
-      c = tf.experimental.numpy.moveaxis(c, [tf.rank(c) - 1], [1])
+      c = tf.squeeze(c,axis=-2)
+      c = tf.einsum("bhwc->bchw",c)
 
       return c
 
@@ -123,12 +123,12 @@ class FourierConvolution2D(tf.keras.layers.Layer):
       '''
       calculates the elementwise product multiple times taking advantage of array broadcasting. Is slower as the maatri multiplication, but requires less memory!
       '''
-      a = tf.experimental.numpy.moveaxis(a, [1], [tf.rank(a) - 1]) # [8,1,64,64,16][b,w,h,c] width is now first!
-      a = tf.expand_dims(a,-1)# [8,64,64,1,16][b,w,h,c,1]
-      b = tf.experimental.numpy.moveaxis(b, [0,1], [tf.rank(b) - 1,tf.rank(b) - 2]) #[64,64,16,32][k, k, in, out/g]
+      a = tf.einsum("bchw->bhwc",a)
+      a = tf.expand_dims(a,-1)#[b,w,h,c,1]
+      b = tf.einsum("oihw->hwio",b)#[k, k, in, out]
 
       c = a*b
-      c = tf.experimental.numpy.moveaxis(c, [tf.rank(c) - 1], [1])
+      c = tf.einsum("bhwxc->bchwx",c)
 
       c = tf.math.reduce_sum(c, axis=-1)
       return c
