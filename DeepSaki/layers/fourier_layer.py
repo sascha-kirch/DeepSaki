@@ -12,6 +12,9 @@ class FourierConvolution2D(tf.keras.layers.Layer):
   - filter_initializer: Initializer for filter weights.
   - bias_initializer: Initializer for bias weights.
   - isChannelFirst: True or False. If True, input shape is assumed to be [batch,channel,height,width]. If False, input shape is assumed to be [batch,height,width,channel]
+  - applyConjugate: 
+  - padToPower2:
+  - method:
   - **kwargs: keyword arguments passed to the parent class tf.keras.layers.Layer.
     
   '''
@@ -22,6 +25,9 @@ class FourierConvolution2D(tf.keras.layers.Layer):
                kernel_initializer = tf.keras.initializers.RandomUniform(-0.05,0.05),
                bias_initializer = tf.keras.initializers.Zeros(),
                isChannelFirst = False,
+               applyConjugate = False,
+               padToPower2 = True,
+               method = "ELEMENT_WISE",
                **kwargs
                ):
     super(FourierConvolution2D, self).__init__(**kwargs) 
@@ -31,25 +37,28 @@ class FourierConvolution2D(tf.keras.layers.Layer):
     self.kernel_initializer = kernel_initializer
     self.bias_initializer = bias_initializer
     self.isChannelFirst = isChannelFirst
+    self.applyConjugate = applyConjugate
+    self.padToPower2 = padToPower2
+    self.method = method
     
   def build(self, input_shape):
     super(FourierConvolution2D, self).build(input_shape)
     if self.isChannelFirst:
-        batch_size, inp_filter, inp_height, inp_width = input_shape
+      self.batch_size, self.inp_filter, self.inp_height, self.inp_width = input_shape
     else:
-        batch_size, inp_height, inp_width, inp_filter = input_shape
+      self.batch_size, self.inp_height, self.inp_width, self.inp_filter = input_shape
     
     if not self.kernels:
-        self.kernels = [inp_height, inp_width]
+      self.kernels = [self.inp_height, self.inp_width]
     
     #weights are independent from batch size [out_filter,inp_filter,kernel,kernel]. I leave the two kernels last, since I then can easily calculate the 2d FFT at once!
-    self.kernel = self.add_weight(name="kernel", shape=[self.filters, inp_filter, self.kernels[0], self.kernels[1]],initializer = self.kernel_initializer, trainable=True)
+    self.kernel = self.add_weight(name="kernel", shape=[self.filters, self.inp_filter, self.kernels[0], self.kernels[1]],initializer = self.kernel_initializer, trainable=True)
+    self.padding = self.GetImagePadding()
+    self.paddedImageShape = (self.batch_size, self.inp_filter, self.inp_height+2*self.padding, self.inp_width+2*self.padding)
     
     if self.use_bias:
-        self.bias = self.add_weight(name="bias", shape=[self.filters,1,1],initializer = self.bias_initializer, trainable=True)
+      self.bias = self.add_weight(name="bias", shape=[self.filters,1,1],initializer = self.bias_initializer, trainable=True)
     
-    #Output shape: batch_size, self.filters, inp_height, inp_width/2+1. Filters is zero, since concatenated later. For rFFT, the las dimension is reduced!  
-    self.out_shape = (batch_size,0,inp_height, int(inp_width/2)+1)
 
   def call(self, inputs):
     if not self.built:
@@ -57,51 +66,34 @@ class FourierConvolution2D(tf.keras.layers.Layer):
     
     #FFT2D is calculated over last two dimensions! 
     if not self.isChannelFirst:
-        inputs = tf.einsum("bhwc->bchw",inputs)
+      inputs = tf.einsum("bhwc->bchw",inputs)
     
-    outputs_F = np.ndarray(shape=self.out_shape)
     
-    # Pad the kernel to the shape of the input to enable element-wise multiplication
-    signal_shape = tf.shape(inputs)
-    kernel_shape = tf.shape(self.kernel)
-    x_pad = signal_shape[2] - kernel_shape[2]
-    y_pad = signal_shape[3] - kernel_shape[3]
-    # paddings shape is [2,4] because rank of inputs is 4, and 2 for height and width
-    paddings = [[0,0],
-               [0,0],
-                [0,x_pad],
-               [0,y_pad]
-              ]
-    kernels_padded = tf.pad(self.kernel, paddings) # [out_channels, inp_channel, height,width,out_channe]
-    #print("Shape: inputs {}".format(np.shape(inputs)))
-    #print("Shape: kernels_padded {}".format(np.shape(kernels_padded)))
+    # Optionally pad to power of 2, to speed up FFT
+    if self.padToPower2:
+      image_shape = self.FillImageShapeToPower2()
+    
     
     # Compute DFFTs for both inputs and kernel weights
-    inputs_F = tf.signal.rfft2d(inputs) #[batch,height,width,channel]
-    kernels_F = tf.signal.rfft2d(kernels_padded)
-    #kernels_F = tf.math.conj(kernels_F) #calculate conjugate to be mathematically correct with the cross-corelation implementation. Not important, since filter is learned! 
+    inputs_F = tf.signal.rfft2d(inputs, fft_length=[self.paddedImageShape[-2],self.paddedImageShape[-1]]) #[batch,height,width,channel]
+    kernels_F = tf.signal.rfft2d(self.kernel, fft_length=[self.paddedImageShape[-2],self.paddedImageShape[-1]])
+    if self.applyConjugate:
+      kernels_F = tf.math.conj(kernels_F) #to be equvivalent to the cross correlation
     
-    #print("Shape: inputs_F {}".format(np.shape(inputs_F)))
-    #print("Shape: kernels_F {}".format(np.shape(kernels_F)))
+    # Apply filter
+    if self.method == "MATRIX_PRODUCT":
+      outputs_F = self.MatrixProduct(inputs_F,kernels_F)
+    elif self.method == "ELEMENT_WISE":
+      outputs_F = self.ElementwiseProduct(inputs_F,kernels_F)
+    else:
+      raise ValueError('Entered method: {} unkown. Use "MATRIX_PRODUCT" or "ELEMENT_WISE".'.format(self.method))
     
-    # Apply filters by element wise multiplications
-    for filter in range(self.filters):
-      #print("Shape: kernels_F[filter,:,:,:] {}".format(np.shape(kernels_F[filter,:,:,:])))
-      outputs_F = tf.concat(
-          [outputs_F,
-          tf.reduce_sum(
-              inputs_F  * kernels_F[filter,:,:,:], #inputs:(batch, inp_filter, height, width ), fourier_filter:(...,out_filter,inp_filter,height, width)
-              axis = -3, # sum over all applied filters
-              keepdims = True
-          )],
-          axis = -3 # is the new filter count, since channel first
-      )
-        
-    #print("Shape: outputs_F {}".format(np.shape(outputs_F)))
     # Inverse rDFFT
-    output = tf.signal.irfft2d(outputs_F)
-    #output = tf.math.real(output)
+    output = tf.signal.irfft2d(outputs_F, fft_length=[self.paddedImageShape[-2],self.paddedImageShape[-1]])
+    output = tf.roll(output,shift = [2*self.padding,2*self.padding],axis = [-2,-1]) # shift the samples to obtain linear conv from circular conv
+    output = tf.slice(output, begin = [0, 0, self.padding, self.padding], size=[self.batch_size, self.filters, self.inp_height, self.inp_width])
     
+    # Optionally add bias
     if self.use_bias:
         output += self.bias
         
@@ -111,6 +103,46 @@ class FourierConvolution2D(tf.keras.layers.Layer):
     
     return output
 
+  def MatrixProduct(self,a, b):
+      '''
+      Calculates the elementwise product for all batches and filters, by reshaping and taking the matrix product. Is much faster, but requires more memory!
+      '''
+      a = tf.experimental.numpy.moveaxis(a, [1], [tf.rank(a) - 1]) # [8,1,64,64,16][b,w,h,c] width is now first!
+      a = tf.expand_dims(a,-2)# [8,64,64,1,16][b,w,h,1,c]
+
+      b = tf.experimental.numpy.moveaxis(b, [0,1], [tf.rank(b) - 1,tf.rank(b) - 2]) #[64,64,16,32][k, k, in, out/g]
+
+      # Matrix Multiplication
+      c = a@b
+      c = tf.squeeze(c)
+      c = tf.experimental.numpy.moveaxis(c, [tf.rank(c) - 1], [1])
+
+      return c
+
+  def ElementwiseProduct(self,a, b):
+      '''
+      calculates the elementwise product multiple times taking advantage of array broadcasting. Is slower as the maatri multiplication, but requires less memory!
+      '''
+      a = tf.experimental.numpy.moveaxis(a, [1], [tf.rank(a) - 1]) # [8,1,64,64,16][b,w,h,c] width is now first!
+      a = tf.expand_dims(a,-1)# [8,64,64,1,16][b,w,h,c,1]
+      b = tf.experimental.numpy.moveaxis(b, [0,1], [tf.rank(b) - 1,tf.rank(b) - 2]) #[64,64,16,32][k, k, in, out/g]
+
+      c = a*b
+      c = tf.experimental.numpy.moveaxis(c, [tf.rank(c) - 1], [1])
+
+      c = tf.math.reduce_sum(c, axis=-1)
+      return c
+  
+  def GetImagePadding(self):
+      return int((self.kernels[0]-1)/2)
+
+  def FillImageShapeToPower2(self):
+    width = self.paddedImageShape[-1]
+    log2 = np.log2(width)
+    newPower = int(np.ceil(log2))
+    newShape = (self.paddedImageShape[0],self.paddedImageShape[1],2**newPower,2**newPower)
+    return newShape
+
   def get_config(self):
     config = super(FourierConvolution2D, self).get_config()
     config.update({
@@ -119,7 +151,10 @@ class FourierConvolution2D(tf.keras.layers.Layer):
         "use_bias":self.use_bias,
         "kernel_initializer":self.kernel_initializer,
         "bias_initializer":self.bias_initializer,
-        "isChannelFirst":self.isChannelFirst
+        "isChannelFirst":self.isChannelFirst,
+        "applyConjugate":self.applyConjugate,
+        "padToPower2":self.padToPower2,
+        "method":self.method
         })
     return config
       
