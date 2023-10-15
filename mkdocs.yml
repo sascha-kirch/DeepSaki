@@ -1,0 +1,56 @@
+# https://www.mkdocs.org/user-guide/configuration/
+site_name: DeepSaki
+site_description: "Custom deep learning code for TensorFlow."
+
+repo_url: https://github.com/sascha-kirch/DeepSaki
+repo_name: sascha-kirch/DeepSaki
+
+theme:
+  icon:
+    repo: fontawesome/brands/github
+  name: "material"
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      primary: "blue"
+      accent: "grey"
+      scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      primary: "blue"
+      accent: "white"
+      scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+
+# https://mkdocstrings.github.io/recipes/#generate-pages-on-the-fly
+plugins:
+  - search
+  - gen-files:
+      scripts:
+      - docs/gen_ref_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - section-index
+  - mkdocstrings
+
+# https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown-extensions/
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.arithmatex:
+      generic: true
+
+nav:
+  - "Start": index.md
+  - Code Reference: reference/
+
+extra_javascript:
+  - javascripts/katex.js
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
+
+extra_css:
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
