@@ -1,4 +1,10 @@
-"""Collection of methods for setting up the compute environment."""
+"""Collection of methods for setting-up the compute environment.
+
+Tips:
+    * Overview on [distributed training with TensorFlow](https://www.tensorflow.org/api_docs/python/tf/distribute).
+    * Tutorial of using [tf.distrubute](https://www.tensorflow.org/tutorials/distribute/custom_training) on custom
+        training.
+"""
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -79,10 +85,7 @@ def EnableMixedPrecision() -> None:
     except ValueError:
         tpu = None
 
-    if tpu:
-        policyConfig = "mixed_bfloat16"
-    else:
-        policyConfig = "mixed_float16"
+    policyConfig = "mixed_bfloat16" if tpu else "mixed_float16"
     policy = tf.keras.mixed_precision.Policy(policyConfig)
     tf.keras.mixed_precision.set_global_policy(policy)
     print("Mixed precision enabled to {}".format(policyConfig))

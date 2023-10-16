@@ -82,7 +82,7 @@ class Encoder(tf.keras.layers.Layer):
     def build(self, input_shape):
         super(Encoder, self).build(input_shape)
 
-        if self.channelList == None:
+        if self.channelList is None:
             self.channelList = [min(self.filters * 2**i, self.limit_filters) for i in range(self.number_of_levels)]
         else:
             self.number_of_levels = len(self.channelList)
@@ -281,7 +281,7 @@ class Bottleneck(tf.keras.layers.Layer):
     def build(self, input_shape):
         super(Bottleneck, self).build(input_shape)
 
-        if self.channelList == None:
+        if self.channelList is None:
             ch = input_shape[-1]
             self.channelList = [ch for i in range(self.n_bottleneck_blocks)]
 
@@ -438,7 +438,7 @@ class Decoder(tf.keras.layers.Layer):
     def build(self, input_shape):
         super(Decoder, self).build(input_shape)
 
-        if self.channelList == None:
+        if self.channelList is None:
             self.channelList = [
                 min(self.filters * 2**i, self.limit_filters) for i in reversed(range(self.number_of_levels))
             ]

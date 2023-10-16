@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-import DeepSaki.initializer
+import DeepSaki.initializers
 import DeepSaki.layers
 
 def GetInitializer(initializerString, seed=None):
@@ -23,9 +23,9 @@ def GetInitializer(initializerString, seed=None):
     elif initializerString == "he_uniform":
         return tf.keras.initializers.HeUniform(seed=seed)
     elif initializerString == "he_alpha_normal":
-        return DeepSaki.initializer.HeAlphaNormal(seed=seed)
+        return DeepSaki.initializers.HeAlphaNormal(seed=seed)
     elif initializerString == "he_alpha_uniform":
-        return DeepSaki.initializer.HeAlphaUniform(seed=seed)
+        return DeepSaki.initializers.HeAlphaUniform(seed=seed)
     else:
         raise Exception("Undefined initializerString provided: {}".format(initializerString))
 

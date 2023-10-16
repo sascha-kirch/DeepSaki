@@ -1,7 +1,7 @@
 import tensorflow as tf
 import tensorflow_addons as tfa
 
-import DeepSaki.initializer
+import DeepSaki.initializers
 import DeepSaki.layers
 import DeepSaki.layers.helper
 
@@ -24,7 +24,7 @@ class Conv2DSplitted(tf.keras.layers.Layer):
         useSpecNorm=False,
         strides=(1, 1),
         use_bias=True,
-        kernel_initializer=DeepSaki.initializer.HeAlphaUniform(),
+        kernel_initializer=DeepSaki.initializers.HeAlphaUniform(),
     ):
         super(Conv2DSplitted, self).__init__()
         self.filters = filters
@@ -108,8 +108,8 @@ class Conv2DBlock(tf.keras.layers.Layer):
         padding="zero",
         applyFinalNormalization=True,
         use_bias=True,
-        kernel_initializer=DeepSaki.initializer.HeAlphaUniform(),
-        gamma_initializer=DeepSaki.initializer.HeAlphaUniform(),
+        kernel_initializer=DeepSaki.initializers.HeAlphaUniform(),
+        gamma_initializer=DeepSaki.initializers.HeAlphaUniform(),
     ):
         super(Conv2DBlock, self).__init__()
         self.filters = filters
@@ -203,7 +203,7 @@ class Conv2DBlock(tf.keras.layers.Layer):
 
             if self.useResidualConv2DBlock:
                 if (
-                    block == 0 and self.residualConv != None
+                    block == 0 and self.residualConv is not None
                 ):  # after the first conf, the channel depth matches between input and output
                     residual = self.residualConv(residual)
                 x = tf.keras.layers.Add()([x, residual])
@@ -276,8 +276,8 @@ class DenseBlock(tf.keras.layers.Layer):
         useSpecNorm=False,
         applyFinalNormalization=True,
         use_bias=True,
-        kernel_initializer=DeepSaki.initializer.HeAlphaUniform(),
-        gamma_initializer=DeepSaki.initializer.HeAlphaUniform(),
+        kernel_initializer=DeepSaki.initializers.HeAlphaUniform(),
+        gamma_initializer=DeepSaki.initializers.HeAlphaUniform(),
     ):
         super(DenseBlock, self).__init__()
         self.units = units
@@ -378,8 +378,8 @@ class DownSampleBlock(tf.keras.layers.Layer):
         useSpecNorm=False,
         padding="zero",
         use_bias=True,
-        kernel_initializer=DeepSaki.initializer.HeAlphaUniform(),
-        gamma_initializer=DeepSaki.initializer.HeAlphaUniform(),
+        kernel_initializer=DeepSaki.initializers.HeAlphaUniform(),
+        gamma_initializer=DeepSaki.initializers.HeAlphaUniform(),
     ):
         super(DownSampleBlock, self).__init__()
         self.kernels = kernels
@@ -475,8 +475,8 @@ class UpSampleBlock(tf.keras.layers.Layer):
         useSpecNorm=False,
         use_bias=True,
         padding="zero",
-        kernel_initializer=DeepSaki.initializer.HeAlphaUniform(),
-        gamma_initializer=DeepSaki.initializer.HeAlphaUniform(),
+        kernel_initializer=DeepSaki.initializers.HeAlphaUniform(),
+        gamma_initializer=DeepSaki.initializers.HeAlphaUniform(),
     ):
         super(UpSampleBlock, self).__init__()
         self.kernels = kernels
@@ -602,8 +602,8 @@ class ResidualIdentityBlock(tf.keras.layers.Layer):
         dropout_rate=0,
         use_bias=True,
         padding="zero",
-        kernel_initializer=DeepSaki.initializer.HeAlphaUniform(),
-        gamma_initializer=DeepSaki.initializer.HeAlphaUniform(),
+        kernel_initializer=DeepSaki.initializers.HeAlphaUniform(),
+        gamma_initializer=DeepSaki.initializers.HeAlphaUniform(),
     ):
         super(ResidualIdentityBlock, self).__init__()
         self.activation = activation
@@ -700,7 +700,7 @@ class ResidualIdentityBlock(tf.keras.layers.Layer):
             raise ValueError("This model has not yet been built.")
         x = inputs
 
-        if self.conv0 != None:
+        if self.conv0 is not None:
             x = self.conv0(x)
 
         for block in range(self.numberOfBlocks):
@@ -773,8 +773,8 @@ class ResBlockDown(tf.keras.layers.Layer):
         useSpecNorm=False,
         use_bias=True,
         padding="zero",
-        kernel_initializer=DeepSaki.initializer.HeAlphaUniform(),
-        gamma_initializer=DeepSaki.initializer.HeAlphaUniform(),
+        kernel_initializer=DeepSaki.initializers.HeAlphaUniform(),
+        gamma_initializer=DeepSaki.initializers.HeAlphaUniform(),
     ):
         super(ResBlockDown, self).__init__()
         self.activation = activation
@@ -879,8 +879,8 @@ class ResBlockUp(tf.keras.layers.Layer):
         useSpecNorm=False,
         use_bias=True,
         padding="zero",
-        kernel_initializer=DeepSaki.initializer.HeAlphaUniform(),
-        gamma_initializer=DeepSaki.initializer.HeAlphaUniform(),
+        kernel_initializer=DeepSaki.initializers.HeAlphaUniform(),
+        gamma_initializer=DeepSaki.initializers.HeAlphaUniform(),
     ):
         super(ResBlockUp, self).__init__()
         self.activation = activation
@@ -1010,8 +1010,8 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
         self,
         useSpecNorm=False,
         intermediateChannel=None,
-        kernel_initializer=DeepSaki.initializer.HeAlphaUniform(),
-        gamma_initializer=DeepSaki.initializer.HeAlphaUniform(),
+        kernel_initializer=DeepSaki.initializers.HeAlphaUniform(),
+        gamma_initializer=DeepSaki.initializers.HeAlphaUniform(),
     ):
         super(ScalarGatedSelfAttention, self).__init__()
         self.useSpecNorm = useSpecNorm
@@ -1022,7 +1022,7 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
     def build(self, input_shape):
         super(ScalarGatedSelfAttention, self).build(input_shape)
         batchSize, height, width, numChannel = input_shape
-        if self.intermediateChannel == None:
+        if self.intermediateChannel is None:
             self.intermediateChannel = int(numChannel / 8)
 
         self.w_f = DeepSaki.layers.DenseBlock(

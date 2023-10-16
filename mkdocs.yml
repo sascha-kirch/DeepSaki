@@ -9,6 +9,7 @@ theme:
   icon:
     repo: fontawesome/brands/github
   name: "material"
+  # https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/
   palette:
     - media: "(prefers-color-scheme: light)"
       primary: "blue"
@@ -18,7 +19,7 @@ theme:
         icon: material/toggle-switch-off-outline
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
-      primary: "blue"
+      primary: "indigo"
       accent: "white"
       scheme: slate
       toggle:
@@ -38,7 +39,8 @@ plugins:
 
 # https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown-extensions/
 markdown_extensions:
-  - pymdownx.highlight
+  - pymdownx.highlight:
+      linenums: true
   - pymdownx.superfences
   - pymdownx.arithmatex:
       generic: true

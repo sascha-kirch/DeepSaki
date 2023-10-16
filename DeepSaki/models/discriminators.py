@@ -1,16 +1,16 @@
 import tensorflow as tf
 import DeepSaki.layers
-import DeepSaki.initializer
+import DeepSaki.initializers
 
 class LayoutContentDiscriminator(tf.keras.Model):
   '''
   Discriminator/critic model with two outputs to enforce disentanglement.
-  First, a layout output with (batch, height, width, 1) that focuses on the inputs layout by reducing its channel depth to 1. 
+  First, a layout output with (batch, height, width, 1) that focuses on the inputs layout by reducing its channel depth to 1.
   Seccond, a content output that discriminates a feature vector with an spatial width of 1.
   Inspired by: http://arxiv.org/abs/2103.13389
   args:
     - filters (optional): defines the number of filters to which the input is exposed.
-    - downsampling(optional): describes the downsampling method 
+    - downsampling(optional): describes the downsampling method
     - kernels (optional): size of the kernel for convolutional layers
     - first_kernel (optional): The first convolution can have a different kernel size, to e.g. increase the perceptive field, while the channel depth is still low.
     - split_kernels (optional): to decrease the number of parameters, a convolution with the kernel_size (kernel,kernel) can be splitted into two consecutive convolutions with the kernel_size (kernel,1) and (1,kernel) respectivly
@@ -24,7 +24,7 @@ class LayoutContentDiscriminator(tf.keras.Model):
     - useSelfAttention (optional): Determines whether to apply self-attention after the encoder before branching.
     - kernel_initializer (optional): Initialization of the convolutions kernels.
     - gamma_initializer (optional): Initialization of the normalization layers.
-  
+
   output call():
     - out1: content output
     - out2: layout output
@@ -40,7 +40,7 @@ class LayoutContentDiscriminator(tf.keras.Model):
   '''
   def __init__(self,
             filters = 64,
-            downsampling = "conv_stride_2", 
+            downsampling = "conv_stride_2",
             kernels = 3,
             first_kernel = 5,
             split_kernels = False,
@@ -52,21 +52,21 @@ class LayoutContentDiscriminator(tf.keras.Model):
             padding = "none",
             FullyConected = "MLP",
             useSelfAttention = False,
-            kernel_initializer = DeepSaki.initializer.HeAlphaUniform(),
-            gamma_initializer =  DeepSaki.initializer.HeAlphaUniform()
+            kernel_initializer = DeepSaki.initializers.HeAlphaUniform(),
+            gamma_initializer =  DeepSaki.initializers.HeAlphaUniform()
             ):
     super(LayoutContentDiscriminator, self).__init__()
     self.encoder = DeepSaki.layers.Encoder(3, filters, 1024, False, downsampling, kernels, split_kernels, numberOfConvs,activation, first_kernel,False,channelList=[4*filters,4*filters,8*filters],useSpecNorm=useSpecNorm, padding = padding, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     if useSelfAttention:
         self.SA = DeepSaki.layers.ScalarGatedSelfAttention(useSpecNorm=useSpecNorm, intermediateChannel=None, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
-    else: 
+    else:
       self.SA = None
 
     if FullyConected == "MLP":
       self.cont1 = DeepSaki.layers.DenseBlock(units = filters * 8, useSpecNorm = useSpecNorm, numberOfLayers = numberOfConvs, activation = activation, dropout_rate =dropout_rate, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
       self.cont2 = DeepSaki.layers.DenseBlock(units = filters * 8, useSpecNorm = useSpecNorm, numberOfLayers = numberOfConvs, activation = activation, dropout_rate =dropout_rate, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
       self.cont3 = DeepSaki.layers.DenseBlock(units = filters * 8, useSpecNorm = useSpecNorm, numberOfLayers = numberOfConvs, activation = activation, dropout_rate =0, final_activation=False, applyFinalNormalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
-    elif FullyConected == "1x1_conv": 
+    elif FullyConected == "1x1_conv":
       self.cont1 = DeepSaki.layers.Conv2DBlock(filters=filters * 8, kernels = 1, activation = activation, split_kernels = split_kernels,numberOfConvs=numberOfConvs, useResidualConv2DBlock=False,dropout_rate=dropout_rate,useSpecNorm=useSpecNorm, padding=padding,use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
       self.cont2 = DeepSaki.layers.Conv2DBlock(filters=filters * 8, kernels = 1, activation = activation, split_kernels = split_kernels,numberOfConvs=numberOfConvs, useResidualConv2DBlock=False,dropout_rate=dropout_rate,useSpecNorm=useSpecNorm, padding=padding,use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
       self.cont3 = DeepSaki.layers.Conv2DBlock(filters=filters * 8, kernels = 1, activation = activation, split_kernels = split_kernels,numberOfConvs=numberOfConvs, useResidualConv2DBlock=False,dropout_rate=0,useSpecNorm=useSpecNorm, final_activation=False, applyFinalNormalization = False, padding=padding,use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
@@ -84,7 +84,7 @@ class LayoutContentDiscriminator(tf.keras.Model):
     x = inputs
     F = self.encoder(x)
     if self.SA is not None:
-        F = self.SA(F) 
+        F = self.SA(F)
 
     batchsize, pool_height, pool_width, channels = tf.keras.backend.int_shape(F)
     F_cont = tf.keras.layers.AveragePooling2D(pool_size=(pool_height, pool_width))(F)
@@ -106,7 +106,7 @@ class PatchDiscriminator(tf.keras.Model):
   Discriminator/critic model with patched output.
   args:
     - filters (optional): defines the number of filters to which the input is exposed.
-    - downsampling(optional): describes the downsampling method 
+    - downsampling(optional): describes the downsampling method
     - kernels (optional): size of the kernel for convolutional layers
     - first_kernel (optional): The first convolution can have a different kernel size, to e.g. increase the perceptive field, while the channel depth is still low.
     - split_kernels (optional): to decrease the number of parameters, a convolution with the kernel_size (kernel,kernel) can be splitted into two consecutive convolutions with the kernel_size (kernel,1) and (1,kernel) respectivly
@@ -120,7 +120,7 @@ class PatchDiscriminator(tf.keras.Model):
     - useSelfAttention (optional): Determines whether to apply self-attention after the encoder before branching.
     - kernel_initializer (optional): Initialization of the convolutions kernels.
     - gamma_initializer (optional): Initialization of the normalization layers.
-  
+
   output call():
     - out1: content output
     - out2: layout output
@@ -136,7 +136,7 @@ class PatchDiscriminator(tf.keras.Model):
   '''
   def __init__(self,
             filters = 64,
-            downsampling = "average_pooling", 
+            downsampling = "average_pooling",
             kernels = 3,
             first_kernel = 5,
             split_kernels = False,
@@ -148,8 +148,8 @@ class PatchDiscriminator(tf.keras.Model):
             use_bias = True,
             useSelfAttention=False,
             padding = "none",
-            kernel_initializer = DeepSaki.initializer.HeAlphaUniform(),
-            gamma_initializer =  DeepSaki.initializer.HeAlphaUniform()
+            kernel_initializer = DeepSaki.initializers.HeAlphaUniform(),
+            gamma_initializer =  DeepSaki.initializers.HeAlphaUniform()
             ):
     super(PatchDiscriminator, self).__init__()
 
@@ -167,15 +167,15 @@ class PatchDiscriminator(tf.keras.Model):
     x = self.linear_dtype(x)
     return x
 
-  
+
 class UNetDiscriminator(tf.keras.Model):
   '''
   U-Net based discriminator model with skip conections between encoder and decoder and two outputs; after the bottleneck and after the decoder.
-  inspired by Schönfeld et. al. http://arxiv.org/abs/2002.12655 
+  inspired by Schönfeld et. al. http://arxiv.org/abs/2002.12655
   args:
   - number_of_levels (optional): number of down and apsampling levels of the model
   - upsampling (optional): describes the upsampling method used
-  - downsampling (optional): describes the downsampling method 
+  - downsampling (optional): describes the downsampling method
 - kernels (optional): size of the convolutions kernels
 - first_kernel (optional): The first convolution can have a different kernel size, to e.g. increase the perceptive field, while the channel depth is still low.
 - split_kernels (optional): to decrease the number of parameters, a convolution with the kernel_size (kernel,kernel) can be splitted into two consecutive convolutions with the kernel_size (kernel,1) and (1,kernel) respectivly
@@ -195,7 +195,7 @@ class UNetDiscriminator(tf.keras.Model):
   - padding (optional): padding type. Options are "none", "zero" or "reflection"
   - kernel_initializer (optional): Initialization of the convolutions kernels.
   - gamma_initializer (optional): Initialization of the normalization layers.
-  
+
   Input Shape:
     (batch, height, width, channel)
 
@@ -213,27 +213,27 @@ class UNetDiscriminator(tf.keras.Model):
   '''
   def __init__(self,
             number_of_levels,
-            upsampling = "transpose_conv", 
+            upsampling = "transpose_conv",
             downsampling = "average_pooling",
             kernels = 3,
             first_kernel = 5,
             split_kernels = False,
             numberOfConvs = 2,
-            activation = "leaky_relu", 
+            activation = "leaky_relu",
             useResidualConv2DBlock = False,
             useResidualIdentityBlock = False,
             residual_cardinality = 1,
-            limit_filters = 512, 
-            n_bottleneck_blocks = 1,  
-            filters = 64, 
-            dropout_rate = 0.2, 
+            limit_filters = 512,
+            n_bottleneck_blocks = 1,
+            filters = 64,
+            dropout_rate = 0.2,
             useSelfAttention=False,
             useSpecNorm=False,
             use_bias = True,
             FullyConected = "MLP",
             padding = "zero",
-            kernel_initializer = DeepSaki.initializer.HeAlphaUniform(),
-            gamma_initializer =  DeepSaki.initializer.HeAlphaUniform()
+            kernel_initializer = DeepSaki.initializers.HeAlphaUniform(),
+            gamma_initializer =  DeepSaki.initializers.HeAlphaUniform()
             ):
     super(UNetDiscriminator, self).__init__()
     ch = filters
@@ -242,8 +242,8 @@ class UNetDiscriminator(tf.keras.Model):
     self.decoder = DeepSaki.layers.Decoder(number_of_levels=number_of_levels, upsampling=upsampling, filters=filters, limit_filters=limit_filters, useResidualConv2DBlock=useResidualConv2DBlock, kernels=kernels, split_kernels=split_kernels,numberOfConvs=numberOfConvs,activation=activation,dropout_rate=dropout_rate, useResidualIdentityBlock=useResidualIdentityBlock, channelList=[8*ch,8*ch,4*ch,2*ch,ch], useSpecNorm=useSpecNorm, use_bias = use_bias,residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer,enableSkipConnectionsInput=True)
     if FullyConected == "MLP":
       self.img_reconstruction = DeepSaki.layers.DenseBlock(units = 1, useSpecNorm = useSpecNorm, numberOfLayers = 1, activation = None, applyFinalNormalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
-    elif FullyConected == "1x1_conv": 
-      self.img_reconstruction =DeepSaki.layers.Conv2DBlock(filters = 1, useResidualConv2DBlock = False, kernels = 1, split_kernels  = False, numberOfConvs = 1, activation = None,useSpecNorm=useSpecNorm, applyFinalNormalization = False, use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer) 
+    elif FullyConected == "1x1_conv":
+      self.img_reconstruction =DeepSaki.layers.Conv2DBlock(filters = 1, useResidualConv2DBlock = False, kernels = 1, split_kernels  = False, numberOfConvs = 1, activation = None,useSpecNorm=useSpecNorm, applyFinalNormalization = False, use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     self.linear = DeepSaki.layers.DenseBlock(units = 1, useSpecNorm = useSpecNorm, numberOfLayers = 1, activation = None, applyFinalNormalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     #To enable mixed precission support for matplotlib and distributed training and to increase training stability
     self.linear_dtype = tf.keras.layers.Activation("linear", dtype = tf.float32)
@@ -255,7 +255,7 @@ class UNetDiscriminator(tf.keras.Model):
     bottleNeckOutput = self.bottleNeck(encoderOutput)
     decoderOutput = self.decoder([bottleNeckOutput,skipConnections])
 
-    out1 = DeepSaki.layers.GlobalSumPooling2D()(bottleNeckOutput)  
+    out1 = DeepSaki.layers.GlobalSumPooling2D()(bottleNeckOutput)
     out1 = self.linear(out1)
     out1 = self.linear_dtype(out1)
 
