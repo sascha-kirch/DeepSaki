@@ -6,9 +6,13 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 # https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
+
 [project]
 name = "DeepSaki"
 authors = [
+    {name = "Sascha Kirch", email = "susch130993@googlemail.com"},
+]
+maintainers = [
     {name = "Sascha Kirch", email = "susch130993@googlemail.com"},
 ]
 description = "Custom deep learning code for TensorFlow."
@@ -34,6 +38,13 @@ dependencies = [
     'pandas',
 ]
 dynamic = ["version","readme"]
+
+# https://packaging.python.org/en/latest/specifications/declaring-project-metadata/#urls
+#[project.urls]
+#Homepage = "https://example.com"
+#Documentation = "https://readthedocs.org"
+#Repository = "https://github.com/me/spam.git"
+#Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
 
 [project.optional-dependencies]
 test = [
@@ -79,7 +90,7 @@ parallel = true
 omit = [
     "setup.py",
     "DeepSaki/__init__.py",
-    "DeepSaki/version.py",
+    "DeepSaki/__version__.py",
 ]
 
 [tool.coverage.report]
@@ -164,13 +175,13 @@ exclude = ["examples"]
 # https://docs.astral.sh/ruff/rules/
 [tool.ruff]
 target-version = "py38"
-select = ["F", "E", "I", "D", "PL"]
-extend-select = ["W", "C90", "YTT", "ANN", "ASYNC", "A", "C4", "RET", "SIM", "PLC", "PLE", "PLR", "PLW", "FLY", "PERF", "RUF"]
+select = ["F", "E", "I", "D", "PL","N"]
+extend-select = ["W", "C90", "YTT", "ANN", "ASYNC", "A", "C4", "RET", "SIM", "PLC", "PLE", "PLR", "PLW", "FLY", "PERF", "RUF","ARG","ERA","TRY","NPY","FURB"]
 ignore = ["E402","E501", "B905", "SIM300", "PD901","ANN101"]
 fixable = ["W", "C90", "YTT", "ANN", "ASYNC", "A", "C4", "RET", "SIM", "PLC", "PLE", "PLR", "PLW", "FLY", "PERF", "RUF", "F401", "D205", "D403", "D200", "D202", "D209","I001","E711"]
 unfixable = ["SIM"]
 line-length = 120
-extend-exclude = ["tests", "test"]
+extend-exclude = ["tests", "test","__init__.py"]
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 [tool.ruff.isort]
 force-single-line = true
@@ -204,6 +215,8 @@ max-returns = 12
 max-statements = 100
 max-args = 15
 allow-magic-value-types = ["str", "bytes", "complex", "float", "int", "tuple"]
+[tool.ruff.pep8-naming]
+ignore-names = []
 
 # Static type checker
 [tool.pyright]
