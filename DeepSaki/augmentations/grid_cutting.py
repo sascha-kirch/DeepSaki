@@ -48,10 +48,10 @@ def _get_mask(shape: Tuple[int, int, int, int]) -> tf.Tensor:
     return tf.convert_to_tensor(mask, dtype=tf.float32)
 
 
-def CutMix(
+def cut_mix(
     batch1: tf.Tensor,
     batch2: tf.Tensor,
-    ignoreBackground: bool = False,
+    ignore_background: bool = False,
     invert_mask: bool = False,
     mask: Optional[tf.Tensor] = None,
 ) -> Tuple[tf.Tensor, tf.Tensor]:
@@ -62,7 +62,7 @@ def CutMix(
     Args:
         batch1 (tf.Tensor): Batch of grid-shaped data of shape (`batch`, `height`, `width`, `channel`).
         batch2 (tf.Tensor): Batch of grid-shaped data of shape (`batch`, `height`, `width`, `channel`).
-        ignoreBackground (bool, optional): If true, pixels belonging to the backgroud are ignored. Only applicable for
+        ignore_background (bool, optional): If true, pixels belonging to the backgroud are ignored. Only applicable for
             images where the background is represented as 0. Defaults to False.
         invert_mask (bool, optional): If true, the mask is inverted. 1->0 and 0->1. Defaults to False.
         mask (Optional[tf.Tensor], optional): Binary mask that requires same shape as `batch1` and `batch2`. If `None`
@@ -78,7 +78,7 @@ def CutMix(
     if mask is None:  # generate mask
         mask = _get_mask(shape=batch1.shape)
 
-    if ignoreBackground:  # check where in image are no background pixels (value = 1)
+    if ignore_background:  # check where in image are no background pixels (value = 1)
         batch1_mask = tf.cast(tf.where(batch1 > 0, 1, 0), tf.int32)
         batch2_mask = tf.cast(tf.where(batch2 > 0, 1, 0), tf.int32)
         mutal_person_mask = tf.cast(tf.clip_by_value((batch1_mask + batch2_mask), 0, 1), tf.float32)
@@ -95,7 +95,7 @@ def CutMix(
     return ground_truth_mask, new_batch
 
 
-def CutOut(
+def cut_out(
     batch: tf.Tensor, invert_mask: bool = False, mask: Optional[tf.Tensor] = None
 ) -> Tuple[tf.Tensor, tf.Tensor]:
     """Performs the cutout operation of a batch of images.

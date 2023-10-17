@@ -13,7 +13,7 @@ from typing import Union
 import tensorflow as tf
 from tensorflow.python.client import device_lib
 
-def DetectHw(
+def detect_accelerator(
     gpu_memory_groth: bool = False,
 ) -> Tuple[
     tf.distribute.Strategy,
@@ -72,20 +72,20 @@ def DetectHw(
     return strategy, runtime_environment, hw_accelerator_handle
 
 
-def EnableXlaAcceleration() -> None:
+def enable_xla_acceleration() -> None:
     """Enable compiler acceleration for linear algebra operations."""
     tf.config.optimizer.set_jit(True)
     print("Linear algebra acceleration enabled")
 
 
-def EnableMixedPrecision() -> None:
+def enable_mixed_precision() -> None:
     """Set mixed precission policy depending on the available HW accelerator. TPU:`mixed_bfloat16`. GPU:`mixed_float16`."""
     try:
         tpu = tf.distribute.cluster_resolver.TPUClusterResolver()  # TPU detection
     except ValueError:
         tpu = None
 
-    policyConfig = "mixed_bfloat16" if tpu else "mixed_float16"
-    policy = tf.keras.mixed_precision.Policy(policyConfig)
+    policy_config = "mixed_bfloat16" if tpu else "mixed_float16"
+    policy = tf.keras.mixed_precision.Policy(policy_config)
     tf.keras.mixed_precision.set_global_policy(policy)
-    print("Mixed precision enabled to {}".format(policyConfig))
+    print("Mixed precision enabled to {}".format(policy_config))

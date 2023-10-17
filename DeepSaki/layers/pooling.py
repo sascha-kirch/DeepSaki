@@ -1,9 +1,25 @@
 """Collection of pooling layer operations to reduce the spatial dimensionality of a feature map."""
+from enum import Enum
 from typing import Any
 from typing import Dict
+from typing import Literal
 from typing import Optional
 
 import tensorflow as tf
+
+class Frequency_Filter(Enum):
+    """`Enum` used to define valid filters for `rFFT2DFilter`.
+
+    Attributes:
+        LOW_PASS (int): Indicates that low frequency components shall be kept and high frequency components shall be
+            filtered.
+        HIGH_PASS (int): Indicates that high frequency components shall be kept and low frequency components shall be
+            filtered.
+    """
+
+    LOW_PASS = 1
+    HIGH_PASS = 2
+
 
 class GlobalSumPooling2D(tf.keras.layers.Layer):
     """Global sum pooling operation for spatial data.
@@ -44,7 +60,7 @@ class GlobalSumPooling2D(tf.keras.layers.Layer):
         """Calls the `GlobalSumPooling2D` layer.
 
         Args:
-            inputs (tf.Tensor): Tensor of shape (`batch`,`channel`,`height`,`width`) or
+            inputs (tf.Tensor): Tensor of shape (`batch`,`height`,`width`,`channel`) or
                 (`batch`,`channel`,`height`,`width`).
 
         Returns:
@@ -72,19 +88,25 @@ class rFFT2DFilter(tf.keras.layers.Layer):
     the spatial domain.
     """
 
-    def __init__(self, is_channel_first: bool = False, truncated_frequencies: str = "low", **kwargs: Any) -> None:
+    def __init__(
+        self,
+        is_channel_first: bool = False,
+        filter_type: Literal[Frequency_Filter.LOW_PASS, Frequency_Filter.HIGH_PASS] = Frequency_Filter.LOW_PASS,
+        **kwargs: Any,
+    ) -> None:
         """Initialize the `rFFT2DFilter` object.
 
         Args:
             is_channel_first (bool, optional): If True, input shape is assumed to be (`batch`,`channel`,`height`,`width`).
                 If False, input shape is assumed to be (`batch`,`height`,`width`,`channel`). Defaults to False.
-            truncated_frequencies (str, optional): ["high" | "low"]: if "high", high frequency values are truncated,
-                if "low", low frequencies are truncated. Defaults to "low".
+            filter_type (Literal[Frequency_Filter.LOW_PASS,Frequency_Filter.HIGH_PASS], optional): If
+                `Frequency_Filter.LOW_PASS`, high frequency values are truncated, if `Frequency_Filter.HIGH_PASS`, low
+                frequencies are truncated. Defaults to `Frequency_Filter.LOW_PASS`.
             kwargs (Any): Additional key word arguments passed to the base class.
         """
         super(rFFT2DFilter, self).__init__(**kwargs)
         self.is_channel_first = is_channel_first
-        self.truncated_frequencies = truncated_frequencies
+        self.filter_type = filter_type
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).
@@ -105,25 +127,37 @@ class rFFT2DFilter(tf.keras.layers.Layer):
         )  # 1/4 because real spectrum has allready half width and filter only applies to positive frequencies in width
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """Calls the `rFFT2DFilter` layer.
+
+        Args:
+            inputs (tf.Tensor): Tensor of shape (`batch`,`height`,`width`,`channel`) or
+                (`batch`,`channel`,`height`,`width`).
+
+        Raises:
+            ValueError: If Layer has not been built.
+
+        Returns:
+            Filtered tensor with shape (`batch`,`channel`,`height`,`width`).
+        """
         if not self.built:
             raise ValueError("This model has not yet been built.")
 
         if not self.is_channel_first:  # layer assumes channel first due to FFT
             inputs = tf.einsum("bhwc->bchw", inputs)
 
-        inputs_F = tf.signal.rfft2d(inputs)
+        inputs_f_domain = tf.signal.rfft2d(inputs)
 
-        if self.truncated_frequencies == "high":
-            inputs_F = tf.signal.fftshift(inputs_F, axes=[-2])  # shift frequencies to be able to crop in center
-        shape = tf.shape(inputs_F)
-        outputs_F = tf.slice(
-            inputs_F,
+        if self.filter_type == Frequency_Filter.LOW_PASS:
+            inputs_f_domain = tf.signal.fftshift(inputs_f_domain, axes=[-2])  # shift frequencies to be able to crop in center
+        shape = tf.shape(inputs_f_domain)
+        outputs_f_domain = tf.slice(
+            inputs_f_domain,
             begin=[0, 0, self.offset_height, self.offset_width],
             size=[shape[0], shape[1], self.target_height, self.target_width],
         )  # Tf.slice instead of tf.image.crop, because the latter assumes channel last
-        if self.truncated_frequencies == "high":
-            outputs_F = tf.signal.ifftshift(outputs_F, axes=[-2])  # reverse shift
-        outputs = tf.signal.irfft2d(outputs_F)
+        if self.filter_type == Frequency_Filter.LOW_PASS:
+            outputs_f_domain = tf.signal.ifftshift(outputs_f_domain, axes=[-2])  # reverse shift
+        outputs = tf.signal.irfft2d(outputs_f_domain)
 
         # reverse to previous channel config!
         if not self.is_channel_first:
@@ -137,7 +171,7 @@ class rFFT2DFilter(tf.keras.layers.Layer):
             Dictionary with the class' variable names as keys.
         """
         config = super(rFFT2DFilter, self).get_config()
-        config.update({"isChannelFirst": self.is_channel_first, "truncatedFrequencies": self.truncated_frequencies})
+        config.update({"is_channel_first": self.is_channel_first, "filter_type": self.filter_type})
         return config
 
 
@@ -165,13 +199,15 @@ class FourierPooling2D(tf.keras.layers.Layer):
         self.is_channel_first = is_channel_first
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
-        """_summary_
+        """Calls the `FourierPooling2D` layer.
 
         Args:
-            inputs (tf.Tensor): Layer input. Asumed to be in frequency domain.
+            inputs (tf.Tensor): Tensor of shape (`batch`,`height`,`width`,`channel`) or
+                (`batch`,`channel`,`height`,`width`). Tensor is asumed to be in frequency domain of type `tf.complex64`
+            or `tf.complex128`.
 
         Returns:
-            tf.Tensor:
+            Pooled tensor of shape (`batch`,`channel`,`height/2`,`width/2`) or (`batch`,`height/2`,`width/2`,`channel`)
         """
         if self.is_channel_first:
             inputs = tf.einsum("bchw->bhwc", inputs)
@@ -190,7 +226,7 @@ class FourierPooling2D(tf.keras.layers.Layer):
             Dictionary with the class' variable names as keys.
         """
         config = super(FourierPooling2D, self).get_config()
-        config.update({"isChannelFirst": self.is_channel_first})
+        config.update({"is_channel_first": self.is_channel_first})
         return config
 
 
@@ -222,14 +258,26 @@ class LearnedPooling(tf.keras.layers.Layer):
         Args:
             input_shape (tf.TensorShape): Shape of the input tensor to this layer.
         """
-        self.pooling = MyConv2D(
-            kernel_size=self.pool_size, strides=self.pool_size, filters=input_shape[-1], use_bias=False
+        self.pooling = tf.keras.layers.Conv2D(
+            kernel_size=self.pool_size,
+            strides=self.pool_size,
+            filters=input_shape[-1],
+            use_bias=False,
+            padding="same",
         )
 
-    def call(self, x):
+    def call(self, x: tf.Tensor) -> tf.Tensor:
+        """Calls the `LearnedPooling` layer.
+
+        Args:
+            x (tf.Tensor): Tensor of shape (`batch`,`height`,`width`,`channel`).
+
+        Returns:
+            Pooled tensor of shape (`batch`,`height/pool_size`,`width/pool_size`,`channel`)
+        """
         return self.pooling(x)
 
-    def get_config(self):
+    def get_config(self) -> Dict[str, Any]:
         """Serialization of the object.
 
         Returns:

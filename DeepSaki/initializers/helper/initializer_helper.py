@@ -3,7 +3,7 @@ from typing import List
 
 import tensorflow as tf
 
-def MakeInitializerComplex(
+def make_initializer_complex(
     initializer: tf.keras.initializers.Initializer,
 ) -> Callable[[List[int], tf.DType], tf.complex]:
     """Returns a function that applies a given `initializer` to generate a complex-valued tensor for initialization.
@@ -15,12 +15,12 @@ def MakeInitializerComplex(
     **Examples:**
     ```python
     # Standalone usage:
-    initializer = MakeInitializerComplex(tf.keras.initializers.GlorotUniform())
+    initializer = make_initializer_complex(tf.keras.initializers.GlorotUniform())
     values = initializer(shape=(2, 2))
     ```
     ```python
     # Usage in a Keras layer:
-    initializer = MakeInitializerComplex(tf.keras.initializers.GlorotUniform())
+    initializer = make_initializer_complex(tf.keras.initializers.GlorotUniform())
     layer = tf.keras.layers.Dense(3, kernel_initializer=initializer)
     ```
 
@@ -31,7 +31,7 @@ def MakeInitializerComplex(
         Wrapper function with same function signature as a `tf.keras.initializers.Initializer` object.
     """
 
-    def ComplexInitializer(shape: List[int], dtype: tf.DType = tf.float64) -> tf.complex:
+    def complex_initializer(shape: List[int], dtype: tf.DType = tf.float64) -> tf.complex:
         """Function that applies a given `initializer` to generate a complex-valued tensor for initialization.
 
         Args:
@@ -49,4 +49,4 @@ def MakeInitializerComplex(
         imag = initializer(shape, dtype)
         return tf.dtypes.complex(real, imag)
 
-    return ComplexInitializer
+    return complex_initializer

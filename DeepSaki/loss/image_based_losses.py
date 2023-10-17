@@ -50,27 +50,27 @@ class PixelDistanceLoss(tf.keras.losses.Loss):
         loss = 0.0
 
         if self.loss_type == "mae":
-            errorFunc = tf.abs
+            error_func = tf.abs
         elif self.loss_type == "mse":
-            errorFunc = tf.square
+            error_func = tf.square
         else:
             raise ValueError(f"Parameter loss_type={self.loss_type} is not defined. Use 'mae' or 'mse' instead.")
 
         if self.calculation_type == "per_channel":
             # initialize all weights with 1
-            channelWeight = np.ones(img1.shape[-1])
+            channel_weight = np.ones(img1.shape[-1])
             if self.normalize_depth_channel:
                 # set weight of the depth channel according to the number of color channels: e.g. for RGB = 3
-                channelWeight[-1] = len(channelWeight) - 1
+                channel_weight[-1] = len(channel_weight) - 1
                 for i in range(img1.shape[-1]):
                     loss += (
-                        channelWeight[i]
-                        * tf.reduce_mean(errorFunc(img1[:, :, :, i] - img2[:, :, :, i]))
+                        channel_weight[i]
+                        * tf.reduce_mean(error_func(img1[:, :, :, i] - img2[:, :, :, i]))
                         * (1.0 / self.global_batch_size)
                     )
 
         elif self.calculation_type == "per_image":
-            loss = tf.reduce_mean(errorFunc(img1 - img2)) * (1.0 / self.global_batch_size)
+            loss = tf.reduce_mean(error_func(img1 - img2)) * (1.0 / self.global_batch_size)
 
         else:
             raise ValueError(f"Pixel distance type '{self.calculation_type}' is not defined.")
@@ -181,13 +181,13 @@ class StructuralSimilarityLoss(tf.keras.losses.Loss):
             ssim_loss = self._calc_ssim_loss(img1, img2)
         elif self.calculation_type == "per_channel":
             # initialize all weights with 1
-            channelWeight = np.ones(img1.shape[-1])
+            channel_weight = np.ones(img1.shape[-1])
             if self.normalize_depth_channel:
                 # set weight of the depth channel according to the number of color channels: e.g. for RGB = 3
-                channelWeight[-1] = len(channelWeight) - 1
+                channel_weight[-1] = len(channel_weight) - 1
             # loop over all channels of the image
             for i in range(img1.shape[-1]):
-                ssim_loss += channelWeight[i] * self._calc_ssim_loss(img1[:, :, :, i], img2[:, :, :, i])
+                ssim_loss += channel_weight[i] * self._calc_ssim_loss(img1[:, :, :, i], img2[:, :, :, i])
         else:
             raise ValueError(f"ssim calculation type '{self.calculation_type}' is not defined")
 
