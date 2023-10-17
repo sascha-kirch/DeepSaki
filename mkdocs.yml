@@ -8,6 +8,14 @@ repo_name: sascha-kirch/DeepSaki
 theme:
   icon:
     repo: fontawesome/brands/github
+  features:
+    - navigation.path
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    #- toc.integrate
   name: "material"
   # https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/
   palette:
@@ -27,6 +35,8 @@ theme:
         name: Switch to light mode
 
 # https://mkdocstrings.github.io/recipes/#generate-pages-on-the-fly
+# https://mkdocstrings.github.io/usage/#docsmy_pagemd
+# https://mkdocstrings.github.io/python/usage/configuration/general/
 plugins:
   - search
   - gen-files:
@@ -35,7 +45,32 @@ plugins:
   - literate-nav:
       nav_file: SUMMARY.md
   - section-index
-  - mkdocstrings
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_root_heading: false
+            heading_level: 2
+            show_root_toc_entry: false
+            show_root_full_path: true
+            show_root_members_full_path: false
+            show_object_full_path: false
+            group_by_category: true
+            show_category_heading: false
+            show_submodules: false
+            ignore_init_summary: true
+            merge_init_into_class: true
+            docstring_section_style: table
+            show_if_no_docstring: false
+            annotations_path: source
+            separate_signature: true
+            show_signature_annotations: true
+            show_docstring_other_parameters: true
+
+
+  #- autorefs
 
 # https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown-extensions/
 markdown_extensions:
@@ -56,3 +91,14 @@ extra_javascript:
 
 extra_css:
   - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/dribbble
+      link: https://sascha-kirch.github.io/
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/sascha-kirch/
+    - icon: fontawesome/brands/github
+      link: https://github.com/sascha-kirch
+    - icon: fontawesome/brands/medium
+      link: https://medium.com/@SaschaKirch
