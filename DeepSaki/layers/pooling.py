@@ -7,7 +7,6 @@ from typing import Optional
 
 import tensorflow as tf
 
-
 class FrequencyFilter(Enum):
     """`Enum` used to define valid filters for `rFFT2DFilter`.
 

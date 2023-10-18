@@ -37,6 +37,7 @@ from DeepSaki.layers.layer_helper import plot_layer
 from DeepSaki.layers.layer_helper import get_initializer
 from DeepSaki.layers.layer_helper import pad_func
 from DeepSaki.layers.layer_helper import dropout_func
+
 # Enums
 from DeepSaki.layers.layer_helper import PaddingType
 from DeepSaki.layers.layer_helper import InitializerFunc

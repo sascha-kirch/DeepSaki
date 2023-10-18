@@ -7,8 +7,9 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 
 from DeepSaki.initializers.he_alpha import HeAlphaUniform
-from DeepSaki.layers.layer_helper import PaddingType,pad_func, dropout_func
-
+from DeepSaki.layers.layer_helper import PaddingType
+from DeepSaki.layers.layer_helper import dropout_func
+from DeepSaki.layers.layer_helper import pad_func
 
 class Conv2DSplitted(tf.keras.layers.Layer):
     """

@@ -2,7 +2,6 @@
 import numpy as np
 import tensorflow as tf
 
-
 class PixelDistanceLoss(tf.keras.losses.Loss):
     """calculates a pixel distance loss (per pixel loss) of two images of the shape (batch, height, width, channels)."""
 

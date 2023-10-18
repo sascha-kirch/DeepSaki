@@ -6,8 +6,15 @@ from typing import Optional
 import tensorflow as tf
 
 from DeepSaki.initializers.he_alpha import HeAlphaUniform
-from DeepSaki.layers.layer_helper import PaddingType,dropout_func
-from DeepSaki.layers.layer_composites import ScaleLayer, Conv2DBlock, ResBlockDown, ResBlockUp, ScalarGatedSelfAttention, ResidualIdentityBlock, UpSampleBlock,DownSampleBlock
+from DeepSaki.layers.layer_composites import Conv2DBlock
+from DeepSaki.layers.layer_composites import DownSampleBlock
+from DeepSaki.layers.layer_composites import ResBlockDown
+from DeepSaki.layers.layer_composites import ResBlockUp
+from DeepSaki.layers.layer_composites import ResidualIdentityBlock
+from DeepSaki.layers.layer_composites import ScalarGatedSelfAttention
+from DeepSaki.layers.layer_composites import UpSampleBlock
+from DeepSaki.layers.layer_helper import PaddingType
+from DeepSaki.layers.layer_helper import dropout_func
 
 class Encoder(tf.keras.layers.Layer):
     """

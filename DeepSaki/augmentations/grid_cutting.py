@@ -5,7 +5,6 @@ from typing import Tuple
 import numpy as np
 import tensorflow as tf
 
-
 def _random_boundingbox(height: int, width: int) -> Tuple[int, int, int, int]:
     """Generates a random bounding box that is smaller than the image.
 

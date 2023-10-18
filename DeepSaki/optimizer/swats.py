@@ -25,7 +25,6 @@ from tensorflow.python.ops import state_ops
 from tensorflow.python.ops import variables as tf_variables
 from tensorflow.python.training import gen_training_ops
 
-
 class SWATS_ADAM(optimizer_v2.OptimizerV2):
     _HAS_AGGREGATE_GRAD = True
 
