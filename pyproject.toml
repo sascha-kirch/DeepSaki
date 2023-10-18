@@ -176,9 +176,9 @@ exclude = ["examples"]
 [tool.ruff]
 target-version = "py38"
 select = ["F", "E", "I", "D", "PL","N"]
-extend-select = ["W", "C90", "YTT", "ANN", "ASYNC", "A", "C4", "RET", "SIM", "PLC", "PLE", "PLR", "PLW", "FLY", "PERF", "RUF","ARG","ERA","TRY","NPY","FURB"]
-ignore = ["E402","E501", "B905", "SIM300", "PD901","ANN101"]
-fixable = ["W", "C90", "YTT", "ANN", "ASYNC", "A", "C4", "RET", "SIM", "PLC", "PLE", "PLR", "PLW", "FLY", "PERF", "RUF", "F401", "D205", "D403", "D200", "D202", "D209","I001","E711"]
+extend-select = ["W", "C90", "YTT", "ANN", "ASYNC", "A", "C4", "RET", "SIM", "PLC", "PLE", "PLR", "PLW", "FLY", "PERF", "RUF","ARG","ERA","TRY","NPY","FURB", "B","COM","PYI","PT","Q","RET", "ICN"]
+ignore = ["E402","E501", "B905", "SIM300", "PD901","ANN101","COM812"]
+fixable = ["W", "C90", "YTT", "ANN", "ASYNC", "A", "C4", "RET", "SIM", "PLC", "PLE", "PLR", "PLW", "FLY", "PERF", "RUF", "F401", "D205", "D403", "D200", "D202", "D209","I001","E711","Q"]
 unfixable = ["SIM"]
 line-length = 120
 extend-exclude = ["tests", "test","__init__.py"]
@@ -208,7 +208,8 @@ ignore-overlong-task-comments = true
 convention = "google"
 [tool.ruff.flake8-annotations]
 allow-star-arg-any = true
-ignore-fully-untyped = true
+ignore-fully-untyped = false
+mypy-init-return = true
 [tool.ruff.pylint]
 max-branches = 24
 max-returns = 12
@@ -216,7 +217,7 @@ max-statements = 100
 max-args = 15
 allow-magic-value-types = ["str", "bytes", "complex", "float", "int", "tuple"]
 [tool.ruff.pep8-naming]
-ignore-names = []
+ignore-names = ["iFFT2D","rFFT2D"]
 
 # Static type checker
 [tool.pyright]

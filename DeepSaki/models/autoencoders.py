@@ -1,6 +1,5 @@
 import tensorflow as tf
-import DeepSaki.layers
-import DeepSaki.initializers
+import DeepSaki as dsk
 
 class UNet(tf.keras.Model):
   '''
@@ -40,10 +39,10 @@ class UNet(tf.keras.Model):
     (batch, height, width, channel)
 
   Example:
-    >>> import DeepSaki
+    >>> import DeepSaki as dsk
     >>> import tensorflow as tf
     >>> inputs = tf.keras.layers.Input(shape = (256,256,4))
-    >>> model = tf.keras.Model(inputs=inputs, outputs=DeepSaki.model.UNet((256,256,4),5).call(inputs))
+    >>> model = tf.keras.Model(inputs=inputs, outputs=dsk.model.UNet((256,256,4),5).call(inputs))
     >>> model.summary()
     >>> tf.keras.utils.plot_model(model, show_shapes=True, expand_nested=True, show_dtype=True, to_file='Unet_model.png')
   '''
@@ -70,19 +69,19 @@ class UNet(tf.keras.Model):
             useSelfAttention=False,
             omit_skips = 0,
             FullyConected = "MLP",
-            padding = "zero",
-            kernel_initializer = DeepSaki.initializers.HeAlphaUniform(),
-            gamma_initializer =  DeepSaki.initializers.HeAlphaUniform()
+            padding:dsk.layers.PaddingType=dsk.layers.PaddingType.ZERO,
+            kernel_initializer = dsk.initializers.HeAlphaUniform(),
+            gamma_initializer =  dsk.initializers.HeAlphaUniform()
             ):
     super(UNet, self).__init__()
 
-    self.encoder = DeepSaki.layers.Encoder(number_of_levels=number_of_levels, filters=filters, limit_filters=limit_filters, use_residual_Conv2DBlock=use_residual_Conv2DBlock, downsampling=downsampling, kernels=kernels, split_kernels=split_kernels, number_of_convs=number_of_convs,activation=activation, first_kernel=first_kernel,useResidualIdentityBlock=useResidualIdentityBlock,use_spec_norm=use_spec_norm, omit_skips=omit_skips, outputSkips=True, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
-    self.bottleNeck = DeepSaki.layers.Bottleneck(useResidualIdentityBlock=useResidualIdentityBlock, n_bottleneck_blocks=n_bottleneck_blocks,use_residual_Conv2DBlock=use_residual_Conv2DBlock, kernels=kernels, split_kernels=split_kernels,number_of_convs=number_of_convs,activation = activation, dropout_rate=dropout_rate, use_spec_norm=use_spec_norm, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
-    self.decoder = DeepSaki.layers.Decoder(number_of_levels=number_of_levels, upsampling=upsampling, filters=filters, limit_filters=limit_filters, use_residual_Conv2DBlock=use_residual_Conv2DBlock, kernels=kernels, split_kernels=split_kernels,number_of_convs=number_of_convs,activation=activation,dropout_rate=dropout_rate, useResidualIdentityBlock=useResidualIdentityBlock,use_spec_norm=use_spec_norm,useSelfAttention=useSelfAttention, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer,enableSkipConnectionsInput=True)
+    self.encoder = dsk.layers.Encoder(number_of_levels=number_of_levels, filters=filters, limit_filters=limit_filters, use_residual_Conv2DBlock=use_residual_Conv2DBlock, downsampling=downsampling, kernels=kernels, split_kernels=split_kernels, number_of_convs=number_of_convs,activation=activation, first_kernel=first_kernel,useResidualIdentityBlock=useResidualIdentityBlock,use_spec_norm=use_spec_norm, omit_skips=omit_skips, outputSkips=True, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+    self.bottleNeck = dsk.layers.Bottleneck(useResidualIdentityBlock=useResidualIdentityBlock, n_bottleneck_blocks=n_bottleneck_blocks,use_residual_Conv2DBlock=use_residual_Conv2DBlock, kernels=kernels, split_kernels=split_kernels,number_of_convs=number_of_convs,activation = activation, dropout_rate=dropout_rate, use_spec_norm=use_spec_norm, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+    self.decoder = dsk.layers.Decoder(number_of_levels=number_of_levels, upsampling=upsampling, filters=filters, limit_filters=limit_filters, use_residual_Conv2DBlock=use_residual_Conv2DBlock, kernels=kernels, split_kernels=split_kernels,number_of_convs=number_of_convs,activation=activation,dropout_rate=dropout_rate, useResidualIdentityBlock=useResidualIdentityBlock,use_spec_norm=use_spec_norm,useSelfAttention=useSelfAttention, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer,enableSkipConnectionsInput=True)
     if FullyConected == "MLP":
-      self.img_reconstruction = DeepSaki.layers.DenseBlock(units = input_shape[-1], use_spec_norm = use_spec_norm, numberOfLayers = 1, activation = final_activation, apply_final_normalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+      self.img_reconstruction = dsk.layers.DenseBlock(units = input_shape[-1], use_spec_norm = use_spec_norm, numberOfLayers = 1, activation = final_activation, apply_final_normalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     elif FullyConected == "1x1_conv":
-      self.img_reconstruction = DeepSaki.layers.Conv2DBlock(filters = input_shape[-1],use_residual_Conv2DBlock = False, kernels = 1, split_kernels  = False, number_of_convs = 1, activation = final_activation, use_spec_norm=use_spec_norm, apply_final_normalization = False, use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+      self.img_reconstruction = dsk.layers.Conv2DBlock(filters = input_shape[-1],use_residual_Conv2DBlock = False, kernels = 1, split_kernels  = False, number_of_convs = 1, activation = final_activation, use_spec_norm=use_spec_norm, apply_final_normalization = False, use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     #To enable mixed precission support for matplotlib and distributed training and to increase training stability
     self.linear_dtype = tf.keras.layers.Activation("linear", dtype = tf.float32)
 
@@ -131,10 +130,10 @@ class ResNet(tf.keras.Model):
     (batch, height, width, channel)
 
   Example:
-    >>> import DeepSaki
+    >>> import DeepSaki as dsk
     >>> import tensorflow as tf
     >>> inputs = tf.keras.layers.Input(shape = (256,256,4))
-    >>> model = tf.keras.Model(inputs=inputs, outputs=DeepSaki.model.ResNet((256,256,4), 5,residual_cardinality=1).call(inputs))
+    >>> model = tf.keras.Model(inputs=inputs, outputs=dsk.model.ResNet((256,256,4), 5,residual_cardinality=1).call(inputs))
     >>> model.summary()
     >>> tf.keras.utils.plot_model(model, show_shapes=True, expand_nested=True, show_dtype=True, to_file='ResNet_model.png')
   '''
@@ -160,19 +159,19 @@ class ResNet(tf.keras.Model):
             use_bias = True,
             useSelfAttention= False,
             FullyConected = "MLP",
-            padding = "zero",
-            kernel_initializer = DeepSaki.initializers.HeAlphaUniform(),
-            gamma_initializer =  DeepSaki.initializers.HeAlphaUniform()
+            padding:dsk.layers.PaddingType=dsk.layers.PaddingType.ZERO,
+            kernel_initializer = dsk.initializers.HeAlphaUniform(),
+            gamma_initializer =  dsk.initializers.HeAlphaUniform()
             ):
     super(ResNet, self).__init__()
 
-    self.encoder = DeepSaki.layers.Encoder(number_of_levels=number_of_levels, filters=filters, limit_filters=limit_filters, use_residual_Conv2DBlock=use_residual_Conv2DBlock, downsampling=downsampling, kernels=kernels, split_kernels=split_kernels, number_of_convs=number_of_convs,activation=activation, first_kernel=first_kernel,useResidualIdentityBlock=useResidualIdentityBlock,use_spec_norm=use_spec_norm, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
-    self.bottleNeck = DeepSaki.layers.Bottleneck(useResidualIdentityBlock=useResidualIdentityBlock, n_bottleneck_blocks=n_bottleneck_blocks,use_residual_Conv2DBlock=use_residual_Conv2DBlock, kernels=kernels, split_kernels=split_kernels,number_of_convs=number_of_convs , activation = activation,dropout_rate=dropout_rate,use_spec_norm=use_spec_norm, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
-    self.decoder = DeepSaki.layers.Decoder(number_of_levels=number_of_levels, upsampling=upsampling, filters=filters, limit_filters=limit_filters, use_residual_Conv2DBlock=use_residual_Conv2DBlock, kernels=kernels, split_kernels=split_kernels,number_of_convs=number_of_convs,activation=activation,dropout_rate=dropout_rate, useResidualIdentityBlock=useResidualIdentityBlock,use_spec_norm=use_spec_norm,useSelfAttention=useSelfAttention, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+    self.encoder = dsk.layers.Encoder(number_of_levels=number_of_levels, filters=filters, limit_filters=limit_filters, use_residual_Conv2DBlock=use_residual_Conv2DBlock, downsampling=downsampling, kernels=kernels, split_kernels=split_kernels, number_of_convs=number_of_convs,activation=activation, first_kernel=first_kernel,useResidualIdentityBlock=useResidualIdentityBlock,use_spec_norm=use_spec_norm, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+    self.bottleNeck = dsk.layers.Bottleneck(useResidualIdentityBlock=useResidualIdentityBlock, n_bottleneck_blocks=n_bottleneck_blocks,use_residual_Conv2DBlock=use_residual_Conv2DBlock, kernels=kernels, split_kernels=split_kernels,number_of_convs=number_of_convs , activation = activation,dropout_rate=dropout_rate,use_spec_norm=use_spec_norm, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+    self.decoder = dsk.layers.Decoder(number_of_levels=number_of_levels, upsampling=upsampling, filters=filters, limit_filters=limit_filters, use_residual_Conv2DBlock=use_residual_Conv2DBlock, kernels=kernels, split_kernels=split_kernels,number_of_convs=number_of_convs,activation=activation,dropout_rate=dropout_rate, useResidualIdentityBlock=useResidualIdentityBlock,use_spec_norm=use_spec_norm,useSelfAttention=useSelfAttention, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     if FullyConected == "MLP":
-      self.img_reconstruction = DeepSaki.layers.DenseBlock(units = input_shape[-1], use_spec_norm = use_spec_norm, numberOfLayers = 1, activation = final_activation, apply_final_normalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+      self.img_reconstruction = dsk.layers.DenseBlock(units = input_shape[-1], use_spec_norm = use_spec_norm, numberOfLayers = 1, activation = final_activation, apply_final_normalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     elif FullyConected == "1x1_conv":
-      self.img_reconstruction = DeepSaki.layers.Conv2DBlock(filters = input_shape[-1],use_residual_Conv2DBlock = False, kernels = 1, split_kernels  = False, number_of_convs = 1, activation = final_activation, use_spec_norm=use_spec_norm, apply_final_normalization = False,use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+      self.img_reconstruction = dsk.layers.Conv2DBlock(filters = input_shape[-1],use_residual_Conv2DBlock = False, kernels = 1, split_kernels  = False, number_of_convs = 1, activation = final_activation, use_spec_norm=use_spec_norm, apply_final_normalization = False,use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     #To enable mixed precission support for matplotlib and distributed training and to increase training stability
     self.linear_dtype = tf.keras.layers.Activation("linear", dtype = tf.float32)
 

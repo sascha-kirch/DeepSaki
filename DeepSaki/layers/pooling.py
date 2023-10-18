@@ -7,7 +7,8 @@ from typing import Optional
 
 import tensorflow as tf
 
-class Frequency_Filter(Enum):
+
+class FrequencyFilter(Enum):
     """`Enum` used to define valid filters for `rFFT2DFilter`.
 
     Attributes:
@@ -91,7 +92,7 @@ class rFFT2DFilter(tf.keras.layers.Layer):
     def __init__(
         self,
         is_channel_first: bool = False,
-        filter_type: Literal[Frequency_Filter.LOW_PASS, Frequency_Filter.HIGH_PASS] = Frequency_Filter.LOW_PASS,
+        filter_type: Literal[FrequencyFilter.LOW_PASS, FrequencyFilter.HIGH_PASS] = FrequencyFilter.LOW_PASS,
         **kwargs: Any,
     ) -> None:
         """Initialize the `rFFT2DFilter` object.
@@ -147,15 +148,17 @@ class rFFT2DFilter(tf.keras.layers.Layer):
 
         inputs_f_domain = tf.signal.rfft2d(inputs)
 
-        if self.filter_type == Frequency_Filter.LOW_PASS:
-            inputs_f_domain = tf.signal.fftshift(inputs_f_domain, axes=[-2])  # shift frequencies to be able to crop in center
+        if self.filter_type == FrequencyFilter.LOW_PASS:
+            inputs_f_domain = tf.signal.fftshift(
+                inputs_f_domain, axes=[-2]
+            )  # shift frequencies to be able to crop in center
         shape = tf.shape(inputs_f_domain)
         outputs_f_domain = tf.slice(
             inputs_f_domain,
             begin=[0, 0, self.offset_height, self.offset_width],
             size=[shape[0], shape[1], self.target_height, self.target_width],
         )  # Tf.slice instead of tf.image.crop, because the latter assumes channel last
-        if self.filter_type == Frequency_Filter.LOW_PASS:
+        if self.filter_type == FrequencyFilter.LOW_PASS:
             outputs_f_domain = tf.signal.ifftshift(outputs_f_domain, axes=[-2])  # reverse shift
         outputs = tf.signal.irfft2d(outputs_f_domain)
 

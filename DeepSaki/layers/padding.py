@@ -6,6 +6,7 @@ from typing import Tuple
 
 import tensorflow as tf
 
+
 class ReflectionPadding2D(tf.keras.layers.Layer):
     def __init__(self, padding: Tuple[int, int] = (1, 1), **kwargs: Any) -> None:
         super(ReflectionPadding2D, self).__init__(**kwargs)

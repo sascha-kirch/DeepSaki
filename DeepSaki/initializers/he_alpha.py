@@ -14,6 +14,7 @@ from typing import Union
 import numpy as np
 import tensorflow as tf
 
+
 class HeAlpha(tf.keras.initializers.Initializer):
     """Parent class for HeAlpha initializers. Can not be called, must be inherited from.
 

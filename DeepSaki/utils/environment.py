@@ -13,6 +13,7 @@ from typing import Union
 import tensorflow as tf
 from tensorflow.python.client import device_lib
 
+
 def detect_accelerator(
     gpu_memory_groth: bool = False,
 ) -> Tuple[
