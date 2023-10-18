@@ -18,11 +18,10 @@ maintainers = [
 description = "Custom deep learning code for TensorFlow."
 keywords = ["deeplearning", "machinelearning", "tensorflow","TPU"]
 license = {file = "LICENSE"}
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Operating System :: Microsoft :: Windows",
@@ -116,7 +115,7 @@ directory = "reports"
 ######## Tools
 # code formatter
 [tool.black]
-target-version = ['py38']
+target-version = ['py310']
 line-length = 120
 skip-string-normalization = false
 skip-magic-trailing-comma = false
@@ -131,7 +130,7 @@ extend-exclude = '''
 # configs: https://mypy.readthedocs.io/en/stable/config_file.html
 [tool.mypy]
 # Platform configuration
-python_version = "3.8"
+python_version = "3.10"
 # imports related
 ignore_missing_imports = true
 follow_imports = "silent"
@@ -174,7 +173,7 @@ exclude = ["examples"]
 # https://docs.astral.sh/ruff/settings/#explicit-preview-rules
 # https://docs.astral.sh/ruff/rules/
 [tool.ruff]
-target-version = "py38"
+target-version = "py310"
 select = ["F", "E", "I", "D", "PL","N"]
 extend-select = ["W", "C90", "YTT", "ANN", "ASYNC", "A", "C4", "RET", "SIM", "PLC", "PLE", "PLR", "PLW", "FLY", "PERF", "RUF","ARG","ERA","TRY","NPY","FURB", "B","COM","PYI","PT","Q","RET", "ICN"]
 ignore = ["E402","E501", "B905", "SIM300", "PD901","ANN101","COM812"]
@@ -221,7 +220,7 @@ ignore-names = ["iFFT2D","rFFT2D"]
 
 # Static type checker
 [tool.pyright]
-pythonVersion = "3.8"
+pythonVersion = "3.10"
 typeCheckingMode = "basic"
 # enable subset of "strict"
 reportDuplicateImport = true
