@@ -10,6 +10,7 @@ from DeepSaki.initializers.he_alpha import HeAlphaUniform
 from DeepSaki.layers.layer_helper import PaddingType
 from DeepSaki.layers.layer_helper import dropout_func
 from DeepSaki.layers.layer_helper import pad_func
+from DeepSaki.constraints import NonNegative
 
 class Conv2DSplitted(tf.keras.layers.Layer):
     """
@@ -983,7 +984,7 @@ class ScaleLayer(tf.keras.layers.Layer):
         super(ScaleLayer, self).__init__()
         self.initializer = initializer
         self.scale = self.add_weight(
-            shape=[1], initializer=initializer, constraint=DeepSaki.constraints.NonNegative(), trainable=True
+            shape=[1], initializer=initializer, constraint=NonNegative(), trainable=True
         )
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
