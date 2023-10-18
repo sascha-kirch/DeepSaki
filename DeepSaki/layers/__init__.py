@@ -8,8 +8,8 @@ from DeepSaki.layers.fourier_layer import FourierConvolution2D
 from DeepSaki.layers.fourier_layer import FourierFilter2D
 from DeepSaki.layers.fourier_layer import FFT2D
 from DeepSaki.layers.fourier_layer import iFFT2D
-from DeepSaki.layers.fourier_layer import FFT2D_real
-from DeepSaki.layers.fourier_layer import FFT3D_real
+from DeepSaki.layers.fourier_layer import FFT2D
+from DeepSaki.layers.fourier_layer import FFT3D
 
 # padding.py
 from DeepSaki.layers.padding import ReflectionPadding2D
@@ -31,5 +31,12 @@ from DeepSaki.layers.sub_model_composites import Encoder
 from DeepSaki.layers.sub_model_composites import Bottleneck
 from DeepSaki.layers.sub_model_composites import Decoder
 
-
-from DeepSaki.layers import helper
+# layer_helper.py
+# Fuctions
+from DeepSaki.layers.layer_helper import plot_layer
+from DeepSaki.layers.layer_helper import get_initializer
+from DeepSaki.layers.layer_helper import pad_func
+from DeepSaki.layers.layer_helper import dropout_func
+# Enums
+from DeepSaki.layers.layer_helper import PaddingType
+from DeepSaki.layers.layer_helper import InitializerFunc
