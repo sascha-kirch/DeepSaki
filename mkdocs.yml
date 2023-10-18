@@ -15,7 +15,7 @@ theme:
     - navigation.top
     - navigation.footer
     - toc.follow
-    #- toc.integrate
+    - toc.integrate
   name: "material"
   # https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/
   palette:
@@ -37,6 +37,7 @@ theme:
 # https://mkdocstrings.github.io/recipes/#generate-pages-on-the-fly
 # https://mkdocstrings.github.io/usage/#docsmy_pagemd
 # https://mkdocstrings.github.io/python/usage/configuration/general/
+# https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/
 plugins:
   - search
   - gen-files:
@@ -73,13 +74,16 @@ plugins:
   #- autorefs
 
 # https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown-extensions/
+# https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown/#table-of-contents
 markdown_extensions:
   - pymdownx.highlight:
       linenums: true
   - pymdownx.superfences
   - pymdownx.arithmatex:
       generic: true
-
+  - toc:
+      permalink: true
+      toc_depth: 2
 nav:
   - "Start": index.md
   - Code Reference: reference/
@@ -93,6 +97,8 @@ extra_css:
   - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
 
 extra:
+  version:
+    provider: mike
   social:
     - icon: fontawesome/brands/dribbble
       link: https://sascha-kirch.github.io/

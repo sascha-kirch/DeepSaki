@@ -20,14 +20,6 @@ for path in sorted(Path(package_name).rglob("__init__.py")):
     doc_path = doc_path.with_name("index.md")
     full_doc_path = full_doc_path.with_name("index.md")
 
-
-    # remove top-level package name
-    #parts = parts[1::]
-
-    #if len(parts)<1:
-    #    continue
-
-
     nav[parts] = doc_path.as_posix()
 
     with mkdocs_gen_files.open(full_doc_path, "w") as fd:
@@ -44,5 +36,5 @@ for path in sorted(Path(package_name).rglob("__init__.py")):
 
         mkdocs_gen_files.set_edit_path(full_doc_path, Path("../") / path)
 
-with mkdocs_gen_files.open(f"reference/SUMMARY.md", "w") as nav_file:
+with mkdocs_gen_files.open("reference/SUMMARY.md", "w") as nav_file:
     nav_file.writelines(nav.build_literate_nav())
