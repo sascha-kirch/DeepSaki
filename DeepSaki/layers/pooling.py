@@ -206,7 +206,7 @@ class FourierPooling2D(tf.keras.layers.Layer):
         Args:
             inputs (tf.Tensor): Tensor of shape (`batch`,`height`,`width`,`channel`) or
                 (`batch`,`channel`,`height`,`width`). Tensor is asumed to be in frequency domain of type `tf.complex64`
-            or `tf.complex128`.
+                or `tf.complex128`.
 
         Returns:
             Pooled tensor of shape (`batch`,`channel`,`height/2`,`width/2`) or (`batch`,`height/2`,`width/2`,`channel`)

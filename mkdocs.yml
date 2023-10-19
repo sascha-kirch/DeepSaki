@@ -1,6 +1,8 @@
 # https://www.mkdocs.org/user-guide/configuration/
 site_name: DeepSaki
+site_author: "Sascha Kirch"
 site_description: "Custom deep learning code for TensorFlow."
+site_url: https://sascha-kirch.github.io/DeepSaki
 
 repo_url: https://github.com/sascha-kirch/DeepSaki
 repo_name: sascha-kirch/DeepSaki
@@ -75,10 +77,15 @@ plugins:
 
 # https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown-extensions/
 # https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown/#table-of-contents
+# http://mermaid.js.org/syntax/flowchart.html
 markdown_extensions:
   - pymdownx.highlight:
       linenums: true
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.arithmatex:
       generic: true
   - toc:

@@ -1,4 +1,4 @@
-"""Activation functions applicable to complex-valued and real-valued inputs"""
+"""Activation functions applicable to complex-valued and real-valued inputs."""
 
 from typing import Any
 from typing import Dict
@@ -30,7 +30,7 @@ class ComplexActivation(tf.keras.layers.Layer):
             inputs (tf.Tensor): Input tensor to be activated. Might be a complex or real valued tensor.
 
         Returns:
-            Union[tf.complex64,tf.complex128]: Complex tensor with activated real and imaginary part.
+            tf.complex64 | tf.complex128: Complex tensor with activated real and imaginary part.
         """
         real = self.activation(tf.math.real(inputs))
         imag = self.activation(tf.math.imag(inputs))

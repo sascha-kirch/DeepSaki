@@ -1,4 +1,4 @@
-"""Loss functions designed for image like data of the shape (`batch`, `height`, `width`, `channels`)"""
+"""Loss functions designed for image like data of the shape (`batch`, `height`, `width`, `channels`)."""
 import numpy as np
 import tensorflow as tf
 

@@ -37,7 +37,7 @@ class HeAlpha(tf.keras.initializers.Initializer):
 
         Args:
             shape (List[int]): Shape of the tensor that shall be initialized.
-            dtype (Optional[Union[tf.DType, np.dtype]], optional): dtype to which the data should be casted to.
+            dtype (Optional[tf.DType | np.dtype], optional): dtype to which the data should be casted to.
                 Defaults to None.
 
         Raises:
@@ -99,12 +99,12 @@ class HeAlphaUniform(HeAlpha):
         """
         super(HeAlphaUniform, self).__init__(alpha, seed)
 
-    def __call__(self, shape: List[int], dtype: Optional[Union[tf.DType, np.dtype]] = None) -> tf.Tensor:
+    def __call__(self, shape: List[int], dtype: Optional[Union[tf.DType | np.dtype]] = None) -> tf.Tensor:
         """Dunder method to call the object instance.
 
         Args:
             shape (List[int]): Shape of the tensor that shall be initialized.
-            dtype (Optional[Union[tf.DType, np.dtype]], optional): dtype to which the data should be casted to.
+            dtype (Optional[tf.DType | np.dtype], optional): dtype to which the data should be casted to.
                 Defaults to None.
 
         Returns:
@@ -140,7 +140,7 @@ class HeAlphaNormal(HeAlpha):
 
         Args:
             shape (List[int]): Shape of the tensor that shall be initialized.
-            dtype (Optional[Union[tf.DType, np.dtype]], optional): dtype to which the data should be casted to.
+            dtype (Optional[tf.DType | np.dtype], optional): dtype to which the data should be casted to.
                 Defaults to None.
 
         Returns:
