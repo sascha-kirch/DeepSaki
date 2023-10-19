@@ -6,11 +6,11 @@ from typing import Tuple
 import tensorflow as tf
 import tensorflow_addons as tfa
 
+from DeepSaki.constraints import NonNegative
 from DeepSaki.initializers.he_alpha import HeAlphaUniform
 from DeepSaki.layers.layer_helper import PaddingType
 from DeepSaki.layers.layer_helper import dropout_func
 from DeepSaki.layers.layer_helper import pad_func
-from DeepSaki.constraints import NonNegative
 
 class Conv2DSplitted(tf.keras.layers.Layer):
     """
@@ -65,6 +65,11 @@ class Conv2DSplitted(tf.keras.layers.Layer):
         return self.conv2(x)
 
     def get_config(self) -> Dict[str, Any]:
+        """Serialization of the object.
+
+        Returns:
+            Dictionary with the class' variable names as keys.
+        """
         config = super(Conv2DSplitted, self).get_config()
         config.update(
             {
@@ -227,6 +232,11 @@ class Conv2DBlock(tf.keras.layers.Layer):
         return x
 
     def get_config(self) -> Dict[str, Any]:
+        """Serialization of the object.
+
+        Returns:
+            Dictionary with the class' variable names as keys.
+        """
         config = super(Conv2DBlock, self).get_config()
         config.update(
             {
@@ -311,10 +321,7 @@ class DenseBlock(tf.keras.layers.Layer):
                 for _ in range(numberOfLayers)
             ]
 
-        if apply_final_normalization:
-            num_instancenorm_blocks = numberOfLayers
-        else:
-            num_instancenorm_blocks = numberOfLayers - 1
+        num_instancenorm_blocks = numberOfLayers if apply_final_normalization else numberOfLayers - 1
         self.IN_blocks = [
             tfa.layers.InstanceNormalization(gamma_initializer=gamma_initializer)
             for _ in range(num_instancenorm_blocks)
@@ -338,6 +345,11 @@ class DenseBlock(tf.keras.layers.Layer):
         return x
 
     def get_config(self) -> Dict[str, Any]:
+        """Serialization of the object.
+
+        Returns:
+            Dictionary with the class' variable names as keys.
+        """
         config = super(DenseBlock, self).get_config()
         config.update(
             {
@@ -436,6 +448,11 @@ class DownSampleBlock(tf.keras.layers.Layer):
         return x
 
     def get_config(self) -> Dict[str, Any]:
+        """Serialization of the object.
+
+        Returns:
+            Dictionary with the class' variable names as keys.
+        """
         config = super(DownSampleBlock, self).get_config()
         config.update(
             {
@@ -557,6 +574,11 @@ class UpSampleBlock(tf.keras.layers.Layer):
         return x
 
     def get_config(self) -> Dict[str, Any]:
+        """Serialization of the object.
+
+        Returns:
+            Dictionary with the class' variable names as keys.
+        """
         config = super(UpSampleBlock, self).get_config()
         config.update(
             {
@@ -586,7 +608,7 @@ class ResidualIdentityBlock(tf.keras.layers.Layer):
     args:
       - filters: number of filters in the output feature map
       - kernels: size of the convolutions kernels
-      - numberOfBlocks (optional, default: 1): number of consecutive convolutional building blocks.
+      - number_of_blocks (optional, default: 1): number of consecutive convolutional building blocks.
       - activation (optional, default: "leaky_relu"): string literal to obtain activation function
       - dropout_rate (optional, default: 0): probability of the dropout layer. If the preceeding layer has more than one channel, spatial dropout is applied, otherwise standard dropout
       - use_spec_norm (optional, default: False): applies spectral normalization to convolutional and dense layers
@@ -602,7 +624,7 @@ class ResidualIdentityBlock(tf.keras.layers.Layer):
         filters: int,
         kernels: int,
         activation: str = "leaky_relu",
-        numberOfBlocks: int = 1,
+        number_of_blocks: int = 1,
         use_spec_norm: bool = False,
         residual_cardinality: int = 1,
         dropout_rate: float = 0.0,
@@ -615,7 +637,7 @@ class ResidualIdentityBlock(tf.keras.layers.Layer):
         self.activation = activation
         self.filters = filters
         self.kernels = kernels
-        self.numberOfBlocks = numberOfBlocks
+        self.number_of_blocks = number_of_blocks
         self.use_spec_norm = use_spec_norm
         self.residual_cardinality = residual_cardinality
         self.dropout_rate = dropout_rate
@@ -633,7 +655,7 @@ class ResidualIdentityBlock(tf.keras.layers.Layer):
 
         # for each block, add several con
         self.blocks = []
-        for i in range(numberOfBlocks):
+        for _ in range(number_of_blocks):
             cardinals = []
             for _ in range(residual_cardinality):
                 cardinals.append(
@@ -709,7 +731,7 @@ class ResidualIdentityBlock(tf.keras.layers.Layer):
         if self.conv0 is not None:
             x = self.conv0(x)
 
-        for block in range(self.numberOfBlocks):
+        for block in range(self.number_of_blocks):
             residual = x
 
             if self.pad != 0 and self.padding != "none":
@@ -736,13 +758,18 @@ class ResidualIdentityBlock(tf.keras.layers.Layer):
         return x
 
     def get_config(self) -> Dict[str, Any]:
+        """Serialization of the object.
+
+        Returns:
+            Dictionary with the class' variable names as keys.
+        """
         config = super(ResidualIdentityBlock, self).get_config()
         config.update(
             {
                 "activation": self.activation,
                 "filters": self.filters,
                 "kernels": self.kernels,
-                "numberOfBlocks": self.numberOfBlocks,
+                "number_of_blocks": self.number_of_blocks,
                 "use_spec_norm": self.use_spec_norm,
                 "residual_cardinality": self.residual_cardinality,
                 "dropout_rate": self.dropout_rate,
@@ -756,7 +783,7 @@ class ResidualIdentityBlock(tf.keras.layers.Layer):
 
 
 # Testcode
-# layer = ResidualIdentityBlock(filters =64, activation = "leaky_relu", kernels = 3, numberOfBlocks=2,use_spec_norm = False, residual_cardinality =5, dropout_rate=0.2)
+# layer = ResidualIdentityBlock(filters =64, activation = "leaky_relu", kernels = 3, number_of_blocks=2,use_spec_norm = False, residual_cardinality =5, dropout_rate=0.2)
 # print(layer.get_config())
 # DeepSaki.layers.plot_layer(layer,input_shape=(256,256,64))
 
@@ -847,6 +874,11 @@ class ResBlockDown(tf.keras.layers.Layer):
         return tf.keras.layers.Add()([path1, path2])
 
     def get_config(self) -> Dict[str, Any]:
+        """Serialization of the object.
+
+        Returns:
+            Dictionary with the class' variable names as keys.
+        """
         config = super(ResBlockDown, self).get_config()
         config.update(
             {
@@ -952,6 +984,11 @@ class ResBlockUp(tf.keras.layers.Layer):
         return tf.keras.layers.Add()([path1, path2])
 
     def get_config(self) -> Dict[str, Any]:
+        """Serialization of the object.
+
+        Returns:
+            Dictionary with the class' variable names as keys.
+        """
         config = super(ResBlockUp, self).get_config()
         config.update(
             {
@@ -983,14 +1020,17 @@ class ScaleLayer(tf.keras.layers.Layer):
     def __init__(self, initializer: tf.keras.initializers.Initializer = tf.keras.initializers.Ones()) -> None:
         super(ScaleLayer, self).__init__()
         self.initializer = initializer
-        self.scale = self.add_weight(
-            shape=[1], initializer=initializer, constraint=NonNegative(), trainable=True
-        )
+        self.scale = self.add_weight(shape=[1], initializer=initializer, constraint=NonNegative(), trainable=True)
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         return inputs * self.scale
 
     def get_config(self) -> Dict[str, Any]:
+        """Serialization of the object.
+
+        Returns:
+            Dictionary with the class' variable names as keys.
+        """
         config = super(ScaleLayer, self).get_config()
         config.update({"scale": self.scale, "initializer": self.initializer})
         return config
@@ -1021,9 +1061,9 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
 
     def build(self, input_shape: tf.TensorShape) -> None:
         super(ScalarGatedSelfAttention, self).build(input_shape)
-        batchSize, height, width, numChannel = input_shape
+        batch_size, height, width, num_channel = input_shape
         if self.intermediateChannel is None:
-            self.intermediateChannel = numChannel // 8
+            self.intermediateChannel = num_channel // 8
 
         self.w_f = DenseBlock(
             units=self.intermediateChannel,
@@ -1056,7 +1096,7 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
             gamma_initializer=self.gamma_initializer,
         )
         self.w_fgh = DenseBlock(
-            units=numChannel,
+            units=num_channel,
             use_spec_norm=self.use_spec_norm,
             numberOfLayers=1,
             activation=None,
@@ -1097,6 +1137,11 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
         return tf.keras.layers.Add()([f_g_h, inputs])
 
     def get_config(self) -> Dict[str, Any]:
+        """Serialization of the object.
+
+        Returns:
+            Dictionary with the class' variable names as keys.
+        """
         config = super(ScalarGatedSelfAttention, self).get_config()
         config.update(
             {

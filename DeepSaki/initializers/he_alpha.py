@@ -9,7 +9,6 @@ from typing import List
 from typing import NoReturn
 from typing import Optional
 from typing import Tuple
-from typing import Union
 
 import numpy as np
 import tensorflow as tf
@@ -32,12 +31,12 @@ class HeAlpha(tf.keras.initializers.Initializer):
         self.alpha = alpha
         self.seed = seed
 
-    def __call__(self, shape: List[int], dtype: Optional[Union[tf.DType, np.dtype]] = None) -> NoReturn:
+    def __call__(self, shape: List[int], dtype: Optional[tf.DType | np.dtype] = None) -> NoReturn:
         """Abstract dunder method to call the object instance that must be overridden by child classes.
 
         Args:
             shape (List[int]): Shape of the tensor that shall be initialized.
-            dtype (Optional[Union[tf.DType, np.dtype]], optional): dtype to which the data should be casted to.
+            dtype (Optional[tf.DType | np.dtype], optional): dtype to which the data should be casted to.
                 Defaults to None.
 
         Raises:
@@ -99,12 +98,12 @@ class HeAlphaUniform(HeAlpha):
         """
         super(HeAlphaUniform, self).__init__(alpha, seed)
 
-    def __call__(self, shape: List[int], dtype: Optional[Union[tf.DType, np.dtype]] = None) -> tf.Tensor:
+    def __call__(self, shape: List[int], dtype: Optional[tf.DType | np.dtype] = None) -> tf.Tensor:
         """Dunder method to call the object instance.
 
         Args:
             shape (List[int]): Shape of the tensor that shall be initialized.
-            dtype (Optional[Union[tf.DType, np.dtype]], optional): dtype to which the data should be casted to.
+            dtype (Optional[tf.DType | np.dtype], optional): dtype to which the data should be casted to.
                 Defaults to None.
 
         Returns:
@@ -135,12 +134,12 @@ class HeAlphaNormal(HeAlpha):
         """
         super(HeAlphaNormal, self).__init__(alpha, seed)
 
-    def __call__(self, shape: List[int], dtype: Optional[Union[tf.DType, np.dtype]] = None) -> tf.Tensor:
+    def __call__(self, shape: List[int], dtype: Optional[tf.DType | np.dtype] = None) -> tf.Tensor:
         """Dunder method to call the object instance.
 
         Args:
             shape (List[int]): Shape of the tensor that shall be initialized.
-            dtype (Optional[Union[tf.DType, np.dtype]], optional): dtype to which the data should be casted to.
+            dtype (Optional[tf.DType | np.dtype], optional): dtype to which the data should be casted to.
                 Defaults to None.
 
         Returns:

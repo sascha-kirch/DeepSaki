@@ -178,7 +178,7 @@ target-version = "py311"
 select = ["F", "E", "I", "D", "PL","N"]
 extend-select = ["W", "C90", "YTT", "ANN", "ASYNC", "A", "C4", "RET", "SIM", "PLC", "PLE", "PLR", "PLW", "FLY", "PERF", "RUF","ARG","ERA","TRY","NPY","FURB", "B","COM","PYI","PT","Q","RET", "ICN"]
 ignore = ["E402","E501", "B905", "SIM300", "PD901","ANN101","COM812"]
-fixable = ["W", "C90", "YTT", "ANN", "ASYNC", "A", "C4", "RET", "SIM", "PLC", "PLE", "PLR", "PLW", "FLY", "PERF", "RUF", "F401", "D205", "D403", "D200", "D202", "D209","I001","E711","Q"]
+fixable = ["W", "C90", "YTT", "ANN", "ASYNC", "A", "C4", "RET", "SIM", "PLC", "PLE", "PLR", "PLW", "FLY", "PERF", "RUF", "F401", "D205", "D403", "D200", "D202", "D209","I001","E711","Q","COM819","Q002"]
 unfixable = ["SIM"]
 line-length = 120
 extend-exclude = ["tests", "test","__init__.py"]
@@ -217,7 +217,7 @@ max-statements = 100
 max-args = 15
 allow-magic-value-types = ["str", "bytes", "complex", "float", "int", "tuple"]
 [tool.ruff.pep8-naming]
-ignore-names = ["iFFT2D","rFFT2D"]
+ignore-names = ["iFFT2D","rFFT2D","use_residual_Conv2DBlock","use_ResidualIdentityBlock","rFFT2DFilter"]
 
 # Static type checker
 [tool.pyright]
