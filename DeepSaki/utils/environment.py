@@ -8,6 +8,7 @@ Tips:
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Union
 
 import tensorflow as tf
 from tensorflow.python.client import device_lib
@@ -17,7 +18,7 @@ def detect_accelerator(
 ) -> Tuple[
     tf.distribute.Strategy,
     str,
-    Optional[tf.distribute.cluster_resolver.TPUClusterResolver | List[tf.config.LogicalDevice]],
+    Optional[Union[tf.distribute.cluster_resolver.TPUClusterResolver, List[tf.config.LogicalDevice]]],
 ]:
     """Detects the availability of TPUs and GPUs and connects to all available devices.
 

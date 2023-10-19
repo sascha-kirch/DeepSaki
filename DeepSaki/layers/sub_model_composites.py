@@ -3,6 +3,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Union
 
 import tensorflow as tf
 
@@ -174,7 +175,7 @@ class Encoder(tf.keras.layers.Layer):
                     )
                 )
 
-    def call(self, inputs: tf.Tensor) -> tf.Tensor | Tuple[tf.Tensor, tf.Tensor]:
+    def call(self, inputs: tf.Tensor) -> Union[tf.Tensor, Tuple[tf.Tensor, tf.Tensor]]:
         if not self.built:
             raise ValueError("This model has not yet been built.")
 

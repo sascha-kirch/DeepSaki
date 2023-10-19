@@ -2,6 +2,7 @@
 
 from typing import Any
 from typing import Dict
+from typing import Union
 
 import tensorflow as tf
 
@@ -22,7 +23,7 @@ class ComplexActivation(tf.keras.layers.Layer):
         super(ComplexActivation, self).__init__(**kwargs)
         self.activation = activation
 
-    def call(self, inputs: tf.Tensor) -> tf.complex64 | tf.complex128:
+    def call(self, inputs: tf.Tensor) -> Union[tf.complex64, tf.complex128]:
         """Splits its intput `inputs`into a real and imaginary part, applies `activation` and constructs a complex number.
 
         Args:
