@@ -1,9 +1,0 @@
-# Runtime requirements
-tensorflow >= 2.8
-numpy>=1.21.6
-tensorflow_addons
-pandas
-matplotlib
-pydot
-opencv-contrib-python
-einops
