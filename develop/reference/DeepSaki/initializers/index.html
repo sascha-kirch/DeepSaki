@@ -9,6 +9,10 @@
         <meta name="description" content="Custom deep learning code for TensorFlow.">
       
       
+        <meta name="author" content="Sascha Kirch">
+      
+      
+        <link rel="canonical" href="https://sascha-kirch.github.io/DeepSaki/develop/reference/DeepSaki/initializers/">
       
       
         <link rel="prev" href="../constraints/">
@@ -1089,7 +1093,7 @@ alpha value of the LeakyReLU activation. Defaults to 0.3.</p>
         <tr>
           <td><code>dtype</code></td>
           <td>
-                <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="tensorflow">tf</span>.<span title="tensorflow.DType">DType</span>, <span title="numpy">np</span>.<span title="numpy.dtype">dtype</span>]]</code>
+                <code><span title="typing.Optional">Optional</span>[<span title="tensorflow">tf</span>.<span title="tensorflow.DType">DType</span> | <span title="numpy">np</span>.<span title="numpy.dtype">dtype</span>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1146,7 +1150,7 @@ Defaults to None.</p>
 
 <span class="sd">    Args:</span>
 <span class="sd">        shape (List[int]): Shape of the tensor that shall be initialized.</span>
-<span class="sd">        dtype (Optional[Union[tf.DType, np.dtype]], optional): dtype to which the data should be casted to.</span>
+<span class="sd">        dtype (Optional[tf.DType | np.dtype], optional): dtype to which the data should be casted to.</span>
 <span class="sd">            Defaults to None.</span>
 
 <span class="sd">    Raises:</span>
@@ -1523,7 +1527,7 @@ alpha value of the LeakyReLU activation. Defaults to 0.3.</p>
         <tr>
           <td><code>dtype</code></td>
           <td>
-                <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="tensorflow">tf</span>.<span title="tensorflow.DType">DType</span>, <span title="numpy">np</span>.<span title="numpy.dtype">dtype</span>]]</code>
+                <code><span title="typing.Optional">Optional</span>[<span title="tensorflow">tf</span>.<span title="tensorflow.DType">DType</span> | <span title="numpy">np</span>.<span title="numpy.dtype">dtype</span>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1582,7 +1586,7 @@ Defaults to None.</p>
 
 <span class="sd">    Args:</span>
 <span class="sd">        shape (List[int]): Shape of the tensor that shall be initialized.</span>
-<span class="sd">        dtype (Optional[Union[tf.DType, np.dtype]], optional): dtype to which the data should be casted to.</span>
+<span class="sd">        dtype (Optional[tf.DType | np.dtype], optional): dtype to which the data should be casted to.</span>
 <span class="sd">            Defaults to None.</span>
 
 <span class="sd">    Returns:</span>
@@ -1730,7 +1734,7 @@ alpha value of the LeakyReLU activation. Defaults to 0.3.</p>
 <span class="normal">3</span>
 <span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="fm">__call__</span><span class="p">(</span>
     <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-    <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">DType</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">DType</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span>
 </code></pre></div></td></tr></table></div>
 
@@ -1768,7 +1772,7 @@ alpha value of the LeakyReLU activation. Defaults to 0.3.</p>
         <tr>
           <td><code>dtype</code></td>
           <td>
-                <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="tensorflow">tf</span>.<span title="tensorflow.DType">DType</span>, <span title="numpy">np</span>.<span title="numpy.dtype">dtype</span>]]</code>
+                <code><span title="typing.Optional">Optional</span>[<span title="tensorflow">tf</span>.<span title="tensorflow.DType">DType</span> | <span title="numpy">np</span>.<span title="numpy.dtype">dtype</span>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1822,12 +1826,12 @@ Defaults to None.</p>
 <span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
-<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">DType</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">DType</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Dunder method to call the object instance.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        shape (List[int]): Shape of the tensor that shall be initialized.</span>
-<span class="sd">        dtype (Optional[Union[tf.DType, np.dtype]], optional): dtype to which the data should be casted to.</span>
+<span class="sd">        dtype (Optional[tf.DType | np.dtype], optional): dtype to which the data should be casted to.</span>
 <span class="sd">            Defaults to None.</span>
 
 <span class="sd">    Returns:</span>

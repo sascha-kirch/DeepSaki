@@ -9,6 +9,10 @@
         <meta name="description" content="Custom deep learning code for TensorFlow.">
       
       
+        <meta name="author" content="Sascha Kirch">
+      
+      
+        <link rel="canonical" href="https://sascha-kirch.github.io/DeepSaki/develop/reference/DeepSaki/activations/">
       
       
         <link rel="prev" href="../">
@@ -675,7 +679,7 @@
 
   <div class="doc doc-contents first">
   
-      <p>Activation functions applicable to complex-valued and real-valued inputs</p>
+      <p>Activation functions applicable to complex-valued and real-valued inputs.</p>
 
   
 
@@ -867,7 +871,7 @@
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Union[tf.complex64,tf.complex128]: Complex tensor with activated real and imaginary part.</p>
+              <p>tf.complex64 | tf.complex128: Complex tensor with activated real and imaginary part.</p>
             </div>
           </td>
         </tr>
@@ -894,7 +898,7 @@
 <span class="sd">        inputs (tf.Tensor): Input tensor to be activated. Might be a complex or real valued tensor.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Union[tf.complex64,tf.complex128]: Complex tensor with activated real and imaginary part.</span>
+<span class="sd">        tf.complex64 | tf.complex128: Complex tensor with activated real and imaginary part.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">real</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">inputs</span><span class="p">))</span>
     <span class="n">imag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">inputs</span><span class="p">))</span>
