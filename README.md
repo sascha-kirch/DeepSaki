@@ -7,7 +7,7 @@ The ML framework used is tensorflow and the entire code is suitable to run Googl
 ![GitHub](https://img.shields.io/github/license/sascha-kirch/deepsaki)
 [![Build](https://github.com/sascha-kirch/DeepSaki/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/sascha-kirch/DeepSaki/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/DeepSaki/branch/main/graph/badge.svg)](https://codecov.io/gh/DeepSaki)
-
+[![Documentation](https://img.shields.io/badge/ref-Documentation-blue)](https://sascha-kirch.github.io/DeepSaki/latest/)
 
 
 # Installation
