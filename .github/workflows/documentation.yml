@@ -22,7 +22,7 @@ jobs:
           pip install -r environment/requirements-dev.txt
           pip install -e .
       - name: Deploy Develop Documentation
-        if: $ {{ github.event_name == 'pull_request' && github.event.pull_request.merged }}
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged }}
         run: mike deploy --push develop
       - name: Deploy Release Documentation
         if: ${{ github.event_name == 'release' }}
