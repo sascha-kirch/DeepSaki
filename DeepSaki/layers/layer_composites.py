@@ -12,7 +12,6 @@ from DeepSaki.layers.layer_helper import PaddingType
 from DeepSaki.layers.layer_helper import dropout_func
 from DeepSaki.layers.layer_helper import pad_func
 
-
 class Conv2DSplitted(tf.keras.layers.Layer):
     """Convolution layer where a single convolution is splitted into two consecutive convolutions.
 
@@ -27,7 +26,7 @@ class Conv2DSplitted(tf.keras.layers.Layer):
         use_spec_norm: bool = False,
         strides: Tuple[int, int] = (1, 1),
         use_bias: bool = True,
-        kernel_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
+        kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
     ) -> None:
         """Initialize the `Conv2DSplitted` object.
 
@@ -40,7 +39,7 @@ class Conv2DSplitted(tf.keras.layers.Layer):
             strides (Tuple[int, int], optional): Strides of the convolution layers. Defaults to (1, 1).
             use_bias (bool, optional): Whether or not to use bias weights. Defaults to True.
             kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions
-                kernels. Defaults to HeAlphaUniform().
+                kernels. Defaults to None.
         """
         super(Conv2DSplitted, self).__init__()
         self.filters = filters
@@ -48,7 +47,7 @@ class Conv2DSplitted(tf.keras.layers.Layer):
         self.use_spec_norm = use_spec_norm
         self.strides = strides
         self.use_bias = use_bias
-        self.kernel_initializer = kernel_initializer
+        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
 
         self.conv1 = tf.keras.layers.Conv2D(
             filters=filters,
@@ -120,9 +119,9 @@ class Conv2DBlock(tf.keras.layers.Layer):
         padding: PaddingType = PaddingType.ZERO,
         apply_final_normalization: bool = True,
         use_bias: bool = True,
-        kernel_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
-        gamma_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
-    )->None:
+        kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
+        gamma_initializer: Optional[tf.keras.initializers.Initializer] = None,
+    ) -> None:
         """Initializes the `Conv2DBlock` layer.
 
         Args:
@@ -148,9 +147,9 @@ class Conv2DBlock(tf.keras.layers.Layer):
                 Defaults to True.
             use_bias (bool, optional): Whether convolutions and dense layers include a bias or not. Defaults to True.
             kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
-                Defaults to HeAlphaUniform().
+                Defaults to None.
             gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
-                Defaults to HeAlphaUniform().
+                Defaults to None.
         """
         super(Conv2DBlock, self).__init__()
         self.filters = filters
@@ -166,8 +165,8 @@ class Conv2DBlock(tf.keras.layers.Layer):
         self.padding = padding
         self.apply_final_normalization = apply_final_normalization
         self.use_bias = use_bias
-        self.kernel_initializer = kernel_initializer
-        self.gamma_initializer = gamma_initializer
+        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
+        self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
 
         self.pad = int((kernels - 1) / 2)  # assumes odd kernel size, which is typical!
 
@@ -184,7 +183,7 @@ class Conv2DBlock(tf.keras.layers.Layer):
                     tf.keras.layers.Conv2D(
                         filters=filters,
                         kernel_size=(kernels, kernels),
-                        kernel_initializer=kernel_initializer,
+                        kernel_initializer=self.kernel_initializer,
                         use_bias=use_bias,
                         strides=strides,
                     )
@@ -196,7 +195,7 @@ class Conv2DBlock(tf.keras.layers.Layer):
                 tf.keras.layers.Conv2D(
                     filters=filters,
                     kernel_size=(kernels, kernels),
-                    kernel_initializer=kernel_initializer,
+                    kernel_initializer=self.kernel_initializer,
                     use_bias=use_bias,
                     strides=strides,
                 )
@@ -304,8 +303,8 @@ class DenseBlock(tf.keras.layers.Layer):
         use_spec_norm: bool = False,
         apply_final_normalization: bool = True,
         use_bias: bool = True,
-        kernel_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
-        gamma_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
+        kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
+        gamma_initializer: Optional[tf.keras.initializers.Initializer] = None,
     ) -> None:
         """Initializes the `DenseBlock` layer.
 
@@ -321,9 +320,9 @@ class DenseBlock(tf.keras.layers.Layer):
                 Defaults to True.
             use_bias (bool, optional): Whether dense layers include bias weights. Defaults to True.
             kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
-                Defaults to HeAlphaUniform().
+                Defaults to None.
             gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
-                Defaults to HeAlphaUniform().
+                Defaults to None.
         """
         super(DenseBlock, self).__init__()
         self.units = units
@@ -334,25 +333,25 @@ class DenseBlock(tf.keras.layers.Layer):
         self.use_spec_norm = use_spec_norm
         self.apply_final_normalization = apply_final_normalization
         self.use_bias = use_bias
-        self.kernel_initializer = kernel_initializer
-        self.gamma_initializer = gamma_initializer
+        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
+        self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
 
         if use_spec_norm:
             self.DenseBlocks = [
                 tfa.layers.SpectralNormalization(
-                    tf.keras.layers.Dense(units=units, use_bias=use_bias, kernel_initializer=kernel_initializer)
+                    tf.keras.layers.Dense(units=units, use_bias=use_bias, kernel_initializer=self.kernel_initializer)
                 )
                 for _ in range(number_of_layers)
             ]
         else:
             self.DenseBlocks = [
-                tf.keras.layers.Dense(units=units, use_bias=use_bias, kernel_initializer=kernel_initializer)
+                tf.keras.layers.Dense(units=units, use_bias=use_bias, kernel_initializer=self.kernel_initializer)
                 for _ in range(number_of_layers)
             ]
 
         num_instancenorm_blocks = number_of_layers if apply_final_normalization else number_of_layers - 1
         self.IN_blocks = [
-            tfa.layers.InstanceNormalization(gamma_initializer=gamma_initializer)
+            tfa.layers.InstanceNormalization(gamma_initializer=self.gamma_initializer)
             for _ in range(num_instancenorm_blocks)
         ]
         self.dropout = tf.keras.layers.Dropout(dropout_rate)
@@ -396,6 +395,7 @@ class DenseBlock(tf.keras.layers.Layer):
         )
         return config
 
+
 class DownSampleBlock(tf.keras.layers.Layer):
     """Spatial down-sampling for grid-like data using `DeepSaki.layers.ConvBlock2D()`."""
 
@@ -407,8 +407,8 @@ class DownSampleBlock(tf.keras.layers.Layer):
         use_spec_norm: bool = False,
         padding: PaddingType = PaddingType.ZERO,
         use_bias: bool = True,
-        kernel_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
-        gamma_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
+        kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
+        gamma_initializer: Optional[tf.keras.initializers.Initializer] = None,
     ) -> None:
         """Initializes the `DownSampleBlock` layer.
 
@@ -422,9 +422,9 @@ class DownSampleBlock(tf.keras.layers.Layer):
             padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
             use_bias (bool, optional): Whether convolutions and dense layers include a bias or not. Defaults to True.
             kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
-                Defaults to HeAlphaUniform().
+                Defaults to None.
             gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
-                Defaults to HeAlphaUniform().
+                Defaults to None.
         """
         super(DownSampleBlock, self).__init__()
         self.kernels = kernels
@@ -433,8 +433,8 @@ class DownSampleBlock(tf.keras.layers.Layer):
         self.use_spec_norm = use_spec_norm
         self.padding = padding
         self.use_bias = use_bias
-        self.kernel_initializer = kernel_initializer
-        self.gamma_initializer = gamma_initializer
+        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
+        self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).
@@ -512,8 +512,8 @@ class UpSampleBlock(tf.keras.layers.Layer):
         use_spec_norm: bool = False,
         use_bias: bool = True,
         padding: PaddingType = PaddingType.ZERO,
-        kernel_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
-        gamma_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
+        kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
+        gamma_initializer: Optional[tf.keras.initializers.Initializer] = None,
     ) -> None:
         """Initializes the `UpSampleBlock` layer.
 
@@ -527,9 +527,9 @@ class UpSampleBlock(tf.keras.layers.Layer):
             use_bias (bool, optional): Whether convolutions and dense layers include a bias or not. Defaults to True.
             padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
             kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
-                Defaults to HeAlphaUniform().
+                Defaults to None.
             gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
-                Defaults to HeAlphaUniform().
+                Defaults to None.
         """
         super(UpSampleBlock, self).__init__()
         self.kernels = kernels
@@ -537,8 +537,8 @@ class UpSampleBlock(tf.keras.layers.Layer):
         self.use_spec_norm = use_spec_norm
         self.upsampling = upsampling
         self.use_bias = use_bias
-        self.kernel_initializer = kernel_initializer
-        self.gamma_initializer = gamma_initializer
+        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
+        self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
         self.padding = padding
 
     def build(self, input_shape: tf.TensorShape) -> None:
@@ -632,7 +632,6 @@ class UpSampleBlock(tf.keras.layers.Layer):
 class ResidualBlock(tf.keras.layers.Layer):
     """Residual block with configurable cardinality."""
 
-
     def __init__(
         self,
         filters: int,
@@ -644,8 +643,8 @@ class ResidualBlock(tf.keras.layers.Layer):
         dropout_rate: float = 0.0,
         use_bias: bool = True,
         padding: PaddingType = PaddingType.ZERO,
-        kernel_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
-        gamma_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
+        kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
+        gamma_initializer: Optional[tf.keras.initializers.Initializer] = None,
     ) -> None:
         """Initializes the `ResidualBlock` layer.
 
@@ -663,9 +662,9 @@ class ResidualBlock(tf.keras.layers.Layer):
             use_bias (bool, optional): Whether convolutions and dense layers include a bias or not. Defaults to True.
             padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
             kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
-                Defaults to HeAlphaUniform().
+                Defaults to None.
             gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
-                Defaults to HeAlphaUniform().
+                Defaults to None.
         """
         super(ResidualBlock, self).__init__()
         self.activation = activation
@@ -677,8 +676,8 @@ class ResidualBlock(tf.keras.layers.Layer):
         self.dropout_rate = dropout_rate
         self.use_bias = use_bias
         self.padding = padding
-        self.kernel_initializer = kernel_initializer
-        self.gamma_initializer = gamma_initializer
+        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
+        self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
 
         self.pad = int((kernels - 1) / 2)  # assumes odd kernel size, which is typical!
 
@@ -704,8 +703,8 @@ class ResidualBlock(tf.keras.layers.Layer):
                             use_spec_norm=use_spec_norm,
                             use_bias=use_bias,
                             padding=padding,
-                            kernel_initializer=kernel_initializer,
-                            gamma_initializer=gamma_initializer,
+                            kernel_initializer=self.kernel_initializer,
+                            gamma_initializer=self.gamma_initializer,
                         ),
                         Conv2DBlock(
                             filters=self.intermediateFilters,
@@ -717,8 +716,8 @@ class ResidualBlock(tf.keras.layers.Layer):
                             padding=PaddingType.NONE,
                             use_spec_norm=use_spec_norm,
                             use_bias=use_bias,
-                            kernel_initializer=kernel_initializer,
-                            gamma_initializer=gamma_initializer,
+                            kernel_initializer=self.kernel_initializer,
+                            gamma_initializer=self.gamma_initializer,
                         ),
                         Conv2DBlock(
                             filters=filters,
@@ -730,8 +729,8 @@ class ResidualBlock(tf.keras.layers.Layer):
                             use_spec_norm=use_spec_norm,
                             use_bias=use_bias,
                             padding=padding,
-                            kernel_initializer=kernel_initializer,
-                            gamma_initializer=gamma_initializer,
+                            kernel_initializer=self.kernel_initializer,
+                            gamma_initializer=self.gamma_initializer,
                         ),
                     ]
                 )
@@ -821,7 +820,6 @@ class ResidualBlock(tf.keras.layers.Layer):
         return config
 
 
-
 class ResBlockDown(tf.keras.layers.Layer):
     """Spatial down-sampling with residual connection for grid-like data using `DeepSaki.layers.ConvBlock2D()`.
 
@@ -848,8 +846,8 @@ class ResBlockDown(tf.keras.layers.Layer):
         use_spec_norm: bool = False,
         use_bias: bool = True,
         padding: PaddingType = PaddingType.ZERO,
-        kernel_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
-        gamma_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
+        kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
+        gamma_initializer: Optional[tf.keras.initializers.Initializer] = None,
     ) -> None:
         """Initializes the `ResBlockDown` layer.
 
@@ -861,17 +859,17 @@ class ResBlockDown(tf.keras.layers.Layer):
             use_bias (bool, optional): Whether convolutions and dense layers include a bias or not. Defaults to True.
             padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
             kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
-                Defaults to HeAlphaUniform().
+                Defaults to None.
             gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
-                Defaults to HeAlphaUniform().
+                Defaults to None.
         """
         super(ResBlockDown, self).__init__()
         self.activation = activation
         self.use_spec_norm = use_spec_norm
         self.use_bias = use_bias
         self.padding = padding
-        self.kernel_initializer = kernel_initializer
-        self.gamma_initializer = gamma_initializer
+        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
+        self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).
@@ -980,8 +978,8 @@ class ResBlockUp(tf.keras.layers.Layer):
         use_spec_norm: bool = False,
         use_bias: bool = True,
         padding: PaddingType = PaddingType.ZERO,
-        kernel_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
-        gamma_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
+        kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
+        gamma_initializer: Optional[tf.keras.initializers.Initializer] = None,
     ) -> None:
         """Initializes the `ResBlockUp` layer.
 
@@ -993,17 +991,17 @@ class ResBlockUp(tf.keras.layers.Layer):
             use_bias (bool, optional): Whether convolutions and dense layers include a bias or not. Defaults to True.
             padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
             kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
-                Defaults to HeAlphaUniform().
+                Defaults to None.
             gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
-                Defaults to HeAlphaUniform().
+                Defaults to None.
         """
         super(ResBlockUp, self).__init__()
         self.activation = activation
         self.use_spec_norm = use_spec_norm
         self.use_bias = use_bias
         self.padding = padding
-        self.kernel_initializer = kernel_initializer
-        self.gamma_initializer = gamma_initializer
+        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
+        self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).
@@ -1084,6 +1082,7 @@ class ResBlockUp(tf.keras.layers.Layer):
         )
         return config
 
+
 @tf.keras.utils.register_keras_serializable(package="Custom", name="scale")
 class ScaleLayer(tf.keras.layers.Layer):
     """Trainable non-negative scalar that might be used as a trainable gate.
@@ -1091,15 +1090,15 @@ class ScaleLayer(tf.keras.layers.Layer):
     It is a single learnable weight that is multiplied by all weights of the input tensor through broadcasting.
     """
 
-    def __init__(self, initializer: tf.keras.initializers.Initializer = tf.keras.initializers.Ones()) -> None:
+    def __init__(self, initializer: Optional[tf.keras.initializers.Initializer] = None) -> None:
         """Initializes the `ScaleLayer` layer.
 
         Args:
             initializer (tf.keras.initializers.Initializer, optional): Initializer used to initialize the scalar weight.
-                Defaults to tf.keras.initializers.Ones().
+                Defaults to None..
         """
         super(ScaleLayer, self).__init__()
-        self.initializer = initializer
+        self.initializer = tf.keras.initializers.Ones() if initializer is None else initializer
         self.scale = self.add_weight(shape=[1], initializer=initializer, constraint=NonNegative(), trainable=True)
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
@@ -1147,8 +1146,8 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
         self,
         use_spec_norm: bool = False,
         intermediate_channel: Optional[bool] = None,
-        kernel_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
-        gamma_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
+        kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
+        gamma_initializer: Optional[tf.keras.initializers.Initializer] = None,
     ) -> None:
         """Initializes the `ScalarGatedSelfAttention` layer.
 
@@ -1158,15 +1157,15 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
             intermediate_channel (Optional[bool], optional): Intermediate channels for the self attention mechanism.
                 Defaults to None.
             kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the kernel weights.
-                Defaults to HeAlphaUniform().
+                Defaults to None.
             gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
-                Defaults to HeAlphaUniform().
+                Defaults to None.
         """
         super(ScalarGatedSelfAttention, self).__init__()
         self.use_spec_norm = use_spec_norm
         self.intermediateChannel = intermediate_channel
-        self.kernel_initializer = kernel_initializer
-        self.gamma_initializer = gamma_initializer
+        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
+        self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).

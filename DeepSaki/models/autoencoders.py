@@ -4,7 +4,7 @@ from DeepSaki.layers.layer_helper import PaddingType
 from DeepSaki.layers.sub_model_composites import Encoder, Decoder,Bottleneck
 from DeepSaki.layers.layer_composites import Conv2DBlock, DenseBlock, ScalarGatedSelfAttention
 
-from typing import Tuple
+from typing import Tuple, Optional
 
 class UNet(tf.keras.Model):
   """U-Net based autoencoder model with skip conections between encoder and decoder. Input_shape = Output_shape.
@@ -64,8 +64,8 @@ class UNet(tf.keras.Model):
             omit_skips:int = 0,
             fully_connected:str = "MLP",
             padding:PaddingType=PaddingType.ZERO,
-            kernel_initializer:tf.keras.initializers.Initializer = HeAlphaUniform(),
-            gamma_initializer:tf.keras.initializers.Initializer =  HeAlphaUniform()
+            kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
+            gamma_initializer: Optional[tf.keras.initializers.Initializer] =  None
             )->None:
     """Initialize the `UNet` object.
 
@@ -109,9 +109,9 @@ class UNet(tf.keras.Model):
             the same result, but linear layers are faster. Option: "MLP" or "1x1_conv". Defaults to "MLP".
         padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
         kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
-            Defaults to HeAlphaUniform().
+            Defaults to None.
         gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
-            Defaults to HeAlphaUniform().
+            Defaults to None.
     """
     super(UNet, self).__init__()
 
@@ -194,7 +194,7 @@ class ResNet(tf.keras.Model):
             use_self_attention:bool= False,
             fully_connected:str = "MLP",
             padding:PaddingType=PaddingType.ZERO,
-            kernel_initializer:tf.keras.initializers.Initializer = HeAlphaUniform(),
+            kernel_initializer:Optional[tf.keras.initializers.Initializer] = None,
             gamma_initializer:tf.keras.initializers.Initializer =  HeAlphaUniform()
             ):
     """Initialize the `ResNet` object.
@@ -236,9 +236,9 @@ class ResNet(tf.keras.Model):
             the same result, but linear layers are faster. Option: "MLP" or "1x1_conv". Defaults to "MLP".
         padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
         kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
-            Defaults to HeAlphaUniform().
+            Defaults to None.
         gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
-            Defaults to HeAlphaUniform().
+            Defaults to None.
     """
     super(ResNet, self).__init__()
 

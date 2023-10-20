@@ -7,8 +7,8 @@ from typing import Tuple
 import tensorflow as tf
 
 class ReflectionPadding2D(tf.keras.layers.Layer):
-    """Reflection Padding layer with support for TPU.
-    """
+    """Reflection Padding layer with support for TPU."""
+
     def __init__(self, padding: Tuple[int, int] = (1, 1), **kwargs: Any) -> None:
         """Initialize the `ReflectionPadding2D` layer.
 

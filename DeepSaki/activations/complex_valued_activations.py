@@ -13,11 +13,11 @@ class ComplexActivation(tf.keras.layers.Layer):
         tf.keras.layers.Layer
     """
 
-    def __init__(self, activation: tf.keras.layers.Layer = tf.keras.layers.ReLU(), **kwargs: Any) -> None:
+    def __init__(self, activation: tf.keras.layers.Layer, **kwargs: Any) -> None:
         """Initialize ComplexActivation.
 
         Args:
-            activation (tf.keras.layers.Layer, optional): Activation function to complexyfy. Defaults to tf.keras.layers.ReLU().
+            activation (tf.keras.layers.Layer): Activation function to complexyfy.
             kwargs: keyword arguments passed to the parent class tf.keras.layers.Layer.
         """
         super(ComplexActivation, self).__init__(**kwargs)

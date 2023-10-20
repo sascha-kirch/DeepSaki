@@ -99,7 +99,7 @@ class HeAlphaUniform(HeAlpha):
         """
         super(HeAlphaUniform, self).__init__(alpha, seed)
 
-    def __call__(self, shape: List[int], dtype: Optional[Union[tf.DType | np.dtype]] = None) -> tf.Tensor:
+    def __call__(self, shape: List[int], dtype: Optional[Union[tf.DType, np.dtype]] = None) -> tf.Tensor:
         """Dunder method to call the object instance.
 
         Args:

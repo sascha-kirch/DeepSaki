@@ -16,6 +16,7 @@ class FrequencyFilter(Enum):
         HIGH_PASS (int): Indicates that high frequency components shall be kept and low frequency components shall be
             filtered.
     """
+
     LOW_PASS = 1
     HIGH_PASS = 2
 

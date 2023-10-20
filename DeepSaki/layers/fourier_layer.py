@@ -29,8 +29,8 @@ class FourierConvolution2D(tf.keras.layers.Layer):
         filters: int,
         kernels: Optional[Tuple[int, int]] = None,
         use_bias: bool = True,
-        kernel_initializer: tf.keras.initializers.Initializer = tf.keras.initializers.RandomUniform(-0.05, 0.05),
-        bias_initializer: tf.keras.initializers.Initializer = tf.keras.initializers.Zeros(),
+        kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
+        bias_initializer: Optional[tf.keras.initializers.Initializer] = None,
         is_channel_first: bool = False,
         apply_conjugate: bool = False,
         pad_to_power_2: bool = True,
@@ -45,9 +45,9 @@ class FourierConvolution2D(tf.keras.layers.Layer):
                 `[height,width]`. If `None`, kernel size is set to the input height and width. Defaults to `None`.
             use_bias (bool, optional): Whether or not to us bias weights. Defaults to `True`.
             kernel_initializer (tf.keras.initializers.Initializer, optional): Initializer to initialize the kernels of
-                the convolution layer. Defaults to `tf.keras.initializers.RandomUniform(-0.05, 0.05)`.
+                the convolution layer. Defaults to `None`.
             bias_initializer (tf.keras.initializers.Initializer, optional): Initializer to initialize the bias weights
-                of the convolution layer. Defaults to `tf.keras.initializers.Zeros()`.
+                of the convolution layer. Defaults to `None`.
             is_channel_first (bool, optional): Set true if input shape is (b,c,h,w) and false if input shape is
                 (b,h,w,c). Defaults to `False`.
             apply_conjugate (bool, optional): If true, the kernels are conjugated. If so, a multiplication in the
@@ -64,12 +64,15 @@ class FourierConvolution2D(tf.keras.layers.Layer):
         self.filters = filters
         self.kernels = kernels
         self.use_bias = use_bias
-        self.kernel_initializer = kernel_initializer
-        self.bias_initializer = bias_initializer
+        self.kernel_initializer = (
+            tf.keras.initializers.RandomUniform(-0.05, 0.05) if kernel_initializer is None else kernel_initializer
+        )
+        self.bias_initializer = tf.keras.initializers.Zeros() if bias_initializer is None else bias_initializer
         self.is_channel_first = is_channel_first
         self.apply_conjugate = apply_conjugate
         self.pad_to_power_2 = pad_to_power_2
         self.method = method
+
         if method == MultiplicationType.MATRIX_PRODUCT:
             self.multiply = self._matrix_product
         elif method == MultiplicationType.ELEMENT_WISE:
@@ -257,8 +260,8 @@ class FourierFilter2D(tf.keras.layers.Layer):
         self,
         filters: int,
         use_bias: bool = True,
-        filter_initializer: tf.keras.initializers.Initializer = tf.keras.initializers.RandomUniform(-0.05, 0.05),
-        bias_initializer: tf.keras.initializers.Initializer = tf.keras.initializers.Zeros(),
+        filter_initializer: Optional[tf.keras.initializers.Initializer] = None,
+        bias_initializer: Optional[tf.keras.initializers.Initializer] = None,
         is_channel_first: bool = False,
         **kwargs: Any,
     ) -> None:
@@ -268,9 +271,9 @@ class FourierFilter2D(tf.keras.layers.Layer):
             filters (int): Number of independent filters
             use_bias (bool, optional): Whether or not to us bias weights. Defaults to `True`.
             filter_initializer (tf.keras.initializers.Initializer, optional): Initializer to initialize the wheights of
-                the filter layer. Defaults to `tf.keras.initializers.RandomUniform(-0.05, 0.05)`.
+                the filter layer. Defaults to `None`.
             bias_initializer (tf.keras.initializers.Initializer, optional): Initializer to initialize the wheights of
-                the bias weights. Defaults to `tf.keras.initializers.Zeros()`.
+                the bias weights. Defaults to `None`.
             is_channel_first (bool, optional): Set true if input shape is (b,c,h,w) and false if input shape is
                 (b,h,w,c). Defaults to `False`.
             kwargs (Any): Additional key word arguments passed to the base class.
@@ -278,6 +281,11 @@ class FourierFilter2D(tf.keras.layers.Layer):
         super(FourierFilter2D, self).__init__(**kwargs)
         self.filters = filters
         self.use_bias = use_bias
+
+        filter_initializer = (
+            tf.keras.initializers.RandomUniform(-0.05, 0.05) if filter_initializer is None else filter_initializer
+        )
+        bias_initializer = tf.keras.initializers.Zeros() if bias_initializer is None else bias_initializer
         self.filter_initializer = make_initializer_complex(filter_initializer)
         self.bias_initializer = make_initializer_complex(bias_initializer)
         self.is_channel_first = is_channel_first
@@ -330,15 +338,13 @@ class FourierFilter2D(tf.keras.layers.Layer):
             inputs = tf.einsum("bhwc->bchw", inputs)
 
         output = np.ndarray(shape=self.out_shape)
-        for filter in range(self.filters):
+        for current_filter in range(self.filters):
+            # inputs:(batch, inp_filter, height, width ), fourier_filter:(...,inp_filter,height, width, out_filter)
             output = tf.concat(
                 [
                     output,
                     tf.reduce_sum(
-                        inputs
-                        * self.fourier_filter[
-                            :, :, :, filter
-                        ],  # inputs:(batch, inp_filter, height, width ), fourier_filter:(...,inp_filter,height, width, out_filter)
+                        inputs * self.fourier_filter[:, :, :, current_filter],
                         axis=-3,  # sum over all applied filters
                         keepdims=True,
                     ),
@@ -371,6 +377,7 @@ class FourierFilter2D(tf.keras.layers.Layer):
             }
         )
         return config
+
 
 class FFT2D(tf.keras.layers.Layer):
     """Calculates the 2D descrete fourier transform over the 2 innermost channels.
@@ -495,6 +502,7 @@ class FFT3D(tf.keras.layers.Layer):
         )
         return config
 
+
 class iFFT2D(tf.keras.layers.Layer):
     """Calculates the 2D inverse FFT."""
 
@@ -548,9 +556,14 @@ class iFFT2D(tf.keras.layers.Layer):
         """
         config = super(iFFT2D, self).get_config()
         config.update(
-            {"is_channel_first": self.is_channel_first, "apply_real_fft": self.apply_real_fft, "shift_fft": self.shift_fft}
+            {
+                "is_channel_first": self.is_channel_first,
+                "apply_real_fft": self.apply_real_fft,
+                "shift_fft": self.shift_fft,
+            }
         )
         return config
+
 
 class iFFT3D(tf.keras.layers.Layer):
     """Calculates the 3D inverse FFT."""
@@ -594,7 +607,5 @@ class iFFT3D(tf.keras.layers.Layer):
             Dictionary with the class' variable names as keys.
         """
         config = super(iFFT3D, self).get_config()
-        config.update(
-            {"apply_real_fft": self.apply_real_fft, "shift_fft": self.shift_fft}
-        )
+        config.update({"apply_real_fft": self.apply_real_fft, "shift_fft": self.shift_fft})
         return config

@@ -57,7 +57,7 @@ class LayoutContentDiscriminator(tf.keras.Model):
             padding:PaddingType=PaddingType.NONE,
             fully_connected:str = "MLP",
             use_self_attention:bool = False,
-            kernel_initializer:tf.keras.initializers.Initializer = HeAlphaUniform(),
+            kernel_initializer:Optional[tf.keras.initializers.Initializer] = None,
             gamma_initializer:tf.keras.initializers.Initializer =  HeAlphaUniform()
             ):
     """Initialize the `LayoutContentDiscriminator` object.
@@ -86,9 +86,9 @@ class LayoutContentDiscriminator(tf.keras.Model):
         use_self_attention (bool, optional): Determines whether to apply self-attention in the decoder. Defaults to
             False.
         kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
-            Defaults to HeAlphaUniform().
+            Defaults to None.
         gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
-            Defaults to HeAlphaUniform().
+            Defaults to None.
 
     Raises:
         ValueError: If provided parameter for `fully_connected` is not supported.
@@ -190,7 +190,7 @@ class PatchDiscriminator(tf.keras.Model):
             use_bias:bool = True,
             use_self_attention:bool=False,
             padding:PaddingType=PaddingType.NONE,
-            kernel_initializer:tf.keras.initializers.Initializer = HeAlphaUniform(),
+            kernel_initializer:Optional[tf.keras.initializers.Initializer] = None,
             gamma_initializer:tf.keras.initializers.Initializer =  HeAlphaUniform()
             ):
     """Initialize the `PatchDiscriminator` object.
@@ -219,9 +219,9 @@ class PatchDiscriminator(tf.keras.Model):
             False.
         padding (PaddingType, optional): Padding type. Defaults to PaddingType.NONE.
         kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
-            Defaults to HeAlphaUniform().
+            Defaults to None.
         gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
-            Defaults to HeAlphaUniform().
+            Defaults to None.
     """
     super(PatchDiscriminator, self).__init__()
 
@@ -307,7 +307,7 @@ class UNetDiscriminator(tf.keras.Model):
             use_bias:bool= True,
             fully_connected:str = "MLP",
             padding:PaddingType=PaddingType.ZERO,
-            kernel_initializer:tf.keras.initializers.Initializer = HeAlphaUniform(),
+            kernel_initializer:Optional[tf.keras.initializers.Initializer] = None,
             gamma_initializer:tf.keras.initializers.Initializer =  HeAlphaUniform()
             ):
     """Initialize the `UNetDiscriminator` object.
@@ -346,9 +346,9 @@ class UNetDiscriminator(tf.keras.Model):
             the same result, but linear layers are faster. Option: "MLP" or "1x1_conv". Defaults to "MLP".
         padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
         kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
-            Defaults to HeAlphaUniform().
+            Defaults to None.
         gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
-            Defaults to HeAlphaUniform().
+            Defaults to None.
     """
     super(UNetDiscriminator, self).__init__()
     ch = filters
