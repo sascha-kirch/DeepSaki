@@ -281,9 +281,7 @@
   
 
 
-  
-
-<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../../.." title="DeepSaki" class="md-nav__button md-logo" aria-label="DeepSaki" data-md-component="logo">
       
@@ -584,11 +582,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../loss/" class="md-nav__link">
+      <a href="../losses/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    loss
+    losses
   </span>
   
 
@@ -624,11 +622,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../optimizer/" class="md-nav__link">
+      <a href="../optimizers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    optimizer
+    optimizers
   </span>
   
 
@@ -679,6 +677,58 @@
                 </div>
               </div>
             
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.initializers.initializer_helper.make_initializer_complex" class="md-nav__link">
+    make_initializer_complex()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.initializers.he_alpha.HeAlpha" class="md-nav__link">
+    HeAlpha
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.initializers.he_alpha.HeAlphaNormal" class="md-nav__link">
+    HeAlphaNormal
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.initializers.he_alpha.HeAlphaUniform" class="md-nav__link">
+    HeAlphaUniform
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
             
           
           
@@ -738,14 +788,18 @@ constructs a complex-valued tensor of the provided <code>shape</code>.</p>
 <p><strong>Examples:</strong>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Standalone usage:</span>
-<span class="n">initializer</span> <span class="o">=</span> <span class="n">make_initializer_complex</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">GlorotUniform</span><span class="p">())</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Standalone usage:</span>
+<span class="kn">import</span> <span class="nn">DeepSaki</span> <span class="k">as</span> <span class="nn">dsk</span>
+<span class="n">initializer</span> <span class="o">=</span> <span class="n">dsk</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">make_initializer_complex</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">GlorotUniform</span><span class="p">())</span>
 <span class="n">values</span> <span class="o">=</span> <span class="n">initializer</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Usage in a Keras layer:</span>
-<span class="n">initializer</span> <span class="o">=</span> <span class="n">make_initializer_complex</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">GlorotUniform</span><span class="p">())</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Usage in a Keras layer:</span>
+<span class="kn">import</span> <span class="nn">DeepSaki</span> <span class="k">as</span> <span class="nn">dsk</span>
+<span class="n">initializer</span> <span class="o">=</span> <span class="n">dsk</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">make_initializer_complex</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">GlorotUniform</span><span class="p">())</span>
 <span class="n">layer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">initializer</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div></p>
 
@@ -851,7 +905,9 @@ constructs a complex-valued tensor of the provided <code>shape</code>.</p>
 <span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
-<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">make_initializer_complex</span><span class="p">(</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">make_initializer_complex</span><span class="p">(</span>
     <span class="n">initializer</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">Initializer</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">tf</span><span class="o">.</span><span class="n">DType</span><span class="p">],</span> <span class="n">tf</span><span class="o">.</span><span class="n">complex</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a function that applies a given `initializer` to generate a complex-valued tensor for initialization.</span>
@@ -863,12 +919,14 @@ constructs a complex-valued tensor of the provided <code>shape</code>.</p>
 <span class="sd">    **Examples:**</span>
 <span class="sd">    ```python</span>
 <span class="sd">    # Standalone usage:</span>
-<span class="sd">    initializer = make_initializer_complex(tf.keras.initializers.GlorotUniform())</span>
+<span class="sd">    import DeepSaki as dsk</span>
+<span class="sd">    initializer = dsk.initializers.make_initializer_complex(tf.keras.initializers.GlorotUniform())</span>
 <span class="sd">    values = initializer(shape=(2, 2))</span>
 <span class="sd">    ```</span>
 <span class="sd">    ```python</span>
 <span class="sd">    # Usage in a Keras layer:</span>
-<span class="sd">    initializer = make_initializer_complex(tf.keras.initializers.GlorotUniform())</span>
+<span class="sd">    import DeepSaki as dsk</span>
+<span class="sd">    initializer = dsk.initializers.make_initializer_complex(tf.keras.initializers.GlorotUniform())</span>
 <span class="sd">    layer = tf.keras.layers.Dense(3, kernel_initializer=initializer)</span>
 <span class="sd">    ```</span>
 
@@ -1734,7 +1792,7 @@ alpha value of the LeakyReLU activation. Defaults to 0.3.</p>
 <span class="normal">3</span>
 <span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="fm">__call__</span><span class="p">(</span>
     <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-    <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">DType</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">DType</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span>
 </code></pre></div></td></tr></table></div>
 
@@ -1826,7 +1884,7 @@ Defaults to None.</p>
 <span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
-<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">DType</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">DType</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Dunder method to call the object instance.</span>
 
 <span class="sd">    Args:</span>
@@ -1994,7 +2052,7 @@ Defaults to None.</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.path", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "toc.follow", "toc.integrate"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.path", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "toc.follow"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
       <script src="../../../assets/javascripts/bundle.aecac24b.min.js"></script>
