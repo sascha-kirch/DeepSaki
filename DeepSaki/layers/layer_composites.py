@@ -103,25 +103,7 @@ class Conv2DSplitted(tf.keras.layers.Layer):
 
 
 class Conv2DBlock(tf.keras.layers.Layer):
-    """
-    Wraps a two-dimensional convolution into a more complex building block
-    args:
-      - filters: number of filters in the output feature map
-      - kernels: size of the convolutions kernels
-      - use_residual_Conv2DBlock (optional, default: False):
-      - split_kernels (optional, default: False): to decrease the number of parameters, a convolution with the kernel_size (kernel,kernel) can be splitted into two consecutive convolutions with the kernel_size (kernel,1) and (1,kernel) respectivly
-      - number_of_convs (optional, default: 1): number of consecutive convolutional building blocks, i.e. Conv2DBlock.
-      - activation (optional, default: "leaky_relu"): string literal to obtain activation function
-      - dropout_rate (optional, default: 0): probability of the dropout layer. If the preceeding layer has more than one channel, spatial dropout is applied, otherwise standard dropout
-      - final_activation (optional, default: True): whether or not to activate the output of this layer
-      - use_spec_norm (optional, default: False): applies spectral normalization to convolutional and dense layers
-      - strides (optional, default: (1,1)): stride of the filter
-      - padding (optional, default: "zero"): padding type. Options are "none", "zero" or "reflection"
-      - apply_final_normalization (optional, default: True): Whether or not to place a normalization on the layer's output
-      - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
-      - kernel_initializer (optional, default: HeAlphaUniform()): Initialization of the convolutions kernels.
-      - gamma_initializer (optional, default: HeAlphaUniform()): Initialization of the normalization layers.
-    """
+    """Wraps a two-dimensional convolution into a more complex building block."""
 
     def __init__(
         self,
@@ -140,7 +122,36 @@ class Conv2DBlock(tf.keras.layers.Layer):
         use_bias: bool = True,
         kernel_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
         gamma_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
-    ):
+    )->None:
+        """Initializes the `Conv2DBlock` layer.
+
+        Args:
+            filters (int): Number of individual filters.
+            kernels (int): Size of the convolutions kernels.
+            use_residual_Conv2DBlock (bool, optional): Adds a residual connection in parallel to the `Conv2DBlock`.
+                Defaults to False.
+            split_kernels (bool, optional): To decrease the number of parameters, a convolution with the kernel_size
+                `(kernel,kernel)` can be splitted into two consecutive convolutions with the kernel_size `(kernel,1)`
+                and `(1,kernel)` respectivly. Defaults to False.
+            number_of_convs (int, optional): Number of consecutive convolutional building blocks, i.e. `Conv2DBlock`.
+                Defaults to 1.
+            activation (str, optional): String literal or tensorflow activation function object to obtain activation
+                function. Defaults to "leaky_relu".
+            dropout_rate (float, optional): Probability of the dropout layer. If the preceeding layer has more than one
+                channel, spatial dropout is applied, otherwise standard dropout. Defaults to 0.0.
+            final_activation (bool, optional): Whether or not to activate the output of this layer. Defaults to True.
+            use_spec_norm (bool, optional): Applies spectral normalization to convolutional and dense layers.
+                Defaults to False.
+            strides (Tuple[int, int], optional): Stride of the filter. Defaults to (1, 1).
+            padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
+            apply_final_normalization (bool, optional): Whether or not to place a normalization on the layer's output.
+                Defaults to True.
+            use_bias (bool, optional): Whether convolutions and dense layers include a bias or not. Defaults to True.
+            kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
+                Defaults to HeAlphaUniform().
+            gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
+                Defaults to HeAlphaUniform().
+        """
         super(Conv2DBlock, self).__init__()
         self.filters = filters
         self.use_residual_Conv2DBlock = use_residual_Conv2DBlock
@@ -207,10 +218,10 @@ class Conv2DBlock(tf.keras.layers.Layer):
             input_shape (tf.TensorShape): Shape of the input tensor to this layer.
         """
         super(Conv2DBlock, self).build(input_shape)
-        self.residualConv = None
+        self.residual_conv = None
         if input_shape[-1] != self.filters and self.use_residual_Conv2DBlock:
             # split kernels for kernel_size = 1 not required
-            self.residualConv = tf.keras.layers.Conv2D(
+            self.residual_conv = tf.keras.layers.Conv2D(
                 filters=self.filters,
                 kernel_size=1,
                 kernel_initializer=self.kernel_initializer,
@@ -218,7 +229,7 @@ class Conv2DBlock(tf.keras.layers.Layer):
                 strides=self.strides,
             )
             if self.use_spec_norm:
-                self.residualConv = tfa.layers.SpectralNormalization(self.residualConv)
+                self.residual_conv = tfa.layers.SpectralNormalization(self.residual_conv)
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         if not self.built:
@@ -234,9 +245,9 @@ class Conv2DBlock(tf.keras.layers.Layer):
 
             if self.use_residual_Conv2DBlock:
                 if (
-                    block == 0 and self.residualConv is not None
+                    block == 0 and self.residual_conv is not None
                 ):  # after the first conf, the channel depth matches between input and output
-                    residual = self.residualConv(residual)
+                    residual = self.residual_conv(residual)
                 x = tf.keras.layers.Add()([x, residual])
 
             if block != (self.number_of_convs - 1) or self.apply_final_normalization:
@@ -280,27 +291,8 @@ class Conv2DBlock(tf.keras.layers.Layer):
         return config
 
 
-# testcode
-# layer = Conv2DBlock(filters = 128, use_residual_Conv2DBlock = True, kernels = 3, split_kernels  = True, use_spec_norm = True, number_of_convs = 3, activation = "relu", dropout_rate =0.1, final_activation = False, apply_final_normalization = True)
-# print(layer.get_config())
-# DeepSaki.layers.plot_layer(layer,input_shape=(256,256,64))
-
-
 class DenseBlock(tf.keras.layers.Layer):
-    """
-    Wraps a dense layer into a more complex building block
-    args:
-      - units: number of units of each dense block
-      - number_of_layers (optional, default: 1): number of consecutive convolutional building blocks, i.e. Conv2DBlock.
-      - activation (optional, default: "leaky_relu"): string literal to obtain activation function
-      - dropout_rate (optional, default: 0): probability of the dropout layer. If the preceeding layer has more than one channel, spatial dropout is applied, otherwise standard dropout
-      - final_activation (optional, default: True): whether or not to activate the output of this layer
-      - use_spec_norm (optional, default: False): applies spectral normalization to convolutional and dense layers
-      - apply_final_normalization (optional, default: True): Whether or not to place a normalization on the layer's output
-      - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
-      - kernel_initializer (optional, default: HeAlphaUniform()): Initialization of the convolutions kernels.
-      - gamma_initializer (optional, default: HeAlphaUniform()): Initialization of the normalization layers.
-    """
+    """Wraps a dense layer into a more complex building block."""
 
     def __init__(
         self,
@@ -315,6 +307,24 @@ class DenseBlock(tf.keras.layers.Layer):
         kernel_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
         gamma_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
     ) -> None:
+        """Initializes the `DenseBlock` layer.
+
+        Args:
+            units (int): Number of units of each dense block
+            number_of_layers (int, optional): Number of consecutive subblocks. Defaults to 1.
+            activation (str, optional): String literal to obtain activation function. Defaults to "leaky_relu".
+            dropout_rate (float, optional): Probability of the dropout layer dropping weights. If the preceeding layer
+                has more than one channel, spatial dropout is applied, otherwise standard dropout. Defaults to 0.0.
+            final_activation (bool, optional): Whether or not to activate the output of this layer. Defaults to True.
+            use_spec_norm (bool, optional): Applies spectral normalization to dense layers. Defaults to False.
+            apply_final_normalization (bool, optional): Whether or not to apply normalization at the layer's output.
+                Defaults to True.
+            use_bias (bool, optional): Whether dense layers include bias weights. Defaults to True.
+            kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
+                Defaults to HeAlphaUniform().
+            gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
+                Defaults to HeAlphaUniform().
+        """
         super(DenseBlock, self).__init__()
         self.units = units
         self.number_of_layers = number_of_layers
@@ -386,26 +396,8 @@ class DenseBlock(tf.keras.layers.Layer):
         )
         return config
 
-
-# testcode
-# layer = DenseBlock(units = 512, number_of_layers = 3, activation = "leaky_relu", apply_final_normalization=False)
-# print(layer.get_config())
-# DeepSaki.layers.plot_layer(layer,input_shape=(256,256,64))
-
-
 class DownSampleBlock(tf.keras.layers.Layer):
-    """
-    Spatial down-sampling for grid-like data
-    args:
-      - downsampling (optional, default: "average_pooling"):
-      - activation (optional, default: "leaky_relu"): string literal to obtain activation function
-      - kernels (optional, default: 3): size of the convolution's kernels when using downsampling = "conv_stride_2"
-      - use_spec_norm (optional, default: False): applies spectral normalization to convolutional and dense layers
-      - padding (optional, default: "zero"): padding type. Options are "none", "zero" or "reflection"
-      - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
-      - kernel_initializer (optional, default: HeAlphaUniform()): Initialization of the convolutions kernels.
-      - gamma_initializer (optional, default: HeAlphaUniform()): Initialization of the normalization layers.
-    """
+    """Spatial down-sampling for grid-like data using `Conv2DBlock`."""
 
     def __init__(
         self,
@@ -418,6 +410,22 @@ class DownSampleBlock(tf.keras.layers.Layer):
         kernel_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
         gamma_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
     ) -> None:
+        """Initializes the `DownSampleBlock` layer.
+
+        Args:
+            downsampling (str, optional): Downsampling method used. Defaults to "average_pooling".
+            activation (str, optional): String literal or tensorflow activation function object to obtain activation
+                function. Defaults to "leaky_relu".
+            kernels (int, optional): Size of the convolutions kernels. Defaults to 3.
+            use_spec_norm (bool, optional): Applies spectral normalization to convolutional and dense layers. Defaults
+                to False.
+            padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
+            use_bias (bool, optional): Whether convolutions and dense layers include a bias or not. Defaults to True.
+            kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
+                Defaults to HeAlphaUniform().
+            gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
+                Defaults to HeAlphaUniform().
+        """
         super(DownSampleBlock, self).__init__()
         self.kernels = kernels
         self.downsampling = downsampling
@@ -493,41 +501,38 @@ class DownSampleBlock(tf.keras.layers.Layer):
         return config
 
 
-# layer = DownSampleBlock(numOfChannels = 3, kernels = 3, downsampling = "conv_stride_2", activation = "leaky_relu", use_spec_norm = True)
-# print(layer.get_config())
-# DeepSaki.layers.plot_layer(layer,input_shape=(256,256,64))
-
-
 class UpSampleBlock(tf.keras.layers.Layer):
-    """
-    Spatial up-sampling for grid-like data
-    args:
-      - upsampling (optional, default: "2D_upsample_and_conv"):
-      - activation (optional, default: "leaky_relu"): string literal to obtain activation function
-      - kernels (optional, default: 3): size of the convolution's kernels when using upsampling = "2D_upsample_and_conv" or "transpose_conv"
-      - split_kernels (optional, default: False): to decrease the number of parameters, a convolution with the kernel_size (kernel,kernel) can be splitted into two consecutive convolutions with the kernel_size (kernel,1) and (1,kernel) respectivly. applies to upsampling = "2D_upsample_and_conv"
-      - use_spec_norm (optional, default: False): applies spectral normalization to convolutional and dense layers
-      - padding (optional, default: "zero"): padding type. Options are "none", "zero" or "reflection"
-      - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
-      - kernel_initializer (optional, default: HeAlphaUniform()): Initialization of the convolutions kernels.
-      - gamma_initializer (optional, default: HeAlphaUniform()): Initialization of the normalization layers.
-    """
+    """Spatial up-sampling for grid-like data using `Conv2DBlock`."""
 
     def __init__(
         self,
         upsampling: str = "2D_upsample_and_conv",
         activation: str = "leaky_relu",
         kernels: int = 3,
-        split_kernels: bool = False,
         use_spec_norm: bool = False,
         use_bias: bool = True,
         padding: PaddingType = PaddingType.ZERO,
         kernel_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
         gamma_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
     ) -> None:
+        """Initializes the `UpSampleBlock` layer.
+
+        Args:
+            upsampling (str, optional): _description_. Defaults to "2D_upsample_and_conv".
+            activation (str, optional): String literal or tensorflow activation function object to obtain activation
+                function. Defaults to "leaky_relu".
+            kernels (int, optional): Size of the convolutions kernels. Defaults to 3.
+            use_spec_norm (bool, optional): Applies spectral normalization to convolutional and dense layers. Defaults
+                to False.
+            use_bias (bool, optional): Whether convolutions and dense layers include a bias or not. Defaults to True.
+            padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
+            kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
+                Defaults to HeAlphaUniform().
+            gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
+                Defaults to HeAlphaUniform().
+        """
         super(UpSampleBlock, self).__init__()
         self.kernels = kernels
-        self.split_kernels = split_kernels
         self.activation = activation
         self.use_spec_norm = use_spec_norm
         self.upsampling = upsampling
@@ -552,7 +557,6 @@ class UpSampleBlock(tf.keras.layers.Layer):
                     filters=input_shape[-1],
                     use_residual_Conv2DBlock=False,
                     kernels=1,
-                    split_kernels=self.split_kernels,
                     number_of_convs=1,
                     activation=self.activation,
                     use_spec_norm=self.use_spec_norm,
@@ -624,11 +628,6 @@ class UpSampleBlock(tf.keras.layers.Layer):
         )
         return config
 
-
-# Testcode
-# layer = UpSampleBlock(kernels = 3, upsampling = "transpose_conv", activation = "leaky_relu", use_spec_norm = True, split_kernels = False)
-# print(layer.get_config())
-# DeepSaki.layers.plot_layer(layer,input_shape=(256,256,64))
 
 
 class ResidualIdentityBlock(tf.keras.layers.Layer):
@@ -816,22 +815,27 @@ class ResidualIdentityBlock(tf.keras.layers.Layer):
         return config
 
 
-# Testcode
-# layer = ResidualIdentityBlock(filters =64, activation = "leaky_relu", kernels = 3, number_of_blocks=2,use_spec_norm = False, residual_cardinality =5, dropout_rate=0.2)
-# print(layer.get_config())
-# DeepSaki.layers.plot_layer(layer,input_shape=(256,256,64))
-
 
 class ResBlockDown(tf.keras.layers.Layer):
-    """
-    Spatial down-sampling with residual connection for grid-like data
-    args:
-      - activation (optional, default: "leaky_relu"): string literal to obtain activation function
-      - use_spec_norm (optional, default: False): applies spectral normalization to convolutional and dense layers
-      - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
-      - padding (optional, default: "zero"): padding type. Options are "none", "zero" or "reflection"
-      - kernel_initializer (optional, default: HeAlphaUniform()): Initialization of the convolutions kernels.
-      - gamma_initializer (optional, default: HeAlphaUniform()): Initialization of the normalization layers.
+    """Spatial down-sampling with residual connection for grid-like data.
+
+    Architecture:
+        ```mermaid
+        flowchart LR
+            i([input_tensor])-->a1
+            i-->c2
+            subgraph ResBlockDown
+                subgraph Block[2x]
+                a1[activation]-->p1[padding]-->c1[Conv2DBlock]
+                end
+                c1-->ap1[AveragePooling2D]
+                c2[Conv2DBlock]-->ap2[AveragePooling2D]
+                ap1-->add((+))
+                ap2-->add((+))
+            end
+            add-->o([output_tensor])
+        ```
+
     """
 
     def __init__(
@@ -843,6 +847,20 @@ class ResBlockDown(tf.keras.layers.Layer):
         kernel_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
         gamma_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
     ) -> None:
+        """Initializes the `ResBlockDown` layer.
+
+        Args:
+            activation (str, optional): String literal or tensorflow activation function object to obtain activation
+                function. Defaults to "leaky_relu".
+            use_spec_norm (bool, optional): Applies spectral normalization to convolutional and dense layers. Defaults
+                to False.
+            use_bias (bool, optional): Whether convolutions and dense layers include a bias or not. Defaults to True.
+            padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
+            kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
+                Defaults to HeAlphaUniform().
+            gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
+                Defaults to HeAlphaUniform().
+        """
         super(ResBlockDown, self).__init__()
         self.activation = activation
         self.use_spec_norm = use_spec_norm
@@ -930,12 +948,6 @@ class ResBlockDown(tf.keras.layers.Layer):
             }
         )
         return config
-
-
-# Testcode
-# layer = ResBlockDown( activation = "leaky_relu", use_spec_norm = True)
-# print(layer.get_config())
-# DeepSaki.layers.plot_layer(layer,input_shape=(256,256,64))
 
 
 class ResBlockUp(tf.keras.layers.Layer):
@@ -1046,27 +1058,33 @@ class ResBlockUp(tf.keras.layers.Layer):
         )
         return config
 
-
-# Testcode
-# layer = ResBlockUp(activation = "leaky_relu", use_spec_norm = True)
-# print(layer.get_config())
-# DeepSaki.layers.plot_layer(layer,input_shape=(256,256,64))
-
-
 @tf.keras.utils.register_keras_serializable(package="Custom", name="scale")
 class ScaleLayer(tf.keras.layers.Layer):
-    """
-    trainable scalar that can act as trainable gate
-    args:
-      - initializer (optional, default: tf.keras.initializers.Ones()): initializes the scalar weight
+    """Trainable non-negative scalar that might be used as a trainable gate.
+
+    It is a single learnable weight that is multiplied by all weights of the input tensor through broadcasting.
     """
 
     def __init__(self, initializer: tf.keras.initializers.Initializer = tf.keras.initializers.Ones()) -> None:
+        """Initializes the `ScaleLayer` layer.
+
+        Args:
+            initializer (tf.keras.initializers.Initializer, optional): Initializer used to initialize the scalar weight.
+                Defaults to tf.keras.initializers.Ones().
+        """
         super(ScaleLayer, self).__init__()
         self.initializer = initializer
         self.scale = self.add_weight(shape=[1], initializer=initializer, constraint=NonNegative(), trainable=True)
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """Calls the `ScaleLayer` layer.
+
+        Args:
+            inputs (tf.Tensor): Tensor of shape (batch, ...).
+
+        Returns:
+            Non-negative scaled version of the input. Tensor of shape (batch, ...).
+        """
         return inputs * self.scale
 
     def get_config(self) -> Dict[str, Any]:
@@ -1081,13 +1099,10 @@ class ScaleLayer(tf.keras.layers.Layer):
 
 
 class ScalarGatedSelfAttention(tf.keras.layers.Layer):
-    """
-    Scaled dot-product self attention that is gated by a learnable scalar.
-    args:
-    - use_spec_norm (optional, default: False): applies spectral normalization to convolutional and dense layers
-    - intermediateChannel (optional, default: None): Integer that determines the intermediate channels within the self-attention model. If None, intermediate channels = inputChannels/8
-    - kernel_initializer (optional, default: HeAlphaUniform()): Initialization of the convolutions kernels.
-    - gamma_initializer (optional, default: HeAlphaUniform()): Initialization of the normalization layers.
+    """Scaled dot-product self attention that is gated by a learnable scalar.
+
+    Info:
+        Implementation as used in the [VoloGAN paper](https://arxiv.org/abs/2207.09204).
     """
 
     def __init__(
@@ -1097,6 +1112,18 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
         kernel_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
         gamma_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
     ) -> None:
+        """Initializes the `ScalarGatedSelfAttention` layer.
+
+        Args:
+            use_spec_norm (bool, optional): If true, applies spectral normalization to convolutional and dense layers.
+                Defaults to False.
+            intermediate_channel (Optional[bool], optional): Intermediate channels for the self attention mechanism.
+                Defaults to None.
+            kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the kernel weights.
+                Defaults to HeAlphaUniform().
+            gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
+                Defaults to HeAlphaUniform().
+        """
         super(ScalarGatedSelfAttention, self).__init__()
         self.use_spec_norm = use_spec_norm
         self.intermediateChannel = intermediate_channel
@@ -1201,9 +1228,3 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
             }
         )
         return config
-
-
-# Testcode
-# layer =ScalarGatedSelfAttention(use_spec_norm = True,intermediateChannel = None)
-# print(layer.get_config())
-# DeepSaki.layers.plot_layer(layer,input_shape=(32,32,512))
