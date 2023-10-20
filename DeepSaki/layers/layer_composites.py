@@ -397,7 +397,7 @@ class DenseBlock(tf.keras.layers.Layer):
         return config
 
 class DownSampleBlock(tf.keras.layers.Layer):
-    """Spatial down-sampling for grid-like data using `Conv2DBlock`."""
+    """Spatial down-sampling for grid-like data using `DeepSaki.layers.ConvBlock2D()`."""
 
     def __init__(
         self,
@@ -502,7 +502,7 @@ class DownSampleBlock(tf.keras.layers.Layer):
 
 
 class UpSampleBlock(tf.keras.layers.Layer):
-    """Spatial up-sampling for grid-like data using `Conv2DBlock`."""
+    """Spatial up-sampling for grid-like data using `DeepSaki.layers.ConvBlock2D()`."""
 
     def __init__(
         self,
@@ -629,23 +629,9 @@ class UpSampleBlock(tf.keras.layers.Layer):
         return config
 
 
+class ResidualBlock(tf.keras.layers.Layer):
+    """Residual block with configurable cardinality."""
 
-class ResidualIdentityBlock(tf.keras.layers.Layer):
-    """
-    Residual identity block with configurable cardinality
-    args:
-      - filters: number of filters in the output feature map
-      - kernels: size of the convolutions kernels
-      - number_of_blocks (optional, default: 1): number of consecutive convolutional building blocks.
-      - activation (optional, default: "leaky_relu"): string literal to obtain activation function
-      - dropout_rate (optional, default: 0): probability of the dropout layer. If the preceeding layer has more than one channel, spatial dropout is applied, otherwise standard dropout
-      - use_spec_norm (optional, default: False): applies spectral normalization to convolutional and dense layers
-      - residual_cardinality (optional, default: 1): number of parallel convolution blocks
-      - padding (optional, default: "zero"): padding type. Options are "none", "zero" or "reflection"
-      - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
-      - kernel_initializer (optional, default: HeAlphaUniform()): Initialization of the convolutions kernels.
-      - gamma_initializer (optional, default: HeAlphaUniform()): Initialization of the normalization layers.
-    """
 
     def __init__(
         self,
@@ -661,7 +647,27 @@ class ResidualIdentityBlock(tf.keras.layers.Layer):
         kernel_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
         gamma_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
     ) -> None:
-        super(ResidualIdentityBlock, self).__init__()
+        """Initializes the `ResidualBlock` layer.
+
+        Args:
+            filters (int): Number of individual filters.
+            kernels (int): Size of the convolutions kernels.
+            activation (str, optional): String literal or tensorflow activation function object to obtain activation
+                function. Defaults to "leaky_relu".
+            number_of_blocks (int, optional): Number of residual subblocks. Defaults to 1.
+            use_spec_norm (bool, optional): Applies spectral normalization to convolutional and dense layers. Defaults
+                to False.
+            residual_cardinality (int, optional): Number of parallel paths. Defaults to 1.
+            dropout_rate (float, optional): Probability of the dropout layer. If the preceeding layer has more than one
+                channel, spatial dropout is applied, otherwise standard dropout. Defaults to 0.0.
+            use_bias (bool, optional): Whether convolutions and dense layers include a bias or not. Defaults to True.
+            padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
+            kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
+                Defaults to HeAlphaUniform().
+            gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
+                Defaults to HeAlphaUniform().
+        """
+        super(ResidualBlock, self).__init__()
         self.activation = activation
         self.filters = filters
         self.kernels = kernels
@@ -739,7 +745,7 @@ class ResidualIdentityBlock(tf.keras.layers.Layer):
         Args:
             input_shape (tf.TensorShape): Shape of the input tensor to this layer.
         """
-        super(ResidualIdentityBlock, self).build(input_shape)
+        super(ResidualBlock, self).build(input_shape)
         self.conv0 = None
         if input_shape[-1] != self.filters:
             self.conv0 = Conv2DBlock(
@@ -796,7 +802,7 @@ class ResidualIdentityBlock(tf.keras.layers.Layer):
         Returns:
             Dictionary with the class' variable names as keys.
         """
-        config = super(ResidualIdentityBlock, self).get_config()
+        config = super(ResidualBlock, self).get_config()
         config.update(
             {
                 "activation": self.activation,
@@ -817,21 +823,19 @@ class ResidualIdentityBlock(tf.keras.layers.Layer):
 
 
 class ResBlockDown(tf.keras.layers.Layer):
-    """Spatial down-sampling with residual connection for grid-like data.
+    """Spatial down-sampling with residual connection for grid-like data using `DeepSaki.layers.ConvBlock2D()`.
 
     Architecture:
         ```mermaid
         flowchart LR
-            i([input_tensor])-->a1
-            i-->c2
+            i([input_tensor])--> c1 & c2
             subgraph ResBlockDown
                 subgraph Block[2x]
-                a1[activation]-->p1[padding]-->c1[Conv2DBlock]
+                c1[dsk.layers.Conv2DBlock]
                 end
                 c1-->ap1[AveragePooling2D]
-                c2[Conv2DBlock]-->ap2[AveragePooling2D]
-                ap1-->add((+))
-                ap2-->add((+))
+                c2[dsk.layers.Conv2DBlock]-->ap2[AveragePooling2D]
+                ap1 & ap2-->add((+))
             end
             add-->o([output_tensor])
         ```
@@ -951,15 +955,23 @@ class ResBlockDown(tf.keras.layers.Layer):
 
 
 class ResBlockUp(tf.keras.layers.Layer):
-    """
-    Spatial down-sampling with residual connection for grid-like data
-    args:
-      - activation (optional, default: "leaky_relu"): string literal to obtain activation function
-      - use_spec_norm (optional, default: False): applies spectral normalization to convolutional and dense layers
-      - padding (optional, default: "zero"): padding type. Options are "none", "zero" or "reflection"
-      - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
-      - kernel_initializer (optional, default: HeAlphaUniform()): Initialization of the convolutions kernels.
-      - gamma_initializer (optional, default: HeAlphaUniform()): Initialization of the normalization layers.
+    """Spatial up-sampling with residual connection for grid-like data using `DeepSaki.layers.ConvBlock2D()`.
+
+    Architecture:
+        ```mermaid
+        flowchart LR
+            i([input_tensor])-->up1 & up2
+            subgraph ResBlockUp
+                up1[UpSample2D]-->c1
+                subgraph Block[2x]
+                c1[dsk.layers.Conv2DBlock]
+                end
+                up2[UpSample2D]-->c2[dsk.layers.Conv2DBlock]
+                c1 & c2-->add((+))
+            end
+            add-->o([output_tensor])
+        ```
+
     """
 
     def __init__(
@@ -971,6 +983,20 @@ class ResBlockUp(tf.keras.layers.Layer):
         kernel_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
         gamma_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
     ) -> None:
+        """Initializes the `ResBlockUp` layer.
+
+        Args:
+            activation (str, optional): String literal or tensorflow activation function object to obtain activation
+                function. Defaults to "leaky_relu".
+            use_spec_norm (bool, optional): Applies spectral normalization to convolutional and dense layers. Defaults
+                to False.
+            use_bias (bool, optional): Whether convolutions and dense layers include a bias or not. Defaults to True.
+            padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
+            kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
+                Defaults to HeAlphaUniform().
+            gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
+                Defaults to HeAlphaUniform().
+        """
         super(ResBlockUp, self).__init__()
         self.activation = activation
         self.use_spec_norm = use_spec_norm
@@ -1103,6 +1129,18 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
 
     Info:
         Implementation as used in the [VoloGAN paper](https://arxiv.org/abs/2207.09204).
+
+    Architecture:
+        ```mermaid
+        flowchart LR
+            i([input_tensor])-->f & g & h
+            subgraph ScalarGatedSelfAttention
+                f[dsk.layers.DenseBlock] --> t[Transpose]
+                g[dsk.layers.DenseBlock] & t --> m1[Multiply] --> s[SoftMax]
+                h[dsk.layers.DenseBlock] & s --> m2[Multiply] --> v[DenseBlock] --> sc[dsk.layers.ScaleLayer]
+            end
+            sc -->o([output_tensor])
+        ```
     """
 
     def __init__(

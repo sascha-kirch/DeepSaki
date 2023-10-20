@@ -12,7 +12,7 @@ from DeepSaki.layers.layer_composites import Conv2DBlock
 from DeepSaki.layers.layer_composites import DownSampleBlock
 from DeepSaki.layers.layer_composites import ResBlockDown
 from DeepSaki.layers.layer_composites import ResBlockUp
-from DeepSaki.layers.layer_composites import ResidualIdentityBlock
+from DeepSaki.layers.layer_composites import ResidualBlock
 from DeepSaki.layers.layer_composites import ScalarGatedSelfAttention
 from DeepSaki.layers.layer_composites import UpSampleBlock
 from DeepSaki.layers.layer_helper import PaddingType
@@ -32,8 +32,8 @@ class Encoder(tf.keras.layers.Layer):
       - number_of_convs (optional, default: 1): number of consecutive convolutional building blocks, i.e. Conv2DBlock.
       - activation (optional, default: "leaky_relu"): string literal or tensorflow activation function object to obtain activation function
       - first_kernel (optional, default: 5): The first convolution can have a different kernel size, to e.g. increase the perceptive field, while the channel depth is still low.
-      - use_ResidualIdentityBlock (optional, default: False): Whether or not to use the ResidualIdentityBlock instead of the Conv2DBlock
-      - residual_cardinality (optional, default: 1): cardinality for the ResidualIdentityBlock
+      - use_ResidualBlock (optional, default: False): Whether or not to use the ResidualBlock instead of the Conv2DBlock
+      - residual_cardinality (optional, default: 1): cardinality for the ResidualBlock
       - channel_list (optional, default:None): alternativly to number_of_layers and filters, a list with the disired filters for each level can be provided. e.g. channel_list = [64, 128, 256] results in a 3-level Encoder with 64, 128, 256 filters for level 1, 2 and 3 respectivly.
       - use_spec_norm (optional, default: False): applies spectral normalization to convolutional and dense layers
       - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
@@ -58,7 +58,7 @@ class Encoder(tf.keras.layers.Layer):
         number_of_convs: int = 2,
         activation: str = "leaky_relu",
         first_kernel: Optional[int] = None,
-        use_ResidualIdentityBlock: bool = False,
+        use_ResidualBlock: bool = False,
         residual_cardinality: int = 1,
         channel_list: Optional[List[int]] = None,
         use_spec_norm: bool = False,
@@ -82,7 +82,7 @@ class Encoder(tf.keras.layers.Layer):
         self.number_of_convs = number_of_convs
         self.activation = activation
         self.first_kernel = first_kernel
-        self.use_ResidualIdentityBlock = use_ResidualIdentityBlock
+        self.use_ResidualBlock = use_ResidualBlock
         self.residual_cardinality = residual_cardinality
         self.channel_list = channel_list
         self.use_spec_norm = use_spec_norm
@@ -119,9 +119,9 @@ class Encoder(tf.keras.layers.Layer):
         for i, ch in enumerate(self.channel_list):
             encoder_kernels = self.first_kernel if i == 0 and self.first_kernel else self.kernels
 
-            if self.use_ResidualIdentityBlock:
+            if self.use_ResidualBlock:
                 self.encoderBlocks.append(
-                    ResidualIdentityBlock(
+                    ResidualBlock(
                         filters=ch,
                         activation=self.activation,
                         kernels=encoder_kernels,
@@ -216,7 +216,7 @@ class Encoder(tf.keras.layers.Layer):
                 "number_of_convs": self.number_of_convs,
                 "activation": self.activation,
                 "first_kernel": self.first_kernel,
-                "use_ResidualIdentityBlock": self.use_ResidualIdentityBlock,
+                "use_ResidualBlock": self.use_ResidualBlock,
                 "residual_cardinality": self.residual_cardinality,
                 "channel_list": self.channel_list,
                 "use_spec_norm": self.use_spec_norm,
@@ -234,7 +234,7 @@ class Encoder(tf.keras.layers.Layer):
 
 
 # Testcode
-# layer = Encoder( number_of_levels = 5, filters = 64, limit_filters = 512, use_self_attention = True,use_residual_Conv2DBlock = True, downsampling="max_pooling", kernels=3, split_kernels = True,  number_of_convs = 2,activation = "leaky_relu", first_kernel=3,use_ResidualIdentityBlock = True,use_spec_norm=True, omit_skips=2)
+# layer = Encoder( number_of_levels = 5, filters = 64, limit_filters = 512, use_self_attention = True,use_residual_Conv2DBlock = True, downsampling="max_pooling", kernels=3, split_kernels = True,  number_of_convs = 2,activation = "leaky_relu", first_kernel=3,use_ResidualBlock = True,use_spec_norm=True, omit_skips=2)
 # print(layer.get_config())
 # dsk.layers.plot_layer(layer,input_shape=(256,256,4))
 
@@ -248,13 +248,13 @@ class Bottleneck(tf.keras.layers.Layer):
       - split_kernels (optional, default: False): to decrease the number of parameters, a convolution with the kernel_size (kernel,kernel) can be splitted into two consecutive convolutions with the kernel_size (kernel,1) and (1,kernel) respectivly
       - number_of_convs (optional, default: 2): number of consecutive convolutional building blocks, i.e. Conv2DBlock.
       - use_residual_Conv2DBlock (optional, default: True): ads a residual connection in parallel to the Conv2DBlock
-      - use_ResidualIdentityBlock (optional, default: False): Whether or not to use the ResidualIdentityBlock instead of the Conv2DBlock
+      - use_ResidualBlock (optional, default: False): Whether or not to use the ResidualBlock instead of the Conv2DBlock
       - activation (optional, default: "leaky_relu"): string literal or tensorflow activation function object to obtain activation function
       - dropout_rate (optional, default: 0): probability of the dropout layer. If the preceeding layer has more than one channel, spatial dropout is applied, otherwise standard dropout
       - channel_list (optional, default:None): alternativly to number_of_layers and filters, a list with the disired filters for each block can be provided. e.g. channel_list = [64, 128, 256] results in a 3-staged Bottleneck with 64, 128, 256 filters for stage 1, 2 and 3 respectivly.
       - use_spec_norm (optional, default: False): applies spectral normalization to convolutional and dense layers
       - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
-      - residual_cardinality (optional, default: 1): cardinality for the ResidualIdentityBlock
+      - residual_cardinality (optional, default: 1): cardinality for the ResidualBlock
       - padding (optional, default: "none"): padding type. Options are "none", "zero" or "reflection"
       - kernel_initializer (optional, default: HeAlphaUniform()): Initialization of the convolutions kernels.
       - gamma_initializer (optional, default: HeAlphaUniform()): Initialization of the normalization layers.
@@ -267,7 +267,7 @@ class Bottleneck(tf.keras.layers.Layer):
         split_kernels: bool = False,
         number_of_convs: int = 2,
         use_residual_Conv2DBlock: bool = True,
-        use_ResidualIdentityBlock: bool = False,
+        use_ResidualBlock: bool = False,
         activation: str = "leaky_relu",
         dropout_rate: float = 0.2,
         channel_list: Optional[List[int]] = None,
@@ -279,7 +279,7 @@ class Bottleneck(tf.keras.layers.Layer):
         gamma_initializer: tf.keras.initializers.Initializer = HeAlphaUniform(),
     ) -> None:
         super(Bottleneck, self).__init__()
-        self.use_ResidualIdentityBlock = use_ResidualIdentityBlock
+        self.use_ResidualBlock = use_ResidualBlock
         self.n_bottleneck_blocks = n_bottleneck_blocks
         self.use_residual_Conv2DBlock = use_residual_Conv2DBlock
         self.kernels = kernels
@@ -304,9 +304,9 @@ class Bottleneck(tf.keras.layers.Layer):
 
         self.layers = []
         for ch in self.channel_list:
-            if self.use_ResidualIdentityBlock:
+            if self.use_ResidualBlock:
                 self.layers.append(
-                    ResidualIdentityBlock(
+                    ResidualBlock(
                         activation=self.activation,
                         filters=ch,
                         kernels=self.kernels,
@@ -360,7 +360,7 @@ class Bottleneck(tf.keras.layers.Layer):
         config = super(Bottleneck, self).get_config()
         config.update(
             {
-                "use_ResidualIdentityBlock": self.use_ResidualIdentityBlock,
+                "use_ResidualBlock": self.use_ResidualBlock,
                 "n_bottleneck_blocks": self.n_bottleneck_blocks,
                 "use_residual_Conv2DBlock": self.use_residual_Conv2DBlock,
                 "kernels": self.kernels,
@@ -400,8 +400,8 @@ class Decoder(tf.keras.layers.Layer):
       - number_of_convs (optional, default: 1): number of consecutive convolutional building blocks, i.e. Conv2DBlock.
       - activation (optional, default: "leaky_relu"): string literal or tensorflow activation function object to obtain activation function
       - dropout_rate (optional, default: 0): probability of the dropout layer. If the preceeding layer has more than one channel, spatial dropout is applied, otherwise standard dropout. In the decoder only applied to the first half of levels.
-      - use_ResidualIdentityBlock (optional, default: False): Whether or not to use the ResidualIdentityBlock instead of the Conv2DBlock
-      - residual_cardinality (optional, default: 1): cardinality for the ResidualIdentityBlock
+      - use_ResidualBlock (optional, default: False): Whether or not to use the ResidualBlock instead of the Conv2DBlock
+      - residual_cardinality (optional, default: 1): cardinality for the ResidualBlock
       - channel_list (optional, default:None): alternativly to number_of_layers and filters, a list with the disired filters for each level can be provided. e.g. channel_list = [64, 128, 256] results in a 3-level Decoder with 64, 128, 256 filters for level 1, 2 and 3 respectivly.
       - use_spec_norm (optional, default: False): applies spectral normalization to convolutional and dense layers
       - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
@@ -424,7 +424,7 @@ class Decoder(tf.keras.layers.Layer):
         number_of_convs: int = 2,
         activation: str = "leaky_relu",
         dropout_rate: float = 0.2,
-        use_ResidualIdentityBlock: bool = False,
+        use_ResidualBlock: bool = False,
         residual_cardinality: int = 1,
         channel_list: Optional[List[int]] = None,
         use_spec_norm: bool = False,
@@ -445,7 +445,7 @@ class Decoder(tf.keras.layers.Layer):
         self.split_kernels = split_kernels
         self.number_of_convs = number_of_convs
         self.activation = activation
-        self.use_ResidualIdentityBlock = use_ResidualIdentityBlock
+        self.use_ResidualBlock = use_ResidualBlock
         self.channel_list = channel_list
         self.use_spec_norm = use_spec_norm
         self.use_bias = use_bias
@@ -484,9 +484,9 @@ class Decoder(tf.keras.layers.Layer):
         for i, ch in enumerate(self.channel_list):
             dropout_rate = self.dropout_rate if i < int(self.number_of_levels / 2) else 0
 
-            if self.use_ResidualIdentityBlock:
+            if self.use_ResidualBlock:
                 self.decoderBlocks.append(
-                    ResidualIdentityBlock(
+                    ResidualBlock(
                         filters=ch,
                         activation=self.activation,
                         kernels=self.kernels,
@@ -578,7 +578,7 @@ class Decoder(tf.keras.layers.Layer):
                 "split_kernels": self.split_kernels,
                 "number_of_convs": self.number_of_convs,
                 "activation": self.activation,
-                "use_ResidualIdentityBlock": self.use_ResidualIdentityBlock,
+                "use_ResidualBlock": self.use_ResidualBlock,
                 "residual_cardinality": self.residual_cardinality,
                 "channel_list": self.channel_list,
                 "use_spec_norm": self.use_spec_norm,
@@ -594,6 +594,6 @@ class Decoder(tf.keras.layers.Layer):
 
 
 # Testcode
-# layer = Decoder( number_of_levels = 5, filters = 64, limit_filters = 2048, use_self_attention = True,use_residual_Conv2DBlock = False, upsampling="depth_to_space", kernels=3, split_kernels = False,  number_of_convs = 2,activation = "leaky_relu",use_ResidualIdentityBlock = True,use_spec_norm=False, dropout_rate = 0.2)
+# layer = Decoder( number_of_levels = 5, filters = 64, limit_filters = 2048, use_self_attention = True,use_residual_Conv2DBlock = False, upsampling="depth_to_space", kernels=3, split_kernels = False,  number_of_convs = 2,activation = "leaky_relu",use_ResidualBlock = True,use_spec_norm=False, dropout_rate = 0.2)
 # print(layer.get_config())
 # dsk.layers.plot_layer(layer,input_shape=(256,256,4))
