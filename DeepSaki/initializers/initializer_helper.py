@@ -15,12 +15,14 @@ def make_initializer_complex(
     **Examples:**
     ```python
     # Standalone usage:
-    initializer = make_initializer_complex(tf.keras.initializers.GlorotUniform())
+    import DeepSaki as dsk
+    initializer = dsk.initializers.make_initializer_complex(tf.keras.initializers.GlorotUniform())
     values = initializer(shape=(2, 2))
     ```
     ```python
     # Usage in a Keras layer:
-    initializer = make_initializer_complex(tf.keras.initializers.GlorotUniform())
+    import DeepSaki as dsk
+    initializer = dsk.initializers.make_initializer_complex(tf.keras.initializers.GlorotUniform())
     layer = tf.keras.layers.Dense(3, kernel_initializer=initializer)
     ```
 
