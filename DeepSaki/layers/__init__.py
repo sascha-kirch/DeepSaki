@@ -20,7 +20,7 @@ from DeepSaki.layers.layer_composites import Conv2DBlock
 from DeepSaki.layers.layer_composites import DenseBlock
 from DeepSaki.layers.layer_composites import DownSampleBlock
 from DeepSaki.layers.layer_composites import UpSampleBlock
-from DeepSaki.layers.layer_composites import ResidualIdentityBlock
+from DeepSaki.layers.layer_composites import ResidualBlock
 from DeepSaki.layers.layer_composites import ResBlockDown
 from DeepSaki.layers.layer_composites import ResBlockUp
 from DeepSaki.layers.layer_composites import ScaleLayer

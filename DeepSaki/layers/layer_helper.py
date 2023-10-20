@@ -69,7 +69,8 @@ def get_initializer(initializer: InitializerFunc, seed: Optional[int] = None) ->
         InitializerFunc.HE_ALPHA_UNIFORM: HeAlphaUniform(seed=seed),
     }
 
-    assert initializer in valid_options, f"Undefined initializer provided: {initializer}"
+    if initializer not in valid_options:
+        raise ValueError(f"Undefined initializer provided: {initializer}")
 
     return valid_options.get(initializer)
 
@@ -81,7 +82,7 @@ def pad_func(
 
     Args:
         pad_values (Tuple[int,int], optional): Size of the padding values. Defaults to (1, 1).
-        padding_type (PaddingType, optional): [_description_]. Defaults to PaddingType.ZERO.
+        padding_type (PaddingType, optional): Padding Type. Defaults to PaddingType.ZERO.
 
     Returns:
         Instance of a padding layer object.
@@ -90,18 +91,23 @@ def pad_func(
         PaddingType.REFLECTION: ReflectionPadding2D(pad_values),
         PaddingType.ZERO: tf.keras.layers.ZeroPadding2D(pad_values),
     }
-    assert (
-        padding_type in valid_options
-    ), f"Undefined padding type provided: '{padding_type}'. Valid options are: '{valid_options.keys()}'"
+    if padding_type not in valid_options:
+        raise ValueError(
+            f"Undefined padding type provided: '{padding_type}'. Valid options are: '{valid_options.keys()}'"
+        )
+
     return valid_options.get(padding_type)
 
 
 def dropout_func(filters: int, dropout_rate: float) -> tf.keras.layers.Layer:
-    """
-    Wrapper to obtain a dropout layer depending on the size of the preceeding feature map
-    args:
-      - filters: number of filters of previous layer
-      - dropout_rate: probability with which dropout is performed
+    """Wrapper to obtain a dropout layer depending on the number of filters of the preceeding feature map.
+
+    Args:
+        filters (int): Number of filters of the preceeding layer.
+        dropout_rate (float): Probability of the dropout layer to drop weights.
+
+    Returns:
+        layer: Returns `tf.keras.layers.SpatialDropout2D` if number of filters > 1, otherwise 'tf.keras.layers.Dropout'.
     """
     if filters > 1:
         return tf.keras.layers.SpatialDropout2D(dropout_rate)
@@ -109,11 +115,11 @@ def dropout_func(filters: int, dropout_rate: float) -> tf.keras.layers.Layer:
 
 
 def plot_layer(layer: tf.keras.layers.Layer, input_shape: List[int]) -> None:
-    """
-    Creates an model from a given layer to be able to call model.summary() and to plot a graphic
-    args:
-      layer: tf.keras.layer object to be ploted
-      input_shape: shape of the input data without batchsize -> (height, width, channel)
+    """Creates a model from a given layer to be able to call model.summary() and to plot a graph image.
+
+    Args:
+        layer (tf.keras.layers.Layer): Layer to be plotted.
+        input_shape (List[int]): Shape of the desired input of the layer.
     """
     layer.build([None, *input_shape])
     inputs = tf.keras.layers.Input(shape=input_shape)

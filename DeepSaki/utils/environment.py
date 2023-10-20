@@ -31,19 +31,20 @@ def detect_accelerator(
         `hw_accelerator_handle`: pointer to the HW accelerator
     """
     hw_accelerator_handle = None
+    tpu = None
+    gpus = []
     try:
         tpu = tf.distribute.cluster_resolver.TPUClusterResolver()  # TPU detection
         hw_accelerator_handle = tpu
     except ValueError:
-        tpu = None
         if gpu_memory_groth:
             for gpu in tf.config.experimental.list_physical_devices("GPU"):
-                tf.config.experimental.set_memory_growth(gpu, True)
+                tf.config.experimental.set_memory_growth(gpu, enable=True)
         gpus = tf.config.experimental.list_logical_devices("GPU")
         hw_accelerator_handle = gpus
 
     # Select appropriate distribution strategy
-    if tpu:
+    if tpu is not None:
         runtime_environment = "TPU"
         tf.config.experimental_connect_to_cluster(tpu)
         tf.tpu.experimental.initialize_tpu_system(tpu)
@@ -74,7 +75,7 @@ def detect_accelerator(
 
 def enable_xla_acceleration() -> None:
     """Enable compiler acceleration for linear algebra operations."""
-    tf.config.optimizer.set_jit(True)
+    tf.config.optimizer.set_jit(enabled=True)
     print("Linear algebra acceleration enabled")
 
 

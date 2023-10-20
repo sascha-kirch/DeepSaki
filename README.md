@@ -5,10 +5,16 @@ The ML framework used is tensorflow and the entire code is suitable to run Googl
 
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
 ![GitHub](https://img.shields.io/github/license/sascha-kirch/deepsaki)
+
+>Main:<br>
 [![Build](https://github.com/sascha-kirch/DeepSaki/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/sascha-kirch/DeepSaki/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/DeepSaki/branch/main/graph/badge.svg)](https://codecov.io/gh/DeepSaki)
+[![codecov](https://codecov.io/gh/sascha-kirch/DeepSaki/branch/main/graph/badge.svg?token=FD7IE1T9EO)](https://codecov.io/gh/sascha-kirch/DeepSaki)
 [![Documentation](https://img.shields.io/badge/ref-Documentation-blue)](https://sascha-kirch.github.io/DeepSaki/latest/)
 
+>Develop:<br>
+[![Build](https://github.com/sascha-kirch/DeepSaki/actions/workflows/test.yml/badge.svg?branch=develop)](https://github.com/sascha-kirch/DeepSaki/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/sascha-kirch/DeepSaki/branch/develop/graph/badge.svg?token=FD7IE1T9EO)](https://codecov.io/gh/sascha-kirch/DeepSaki)
+[![Documentation](https://img.shields.io/badge/ref-Documentation-blue)](https://sascha-kirch.github.io/DeepSaki/develop/)
 
 # Installation
 

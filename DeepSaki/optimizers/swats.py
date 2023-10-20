@@ -1,10 +1,12 @@
-# The SWATS Optimizer is an optimizer that starts with ADAM and switches to SGD after a certain epoch.
-# SWATS Paper: http://arxiv.org/abs/1712.07628
-#
-# This implementation is based on tensorflow's ADAM, SGD and NADAM optimizer
-# TensorFlow ADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/adam.py
-# Tensorflow SGD: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/gradient_descent.py
-# Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/nadam.py
+"""The SWATS Optimizer is an optimizer that starts with ADAM and switches to SGD after a certain epoch.
+
+SWATS Paper: http://arxiv.org/abs/1712.07628
+
+This implementation is based on tensorflow's ADAM, SGD and NADAM optimizer
+TensorFlow ADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/adam.py
+Tensorflow SGD: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/gradient_descent.py
+Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/nadam.py
+"""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -25,7 +27,7 @@ from tensorflow.python.ops import state_ops
 from tensorflow.python.ops import variables as tf_variables
 from tensorflow.python.training import gen_training_ops
 
-class SWATS_ADAM(optimizer_v2.OptimizerV2):
+class SwatsAdam(optimizer_v2.OptimizerV2):
     _HAS_AGGREGATE_GRAD = True
 
     def __init__(
@@ -37,10 +39,10 @@ class SWATS_ADAM(optimizer_v2.OptimizerV2):
         amsgrad: bool = False,
         momentum: float = 0.0,
         nesterov: bool = False,
-        name: str = "SWATS_ADAM",
+        name: str = "SwatsAdam",
         **kwargs: Any,
     ) -> None:
-        super(SWATS_ADAM, self).__init__(name, **kwargs)
+        super(SwatsAdam, self).__init__(name, **kwargs)
         self._set_hyper("learning_rate", kwargs.get("lr", learning_rate))
         self._set_hyper("decay", self._initial_decay)
         self._set_hyper("beta_1", beta_1)
@@ -73,7 +75,7 @@ class SWATS_ADAM(optimizer_v2.OptimizerV2):
                 self.add_slot(var, "momentum")
 
     def _prepare_local(self, var_device, var_dtype: tf.DType, apply_state) -> None:
-        super(SWATS_ADAM, self)._prepare_local(var_device, var_dtype, apply_state)
+        super(SwatsAdam, self)._prepare_local(var_device, var_dtype, apply_state)
 
         local_step = math_ops.cast(self.iterations + 1, var_dtype)
         beta_1_t = array_ops.identity(self._get_hyper("beta_1", var_dtype))
@@ -104,7 +106,7 @@ class SWATS_ADAM(optimizer_v2.OptimizerV2):
         num_vars = int((len(params) - 1) / 2)
         if len(weights) == 3 * num_vars + 1:
             weights = weights[: len(params)]
-        super(SWATS_ADAM, self).set_weights(weights)
+        super(SwatsAdam, self).set_weights(weights)
 
     def _resource_apply_dense(self, grad, var, apply_state=None):
         var_device, var_dtype = var.device, var.dtype.base_dtype
@@ -124,12 +126,12 @@ class SWATS_ADAM(optimizer_v2.OptimizerV2):
                     use_locking=self._use_locking,
                     use_nesterov=self.nesterov,
                 )
-            else:
-                return gen_training_ops.ResourceApplyGradientDescent(
-                    var=var.handle, alpha=coefficients["lr_t"], delta=grad, use_locking=self._use_locking
-                )
 
-        elif self.currentOptimizer == "adam":
+            return gen_training_ops.ResourceApplyGradientDescent(
+                var=var.handle, alpha=coefficients["lr_t"], delta=grad, use_locking=self._use_locking
+            )
+
+        if self.currentOptimizer == "adam":
             m = self.get_slot(var, "m")
             v = self.get_slot(var, "v")
             if not self.amsgrad:
@@ -146,24 +148,24 @@ class SWATS_ADAM(optimizer_v2.OptimizerV2):
                     grad=grad,
                     use_locking=self._use_locking,
                 )
-            else:
-                vhat = self.get_slot(var, "vhat")
-                return gen_training_ops.ResourceApplyAdamWithAmsgrad(
-                    var=var.handle,
-                    m=m.handle,
-                    v=v.handle,
-                    vhat=vhat.handle,
-                    beta1_power=coefficients["beta_1_power"],
-                    beta2_power=coefficients["beta_2_power"],
-                    lr=coefficients["lr_t"],
-                    beta1=coefficients["beta_1_t"],
-                    beta2=coefficients["beta_2_t"],
-                    epsilon=coefficients["epsilon"],
-                    grad=grad,
-                    use_locking=self._use_locking,
-                )
-        else:
-            raise Exception("Optimizer is not Defined. Use adam or sgd.")
+
+            vhat = self.get_slot(var, "vhat")
+            return gen_training_ops.ResourceApplyAdamWithAmsgrad(
+                var=var.handle,
+                m=m.handle,
+                v=v.handle,
+                vhat=vhat.handle,
+                beta1_power=coefficients["beta_1_power"],
+                beta2_power=coefficients["beta_2_power"],
+                lr=coefficients["lr_t"],
+                beta1=coefficients["beta_1_t"],
+                beta2=coefficients["beta_2_t"],
+                epsilon=coefficients["epsilon"],
+                grad=grad,
+                use_locking=self._use_locking,
+            )
+
+        raise Exception("Optimizer is not Defined. Use adam or sgd.")
 
     def _resource_apply_sparse(self, grad, var, indices, apply_state=None):
         var_device, var_dtype = var.device, var.dtype.base_dtype
@@ -184,7 +186,7 @@ class SWATS_ADAM(optimizer_v2.OptimizerV2):
                 use_nesterov=self.nesterov,
             )
 
-        elif self.currentOptimizer == "adam":
+        if self.currentOptimizer == "adam":
             m = self.get_slot(var, "m")
             m_scaled_g_values = grad * coefficients["one_minus_beta_1_t"]
             m_t = state_ops.assign(m, m * coefficients["beta_1_t"], use_locking=self._use_locking)
@@ -203,21 +205,21 @@ class SWATS_ADAM(optimizer_v2.OptimizerV2):
                     var, coefficients["lr"] * m_t / (v_sqrt + coefficients["epsilon"]), use_locking=self._use_locking
                 )
                 return control_flow_ops.group(*[var_update, m_t, v_t])
-            else:
-                v_hat = self.get_slot(var, "vhat")
-                v_hat_t = math_ops.maximum(v_hat, v_t)
-                with ops.control_dependencies([v_hat_t]):
-                    v_hat_t = state_ops.assign(v_hat, v_hat_t, use_locking=self._use_locking)
-                v_hat_sqrt = math_ops.sqrt(v_hat_t)
-                var_update = state_ops.assign_sub(
-                    var, oefficients["lr"] * m_t / (v_hat_sqrt + coefficients["epsilon"]), use_locking=self._use_locking
-                )
-                return control_flow_ops.group(*[var_update, m_t, v_t, v_hat_t])
-        else:
-            raise Exception("Optimizer is not Defined. Use adam or sgd.")
+
+            v_hat = self.get_slot(var, "vhat")
+            v_hat_t = math_ops.maximum(v_hat, v_t)
+            with ops.control_dependencies([v_hat_t]):
+                v_hat_t = state_ops.assign(v_hat, v_hat_t, use_locking=self._use_locking)
+            v_hat_sqrt = math_ops.sqrt(v_hat_t)
+            var_update = state_ops.assign_sub(
+                var, coefficients["lr"] * m_t / (v_hat_sqrt + coefficients["epsilon"]), use_locking=self._use_locking
+            )
+            return control_flow_ops.group(*[var_update, m_t, v_t, v_hat_t])
+
+        raise Exception("Optimizer is not Defined. Use adam or sgd.")
 
     def get_config(self) -> Dict[str, Any]:
-        config = super(SWATS_ADAM, self).get_config()
+        config = super(SwatsAdam, self).get_config()
         config.update(
             {
                 "learning_rate": self._serialize_hyperparameter("learning_rate"),
@@ -234,7 +236,7 @@ class SWATS_ADAM(optimizer_v2.OptimizerV2):
         return config
 
 
-class SWATS_NADAM(optimizer_v2.OptimizerV2):
+class SwatsNadam(optimizer_v2.OptimizerV2):
     _HAS_AGGREGATE_GRAD = True
 
     def __init__(
@@ -245,10 +247,10 @@ class SWATS_NADAM(optimizer_v2.OptimizerV2):
         epsilon: float = 1e-7,
         momentum: float = 0.0,
         nesterov: bool = False,
-        name: str = "SWATS_NADAM",
+        name: str = "SwatsNadam",
         **kwargs: Any,
     ) -> None:
-        super(SWATS_NADAM, self).__init__(name, **kwargs)
+        super(SwatsNadam, self).__init__(name, **kwargs)
         self._set_hyper("learning_rate", kwargs.get("lr", learning_rate))
         self._set_hyper("decay", self._initial_decay)
         self._set_hyper("beta_1", beta_1)
@@ -290,7 +292,7 @@ class SWATS_NADAM(optimizer_v2.OptimizerV2):
                 self.add_slot(var, "momentum")
 
     def _prepare_local(self, var_device, var_dtype: tf.DType, apply_state) -> None:
-        super(SWATS_NADAM, self)._prepare_local(var_device, var_dtype, apply_state)
+        super(SwatsNadam, self)._prepare_local(var_device, var_dtype, apply_state)
 
         # From Nadam Optimizer!
         lr_t = array_ops.identity(self._get_hyper("learning_rate", var_dtype))
@@ -330,7 +332,7 @@ class SWATS_NADAM(optimizer_v2.OptimizerV2):
     def _prepare(self, var_list: List[tf.Variable]):
         # Get the value of the momentum cache before starting to apply gradients.
         self._m_cache_read = array_ops.identity(self._m_cache)
-        return super(SWATS_NADAM, self)._prepare(var_list)
+        return super(SwatsNadam, self)._prepare(var_list)
 
     def _resource_apply_dense(self, grad, var, apply_state=None):
         var_device, var_dtype = var.device, var.dtype.base_dtype
@@ -351,12 +353,11 @@ class SWATS_NADAM(optimizer_v2.OptimizerV2):
                     use_locking=self._use_locking,
                     use_nesterov=self.nesterov,
                 )
-            else:
-                return gen_training_ops.ResourceApplyGradientDescent(
-                    var=var.handle, alpha=coefficients["lr_t"], delta=grad, use_locking=self._use_locking
-                )
+            return gen_training_ops.ResourceApplyGradientDescent(
+                var=var.handle, alpha=coefficients["lr_t"], delta=grad, use_locking=self._use_locking
+            )
         # Nadam Optimizer!
-        elif self.currentOptimizer == "nadam":
+        if self.currentOptimizer == "nadam":
             m = self.get_slot(var, "m")
             v = self.get_slot(var, "v")
             g_prime = grad / coefficients["one_minus_m_schedule_new"]
@@ -369,8 +370,8 @@ class SWATS_NADAM(optimizer_v2.OptimizerV2):
             m_t_bar = coefficients["one_minus_m_t"] * g_prime + coefficients["m_t_1"] * m_t_prime
             var_t = var - coefficients["lr_t"] * m_t_bar / (math_ops.sqrt(v_t_prime) + coefficients["epsilon"])
             return state_ops.assign(var, var_t, use_locking=self._use_locking).op
-        else:
-            raise Exception("Optimizer is not Defined. Use nadam or sgd.")
+
+        raise Exception("Optimizer is not Defined. Use nadam or sgd.")
 
     def _resource_apply_sparse(self, grad, var, indices, apply_state=None):
         var_device, var_dtype = var.device, var.dtype.base_dtype
@@ -392,7 +393,7 @@ class SWATS_NADAM(optimizer_v2.OptimizerV2):
                 use_nesterov=self.nesterov,
             )
         # Nadam Part
-        elif self.currentOptimizer == "nadam":
+        if self.currentOptimizer == "nadam":
             m = self.get_slot(var, "m")
             v = self.get_slot(var, "v")
 
@@ -422,11 +423,11 @@ class SWATS_NADAM(optimizer_v2.OptimizerV2):
                 var, indices, coefficients["neg_lr_t"] * m_t_bar / v_prime_sqrt_plus_eps
             )
             return control_flow_ops.group(*[var_update, m_t_bar, v_t])
-        else:
-            raise Exception("Optimizer is not Defined. Use nadam or sgd.")
+
+        raise Exception("Optimizer is not Defined. Use nadam or sgd.")
 
     def get_config(self) -> Dict[str, Any]:
-        config = super(SWATS_NADAM, self).get_config()
+        config = super(SwatsNadam, self).get_config()
         config.update(
             {
                 "learning_rate": self._serialize_hyperparameter("learning_rate"),
