@@ -2,7 +2,7 @@ import tensorflow as tf
 from DeepSaki.initializers.he_alpha import HeAlphaUniform
 from DeepSaki.layers.layer_helper import PaddingType
 from DeepSaki.layers.sub_model_composites import Encoder, Decoder,Bottleneck
-from DeepSaki.layers.layer_composites import Conv2DBlock, DenseBlock, ScalarGatedSelfAttention
+from DeepSaki.layers.layer_composites import Conv2DBlock, DenseBlock
 
 from typing import Tuple, Optional
 

@@ -206,6 +206,21 @@ class Encoder(tf.keras.layers.Layer):
                 )
 
     def call(self, inputs: tf.Tensor) -> Union[tf.Tensor, Tuple[tf.Tensor, tf.Tensor]]:
+        """Calls the `Encoder` layer.
+
+        Args:
+            inputs (tf.Tensor): Input tensor of shape (batch, height, width, channel)
+
+        Raises:
+            ValueError: if layer has not been build by calling build() on to layer.
+
+        Returns:
+            If `output_skips=False` only the final output of the Encoder is returned as a tensor of shape
+                (`batch`, `height/2**number_of_levels`, `width/2**number_of_levels`,
+                `max(channel*2**number_of_levels, limit_filters)`. If `output_skips=True` additionally returns a tensor
+                of tensor (one for each level of the encoder) of shape (`batch`, `height/2**level`, `width/2**level`,
+                `max(channel*2**level, limit_filters)`.
+        """
         if not self.built:
             raise ValueError("This model has not yet been built.")
 
@@ -472,8 +487,8 @@ class Decoder(tf.keras.layers.Layer):
             upsampling (str, optional): Describes the upsampling method used. Defaults to "2D_upsample_and_conv".
             filters (int, optional): Base size of filters the is doubled with every level of the decoder.
                 Defaults to 64.
-            Limits the number of filters, which is doubled with every downsampling block.
-            Defaults to 512.
+            limit_filters (int, optional): Limits the number of filters, which is doubled with every downsampling block.
+                Defaults to 512.
             use_residual_Conv2DBlock (bool, optional):Adds a residual connection in parallel to the `Conv2DBlock`.
                 Defaults to False.
             kernels (int, optional): Size of the convolutions kernels. Defaults to 3.
@@ -542,7 +557,6 @@ class Decoder(tf.keras.layers.Layer):
 
         self.decoderBlocks = []
         self.upSampleBlocks = []
-        self.dropouts = []
 
         if self.use_self_attention:
             self.SA = ScalarGatedSelfAttention(
@@ -604,7 +618,6 @@ class Decoder(tf.keras.layers.Layer):
                     UpSampleBlock(
                         kernels=self.kernels,
                         upsampling=self.upsampling,
-                        split_kernels=self.split_kernels,
                         activation=self.activation,
                         use_spec_norm=self.use_spec_norm,
                         use_bias=self.use_bias,

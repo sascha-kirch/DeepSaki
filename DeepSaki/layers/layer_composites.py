@@ -689,51 +689,51 @@ class ResidualBlock(tf.keras.layers.Layer):
         # for each block, add several con
         self.blocks = []
         for _ in range(number_of_blocks):
-            cardinals = []
-            for _ in range(residual_cardinality):
-                cardinals.append(
-                    [
-                        Conv2DBlock(
-                            filters=self.intermediateFilters,
-                            use_residual_Conv2DBlock=False,
-                            kernels=1,
-                            split_kernels=False,
-                            number_of_convs=1,
-                            activation=activation,
-                            use_spec_norm=use_spec_norm,
-                            use_bias=use_bias,
-                            padding=padding,
-                            kernel_initializer=self.kernel_initializer,
-                            gamma_initializer=self.gamma_initializer,
-                        ),
-                        Conv2DBlock(
-                            filters=self.intermediateFilters,
-                            use_residual_Conv2DBlock=False,
-                            kernels=kernels,
-                            split_kernels=False,
-                            number_of_convs=1,
-                            activation=activation,
-                            padding=PaddingType.NONE,
-                            use_spec_norm=use_spec_norm,
-                            use_bias=use_bias,
-                            kernel_initializer=self.kernel_initializer,
-                            gamma_initializer=self.gamma_initializer,
-                        ),
-                        Conv2DBlock(
-                            filters=filters,
-                            use_residual_Conv2DBlock=False,
-                            kernels=1,
-                            split_kernels=False,
-                            number_of_convs=1,
-                            activation=activation,
-                            use_spec_norm=use_spec_norm,
-                            use_bias=use_bias,
-                            padding=padding,
-                            kernel_initializer=self.kernel_initializer,
-                            gamma_initializer=self.gamma_initializer,
-                        ),
-                    ]
-                )
+            cardinals = [
+                [
+                    Conv2DBlock(
+                        filters=self.intermediateFilters,
+                        use_residual_Conv2DBlock=False,
+                        kernels=1,
+                        split_kernels=False,
+                        number_of_convs=1,
+                        activation=activation,
+                        use_spec_norm=use_spec_norm,
+                        use_bias=use_bias,
+                        padding=padding,
+                        kernel_initializer=self.kernel_initializer,
+                        gamma_initializer=self.gamma_initializer,
+                    ),
+                    Conv2DBlock(
+                        filters=self.intermediateFilters,
+                        use_residual_Conv2DBlock=False,
+                        kernels=kernels,
+                        split_kernels=False,
+                        number_of_convs=1,
+                        activation=activation,
+                        padding=PaddingType.NONE,
+                        use_spec_norm=use_spec_norm,
+                        use_bias=use_bias,
+                        kernel_initializer=self.kernel_initializer,
+                        gamma_initializer=self.gamma_initializer,
+                    ),
+                    Conv2DBlock(
+                        filters=filters,
+                        use_residual_Conv2DBlock=False,
+                        kernels=1,
+                        split_kernels=False,
+                        number_of_convs=1,
+                        activation=activation,
+                        use_spec_norm=use_spec_norm,
+                        use_bias=use_bias,
+                        padding=padding,
+                        kernel_initializer=self.kernel_initializer,
+                        gamma_initializer=self.gamma_initializer,
+                    ),
+                ]
+                for _ in range(residual_cardinality)
+            ]
+
             self.blocks.append(cardinals)
 
         self.dropout = dropout_func(filters, dropout_rate)

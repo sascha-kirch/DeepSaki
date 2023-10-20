@@ -69,7 +69,8 @@ def get_initializer(initializer: InitializerFunc, seed: Optional[int] = None) ->
         InitializerFunc.HE_ALPHA_UNIFORM: HeAlphaUniform(seed=seed),
     }
 
-    assert initializer in valid_options, f"Undefined initializer provided: {initializer}"
+    if initializer not in valid_options:
+        raise ValueError(f"Undefined initializer provided: {initializer}")
 
     return valid_options.get(initializer)
 
@@ -81,7 +82,7 @@ def pad_func(
 
     Args:
         pad_values (Tuple[int,int], optional): Size of the padding values. Defaults to (1, 1).
-        padding_type (PaddingType, optional): [_description_]. Defaults to PaddingType.ZERO.
+        padding_type (PaddingType, optional): Padding Type. Defaults to PaddingType.ZERO.
 
     Returns:
         Instance of a padding layer object.
@@ -90,9 +91,11 @@ def pad_func(
         PaddingType.REFLECTION: ReflectionPadding2D(pad_values),
         PaddingType.ZERO: tf.keras.layers.ZeroPadding2D(pad_values),
     }
-    assert (
-        padding_type in valid_options
-    ), f"Undefined padding type provided: '{padding_type}'. Valid options are: '{valid_options.keys()}'"
+    if padding_type not in valid_options:
+        raise ValueError(
+            f"Undefined padding type provided: '{padding_type}'. Valid options are: '{valid_options.keys()}'"
+        )
+
     return valid_options.get(padding_type)
 
 

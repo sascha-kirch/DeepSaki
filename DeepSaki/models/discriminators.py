@@ -6,7 +6,7 @@ from DeepSaki.layers.sub_model_composites import Encoder, Decoder,Bottleneck
 from DeepSaki.layers.layer_composites import Conv2DBlock, DenseBlock, ScalarGatedSelfAttention
 from DeepSaki.layers.pooling import GlobalSumPooling2D
 
-from typing import Tuple
+from typing import Tuple, Optional
 
 class LayoutContentDiscriminator(tf.keras.Model):
   """Discriminator/critic model with two outputs to enforce disentanglement of layout and content discrimination.
@@ -248,7 +248,6 @@ class PatchDiscriminator(tf.keras.Model):
 
 class UNetDiscriminator(tf.keras.Model):
   """U-Net based discriminator for pixel-wise real/fake prediction plus additional output for global prediction.
-
 
   Usually used in a GAN framework.
 

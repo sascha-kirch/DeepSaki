@@ -3,9 +3,9 @@ from . import augmentations
 from . import constraints
 from . import initializers
 from . import layers
-from . import loss
+from . import losses
 from . import models
-from . import optimizer
+from . import optimizers
 from . import utils
 
 __version__ = "1.0.0"
@@ -18,8 +18,8 @@ __all__ = [
     "constraints",
     "initializers",
     "layers",
-    "loss",
+    "losses",
     "models",
-    "optimizer",
+    "optimizers",
     "utils",
 ]

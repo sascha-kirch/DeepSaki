@@ -18,11 +18,12 @@ def _random_boundingbox(height: int, width: int) -> Tuple[int, int, int, int]:
         x value bottom-right corner.
         y value bottom-right corner.
     """
-    r = np.sqrt(1.0 - np.random.beta(1, 1))
+    random_generator = np.random.default_rng()
+    r = np.sqrt(1.0 - random_generator.beta(1, 1))
     w = np.floor(width * r)
     h = np.floor(height * r)
-    x = np.random.randint(width)
-    y = np.random.randint(height)
+    x = random_generator.integers(width)
+    y = random_generator.integers(height)
 
     x1 = int(np.clip(x - w // 2, 0, width))
     y1 = int(np.clip(y - h // 2, 0, height))

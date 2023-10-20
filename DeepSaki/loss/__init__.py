@@ -1,2 +1,0 @@
-from DeepSaki.loss.image_based_losses import PixelDistanceLoss
-from DeepSaki.loss.image_based_losses import StructuralSimilarityLoss
