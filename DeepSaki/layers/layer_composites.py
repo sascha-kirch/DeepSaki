@@ -231,6 +231,20 @@ class Conv2DBlock(tf.keras.layers.Layer):
                 self.residual_conv = tfa.layers.SpectralNormalization(self.residual_conv)
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """Calls the `Conv2DBlock` layer.
+
+        Args:
+            inputs (tf.Tensor): Tensor of shape (batch, height, width, channel)
+
+        Raises:
+            ValueError: If layer has not been built by calling build() on to layer.
+
+        Returns:
+            Tensor of shape (batch, `H`, `W`, `filters`). The values for `H`, `W`, `C` depend on the stride as well on
+            the padding. If padding is applied in the stride is (1,1), the output shape matches the input shape. If for
+            example the stride is(2,2) the output shape would be (batch, `height/(2*number_of_convs)`,
+            `width/(2*number_of_convs)`, `filters`).
+        """
         if not self.built:
             raise ValueError("This model has not yet been built.")
         x = inputs

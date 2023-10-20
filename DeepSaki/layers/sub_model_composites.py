@@ -212,14 +212,14 @@ class Encoder(tf.keras.layers.Layer):
             inputs (tf.Tensor): Input tensor of shape (batch, height, width, channel)
 
         Raises:
-            ValueError: if layer has not been build by calling build() on to layer.
+            ValueError: If layer has not been built by calling build() on to layer.
 
         Returns:
             If `output_skips=False` only the final output of the Encoder is returned as a tensor of shape
                 (`batch`, `height/2**number_of_levels`, `width/2**number_of_levels`,
-                `max(channel*2**number_of_levels, limit_filters)`. If `output_skips=True` additionally returns a tensor
+                `min(channel*2**number_of_levels, limit_filters)`. If `output_skips=True` additionally returns a tensor
                 of tensor (one for each level of the encoder) of shape (`batch`, `height/2**level`, `width/2**level`,
-                `max(channel*2**level, limit_filters)`.
+                `min(channel*2**level, limit_filters)`.
         """
         if not self.built:
             raise ValueError("This model has not yet been built.")
@@ -405,6 +405,17 @@ class Bottleneck(tf.keras.layers.Layer):
         self.dropout = dropout_func(self.channel_list[-1], self.dropout_rate)
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """Calls the `Bottleneck` layer.
+
+        Args:
+            inputs (tf.Tensor): Input tensor of shape (batch, height, width, channel)
+
+        Raises:
+            ValueError: If layer has not been built by calling build() on to layer.
+
+        Returns:
+            Tensor of shape (batch, height, width, channel)
+        """
         if not self.built:
             raise ValueError("This model has not yet been built.")
         x = inputs
@@ -627,7 +638,21 @@ class Decoder(tf.keras.layers.Layer):
                     )
                 )
 
-    def call(self, inputs: tf.Tensor | Tuple[tf.Tensor, tf.Tensor]) -> tf.Tensor:
+    def call(self, inputs: Union[tf.Tensor , Tuple[tf.Tensor, tf.Tensor]]) -> tf.Tensor:
+        """Calls the `Decoder` layer.
+
+        Args:
+            inputs (Union[tf.Tensor , Tuple[tf.Tensor, tf.Tensor]]): If `enable_skip_connections_input=False` only
+                inputs a tensor of shape (batch, height, width, min(channel*2**level, limit_filters)). If
+                `enable_skip_connections_input=True`, additonally at every level of the decoder, skip connections from
+                an encoder can be inserted.
+
+        Raises:
+            ValueError: If layer has not been built by calling build() on to layer.
+
+        Returns:
+            tf.Tensor: Tensor of shape (`batch`, `height*2**number_of_levels`, `width*2**number_of_levels`,`filters`).
+        """
         if not self.built:
             raise ValueError("This model has not yet been built.")
         skip_connections = None
