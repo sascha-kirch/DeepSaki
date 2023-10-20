@@ -372,28 +372,33 @@ class FourierFilter2D(tf.keras.layers.Layer):
         )
         return config
 
-
 class FFT2D(tf.keras.layers.Layer):
-    """
-    Calculates the 2D descrete fourier transform over the 2 innermost channels (height, width) over a 4 channel input (batch, height, width, channel)
-    args:
-    - is_channel_first: True or False. If True, input shape is assumed to be [batch,channel,height,width]. If False, input shape is assumed to be [batch,height,width,channel]
-    - applyRealFFT: True or False. If True, rfft2D is applied, which assumes real valued inputs and halves the width of the output. If False, fft2D is applied, which assumes complex input.
-    - shiftFFT: True or False. If true, low frequency componentes are centered.
-    - **kwargs: keyword arguments passed to the parent class tf.keras.layers.Layer.
+    """Calculates the 2D descrete fourier transform over the 2 innermost channels.
+
+    For a 4D input of shape (batch, height, width, channel), the 2DFFT would be calculated over (height, width)
     """
 
     def __init__(
         self,
         is_channel_first: bool = False,
-        applyRealFFT: bool = False,
-        shiftFFT: bool = True,
+        apply_real_fft: bool = False,
+        shift_fft: bool = True,
         **kwargs: Any,
     ) -> None:
+        """Initializes the `FFT2D` layer.
+
+        Args:
+            is_channel_first (bool, optional): Set true if input shape is (b,c,h,w) and false if input shape is
+                (b,h,w,c). Defaults to `False`.
+            apply_real_fft (bool, optional): If True, rfft2D is applied, which assumes real valued inputs and halves the
+                width of the output. If False, fft2D is applied, which assumes complex input. Defaults to False.
+            shift_fft (bool, optional): If true, low frequency componentes are centered. Defaults to True.
+            kwargs (Any): keyword arguments passed to the parent class tf.keras.layers.Layer.
+        """
         super(FFT2D, self).__init__(**kwargs)
         self.is_channel_first = is_channel_first
-        self.applyRealFFT = applyRealFFT
-        self.shiftFFT = shiftFFT
+        self.apply_real_fft = apply_real_fft
+        self.shift_fft = shift_fft
         self.policy_compute_dtype = tf.keras.mixed_precision.global_policy().compute_dtype
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
@@ -401,15 +406,15 @@ class FFT2D(tf.keras.layers.Layer):
         if not self.is_channel_first:
             inputs = tf.einsum("bhwc->bchw", inputs)
 
-        if self.applyRealFFT:
+        if self.apply_real_fft:
             x = tf.signal.rfft2d(inputs)
-            if self.shiftFFT:
+            if self.shift_fft:
                 x = tf.signal.fftshift(x, axes=[-2])
         else:
             imag = tf.zeros_like(inputs)
             inputs = tf.complex(inputs, imag)  # fft2d requires complex inputs -> create complex with 0 imaginary
             x = tf.signal.fft2d(inputs)
-            if self.shiftFFT:
+            if self.shift_fft:
                 x = tf.signal.fftshift(x)
 
         if not self.is_channel_first:  # reverse the channel configuration to its initial config
@@ -426,8 +431,8 @@ class FFT2D(tf.keras.layers.Layer):
         config.update(
             {
                 "is_channel_first": self.is_channel_first,
-                "applyRealFFT": self.applyRealFFT,
-                "shiftFFT": self.shiftFFT,
+                "apply_real_fft": self.apply_real_fft,
+                "shift_fft": self.shift_fft,
                 "policy_compute_dtype": self.policy_compute_dtype,
             }
         )
@@ -435,32 +440,41 @@ class FFT2D(tf.keras.layers.Layer):
 
 
 class FFT3D(tf.keras.layers.Layer):
-    """
-    Calculates the 3D descrete fourier transform over the 3 innermost channels (height, width, channel) over a 4 channel input (batch, height, width, channel)
-    args:
-    - applyRealFFT: True or False. If True, rfft3D is applied, which assumes real valued inputs and halves the width of the output. If False, fft3D is applied, which assumes complex input.
-    - shiftFFT: True or False. If true, low frequency componentes are centered.
-    - **kwargs: keyword arguments passed to the parent class tf.keras.layers.Layer.
+    """Calculates the 3D descrete fourier transform over the 3 innermost channels.
+
+    For a 4D input like a batch of images of shape (batch, height, width, channel), the 3DFFT would be calculated over
+    (height, width).
+    For a 5D input, like a batch of videos of shape (batch, frame, height, width, channel), the 3DFFT would be
+    calculated over (frame, height, width).
+
     """
 
-    def __init__(self, applyRealFFT: bool = False, shiftFFT: bool = True, **kwargs: Any) -> None:
+    def __init__(self, apply_real_fft: bool = False, shift_fft: bool = True, **kwargs: Any) -> None:
+        """Initializes the `FFT3D` layer.
+
+        Args:
+            apply_real_fft (bool, optional): If True, rfft3D is applied, which assumes real valued inputs and halves the
+                width of the output. If False, fft3D is applied, which assumes complex input. Defaults to False.
+            shift_fft (bool, optional): If true, low frequency componentes are centered. Defaults to True.
+            kwargs (Any): keyword arguments passed to the parent class tf.keras.layers.Layer.
+        """
         super(FFT3D, self).__init__(**kwargs)
-        self.applyRealFFT = applyRealFFT
-        self.shiftFFT = shiftFFT
+        self.apply_real_fft = apply_real_fft
+        self.shift_fft = shift_fft
         self.policy_compute_dtype = tf.keras.mixed_precision.global_policy().compute_dtype
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         inputs = tf.cast(inputs, tf.float32)  # mixed precision not supported with float16
 
-        if self.applyRealFFT:
+        if self.apply_real_fft:
             x = tf.signal.rfft3d(inputs)
-            if self.shiftFFT:
+            if self.shift_fft:
                 x = tf.signal.fftshift(x, axes=[-2])
         else:
             imag = tf.zeros_like(inputs)
             inputs = tf.complex(inputs, imag)  # fft3d requires complex inputs -> create complex with 0 imaginary
             x = tf.signal.fft3d(inputs)
-            if self.shiftFFT:
+            if self.shift_fft:
                 x = tf.signal.fftshift(x)
 
         return tf.cast(tf.math.real(x), self.policy_compute_dtype)
@@ -474,48 +488,49 @@ class FFT3D(tf.keras.layers.Layer):
         config = super(FFT3D, self).get_config()
         config.update(
             {
-                "applyRealFFT": self.applyRealFFT,
-                "shiftFFT": self.shiftFFT,
+                "apply_real_fft": self.apply_real_fft,
+                "shift_fft": self.shift_fft,
                 "policy_compute_dtype": self.policy_compute_dtype,
             }
         )
         return config
 
-
 class iFFT2D(tf.keras.layers.Layer):
-    """
-    Calculates the 2D inverse FFT and reverses the center shift operation
-    args:
-    - is_channel_first: True or False. If True, input shape is assumed to be [batch,channel,height,width]. If False, input shape is assumed to be [batch,height,width,channel]
-    - applyRealFFT: True or False. If True, rfft2D is applied, which assumes real valued inputs and halves the width of the output. If False, fft2D is applied, which assumes complex input.
-    - shiftFFT: True or False. If True, shift operation of fourier transform is reversed before calculating the inverse fourier transformation
-    - **kwargs: keyword arguments passed to the parent class tf.keras.layers.Layer.
-
-    """
+    """Calculates the 2D inverse FFT."""
 
     def __init__(
         self,
         is_channel_first: bool = False,
-        applyRealFFT: bool = False,
-        shiftFFT: bool = True,
+        apply_real_fft: bool = False,
+        shift_fft: bool = True,
         **kwargs: Any,
     ) -> None:
+        """Initializes the `iFFT2D` layer.
+
+        Args:
+            is_channel_first (bool, optional): Set true if input shape is (b,c,h,w) and false if input shape is
+                (b,h,w,c). Defaults to `False`.
+            apply_real_fft (bool, optional): If True, rfft2D is applied, which assumes real valued inputs and halves the
+                width of the output. If False, fft2D is applied, which assumes complex input. Defaults to False.
+            shift_fft (bool, optional): If true, low frequency componentes are centered. Defaults to True.
+            kwargs (Any): keyword arguments passed to the parent class tf.keras.layers.Layer.
+        """
         super(iFFT2D, self).__init__(**kwargs)
         self.is_channel_first = is_channel_first
-        self.applyRealFFT = applyRealFFT
-        self.shiftFFT = shiftFFT
+        self.apply_real_fft = apply_real_fft
+        self.shift_fft = shift_fft
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         if not self.is_channel_first:
             inputs = tf.einsum("bhwc->bchw", inputs)
         x = inputs
 
-        if self.applyRealFFT:
-            if self.shiftFFT:
+        if self.apply_real_fft:
+            if self.shift_fft:
                 x = tf.signal.ifftshift(x, axes=[-2])
             x = tf.signal.irfft2d(x)
         else:
-            if self.shiftFFT:
+            if self.shift_fft:
                 x = tf.signal.ifftshift(x)
             x = tf.signal.ifft2d(x)
 
@@ -533,6 +548,53 @@ class iFFT2D(tf.keras.layers.Layer):
         """
         config = super(iFFT2D, self).get_config()
         config.update(
-            {"is_channel_first": self.is_channel_first, "applyRealFFT": self.applyRealFFT, "shiftFFT": self.shiftFFT}
+            {"is_channel_first": self.is_channel_first, "apply_real_fft": self.apply_real_fft, "shift_fft": self.shift_fft}
+        )
+        return config
+
+class iFFT3D(tf.keras.layers.Layer):
+    """Calculates the 3D inverse FFT."""
+
+    def __init__(
+        self,
+        apply_real_fft: bool = False,
+        shift_fft: bool = True,
+        **kwargs: Any,
+    ) -> None:
+        """Initializes the `iFFT3D` layer.
+
+        Args:
+            apply_real_fft (bool, optional): If True, rfft3D is applied, which assumes real valued inputs and halves the
+                width of the output. If False, fft3D is applied, which assumes complex input. Defaults to False.
+            shift_fft (bool, optional): If true, low frequency componentes are centered. Defaults to True.
+            kwargs (Any): keyword arguments passed to the parent class tf.keras.layers.Layer.
+        """
+        super(iFFT3D, self).__init__(**kwargs)
+        self.apply_real_fft = apply_real_fft
+        self.shift_fft = shift_fft
+
+    def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        x = inputs
+
+        if self.apply_real_fft:
+            if self.shift_fft:
+                x = tf.signal.ifftshift(x, axes=[-2])
+            x = tf.signal.irfft3d(x)
+        else:
+            if self.shift_fft:
+                x = tf.signal.ifftshift(x)
+            x = tf.signal.ifft3d(x)
+
+        return tf.math.real(x)
+
+    def get_config(self) -> Dict[str, Any]:
+        """Serialization of the object.
+
+        Returns:
+            Dictionary with the class' variable names as keys.
+        """
+        config = super(iFFT3D, self).get_config()
+        config.update(
+            {"apply_real_fft": self.apply_real_fft, "shift_fft": self.shift_fft}
         )
         return config
