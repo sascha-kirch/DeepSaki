@@ -56,7 +56,7 @@ class TestComplexActivation:
         ],
     )
     def test_dtype(self, input):
-        activation = ComplexActivation()
+        activation = ComplexActivation(tf.keras.layers.ReLU())
         output = activation(input)
         assert output.dtype in (tf.dtypes.complex64, tf.dtypes.complex128)
 
@@ -78,6 +78,6 @@ class TestComplexActivation:
         ],
     )
     def test_input_shape_equals_output_shape(self, input):
-        activation = ComplexActivation()
+        activation = ComplexActivation(tf.keras.layers.ReLU())
         output = activation(input)
         assert output.shape == input.shape
