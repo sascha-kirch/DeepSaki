@@ -638,7 +638,7 @@ class Decoder(tf.keras.layers.Layer):
                     )
                 )
 
-    def call(self, inputs: Union[tf.Tensor , Tuple[tf.Tensor, tf.Tensor]]) -> tf.Tensor:
+    def call(self, inputs: Union[tf.Tensor, Tuple[tf.Tensor, tf.Tensor]]) -> tf.Tensor:
         """Calls the `Decoder` layer.
 
         Args:

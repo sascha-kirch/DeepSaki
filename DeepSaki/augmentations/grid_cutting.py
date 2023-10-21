@@ -48,8 +48,9 @@ def _get_mask(shape: Tuple[int, int, int, int]) -> tf.Tensor:
         mask[element, x1:x2, y1:y2, :] = 0
     return tf.convert_to_tensor(mask, dtype=tf.float32)
 
-def _invert_mask(mask:tf.Tensor)->tf.Tensor:
-    return 1-mask
+
+def _invert_mask(mask: tf.Tensor) -> tf.Tensor:
+    return 1 - mask
 
 
 def cut_mix(

@@ -1,9 +1,101 @@
 """Loss functions designed for image like data of the shape (`batch`, `height`, `width`, `channels`)."""
+from abc import ABC
+from abc import abstractmethod
+from typing import Callable
+
 import numpy as np
 import tensorflow as tf
 
-class PixelDistanceLoss(tf.keras.losses.Loss):
-    """calculates a pixel distance loss (per pixel loss) of two images of the shape (batch, height, width, channels)."""
+class ImageBasedLoss(tf.keras.losses.Loss, ABC):
+    """Abstract base class for image based losses.
+
+    Sub-classes must override `_error_func(self, tensor1: tf.Tensor, tensor2: tf.Tensor) -> tf.Tensor`, the actuall
+    loss function that callculates the loss between two tensors.
+    """
+
+    def __init__(
+        self,
+        global_batch_size: int,
+        calculation_type: str = "per_image",
+        normalize_depth_channel: bool = False,
+        loss_reduction: tf.keras.losses.Reduction = tf.keras.losses.Reduction.AUTO,
+    ) -> None:
+        """Initializes the abstract base class `ImageBasedLoss`.
+
+        Args:
+            global_batch_size (int): Batch size considering all workers running in parallel in a data parallel setup
+            calculation_type (str, optional): Determines how the loss is calculated: ["per_image" | "per_channel"].
+                Defaults to "per_image".
+            normalize_depth_channel (bool, optional): For RGBD images, the weight of depth is increased by multiplying
+                the depth by the number of color channels. Defaults to False.
+            loss_reduction (tf.keras.losses.Reduction, optional): Determines how the loss is reduced. Defaults to
+                tf.keras.losses.Reduction.AUTO.
+
+        Raises:
+            ValueError: if `calculation_type` is not a valid option.
+        """
+        super(ImageBasedLoss, self).__init__(reduction=loss_reduction)
+
+        match calculation_type:
+            case "per_channel":
+                self.loss_calc_func = self._calc_loss_per_channel
+            case "per_image":
+                self.loss_calc_func = self._calc_loss_per_image
+            case _:
+                raise ValueError(f"Pixel distance type '{calculation_type}' is not defined.")
+
+        self.global_batch_size = global_batch_size
+        self.normalize_depth_channel = normalize_depth_channel
+
+    @abstractmethod
+    def _error_func(self, tensor1: tf.Tensor, tensor2: tf.Tensor) -> tf.Tensor:
+        pass
+
+    def _calc_loss_per_channel(
+        self,
+        img1: tf.Tensor,
+        img2: tf.Tensor,
+        error_func: Callable[[tf.Tensor, tf.Tensor], tf.Tensor],
+    ) -> tf.Tensor:
+        # initialize all weights with 1
+        channel_weight = np.ones(img1.shape[-1])
+        loss = 0.0
+        if self.normalize_depth_channel:
+            # set weight of the depth channel according to the number of color channels: e.g. for RGB = 3
+            channel_weight[-1] = len(channel_weight) - 1
+        for i in range(img1.shape[-1]):
+            loss += channel_weight[i] * error_func(img1[:, :, :, i], img2[:, :, :, i]) * (1.0 / self.global_batch_size)
+        return loss
+
+    def _calc_loss_per_image(
+        self,
+        img1: tf.Tensor,
+        img2: tf.Tensor,
+        error_func: Callable[[tf.Tensor, tf.Tensor], tf.Tensor],
+    ) -> tf.Tensor:
+        return error_func(img1, img2) * (1.0 / self.global_batch_size)
+
+    def call(self, img1: tf.Tensor, img2: tf.Tensor) -> tf.Tensor:
+        """Calculates the image loss between `img1` and `img2` using the overriden `error_func` from the sub-class.
+
+        Args:
+            img1 (tf.Tensor): Image of shape (`batch_size`, `height`, `width`,`channel`).
+            img2 (tf.Tensor): Image of shape (`batch_size`, `height`, `width`,`channel`).
+
+        Returns:
+            Tensor containing the loss.
+        """
+        img1 = tf.cast(img1, tf.dtypes.float32)
+        img2 = tf.cast(img2, tf.dtypes.float32)
+
+        return self.loss_calc_func(img1, img2, self.error_func)
+
+
+class PixelDistanceLoss(ImageBasedLoss):
+    """Calculates a pixel distance loss (per pixel loss) of two images of the shape (batch, height, width, channels).
+
+    The distance is either a mean squared error (MSE) or a mean absolute error (MAE).
+    """
 
     def __init__(
         self,
@@ -13,7 +105,7 @@ class PixelDistanceLoss(tf.keras.losses.Loss):
         loss_type: str = "mae",
         loss_reduction: tf.keras.losses.Reduction = tf.keras.losses.Reduction.AUTO,
     ) -> None:
-        """Dunder method to initialize `PixelDistanceLoss`.
+        """Initializes the `PixelDistanceLoss`.
 
         Args:
             global_batch_size (int): Batch size considering all workers running in parallel in a data parallel setup
@@ -24,61 +116,31 @@ class PixelDistanceLoss(tf.keras.losses.Loss):
             loss_type (str, optional): Loss to apply: ["mae" | "mse"]. Defaults to "mae".
             loss_reduction (tf.keras.losses.Reduction, optional): Determines how the loss is reduced. Defaults to
                 tf.keras.losses.Reduction.AUTO.
-        """
-        super(PixelDistanceLoss, self).__init__(reduction=loss_reduction)
-        self.global_batch_size = global_batch_size
-        self.calculation_type = calculation_type
-        self.normalize_depth_channel = normalize_depth_channel
-        self.loss_type = loss_type
-
-    def call(self, img1: tf.Tensor, img2: tf.Tensor) -> tf.Tensor:
-        """Calculates the pixel distance between `img1` and `img2`.
-
-        Args:
-            img1 (tf.Tensor): Image of shape (`batch_size`, `height`, `width`,`channel`).
-            img2 (tf.Tensor): Image of shape (`batch_size`, `height`, `width`,`channel`).
 
         Raises:
-            ValueError: if `self.loss_type` is not a valid option.
-            ValueError: if `self.calculation_type` is not a valid option.
-
-        Returns:
-            Tensor containing the loss defined in `loss_type`.
+            ValueError: if `loss_type` is not a valid option.
         """
-        img1 = tf.cast(img1, tf.dtypes.float32)
-        img2 = tf.cast(img2, tf.dtypes.float32)
-        loss = 0.0
+        match loss_type:
+            case "mae":
+                self.error_func_type = tf.abs
+            case "mse":
+                self.error_func_type = tf.square
+            case _:
+                raise ValueError(f"Parameter loss_type={loss_type} is not defined. Use 'mae' or 'mse' instead.")
 
-        if self.loss_type == "mae":
-            error_func = tf.abs
-        elif self.loss_type == "mse":
-            error_func = tf.square
-        else:
-            raise ValueError(f"Parameter loss_type={self.loss_type} is not defined. Use 'mae' or 'mse' instead.")
+        super(PixelDistanceLoss, self).__init__(
+            global_batch_size=global_batch_size,
+            calculation_type=calculation_type,
+            normalize_depth_channel=normalize_depth_channel,
+            loss_reduction=loss_reduction,
+        )
 
-        if self.calculation_type == "per_channel":
-            # initialize all weights with 1
-            channel_weight = np.ones(img1.shape[-1])
-            if self.normalize_depth_channel:
-                # set weight of the depth channel according to the number of color channels: e.g. for RGB = 3
-                channel_weight[-1] = len(channel_weight) - 1
-                for i in range(img1.shape[-1]):
-                    loss += (
-                        channel_weight[i]
-                        * tf.reduce_mean(error_func(img1[:, :, :, i] - img2[:, :, :, i]))
-                        * (1.0 / self.global_batch_size)
-                    )
-
-        elif self.calculation_type == "per_image":
-            loss = tf.reduce_mean(error_func(img1 - img2)) * (1.0 / self.global_batch_size)
-
-        else:
-            raise ValueError(f"Pixel distance type '{self.calculation_type}' is not defined.")
-
-        return loss
+    # Override abstract method
+    def _error_func(self, tensor1: tf.Tensor, tensor2: tf.Tensor) -> tf.Tensor:
+        return tf.reduce_mean(self.error_func_type(tensor1 - tensor2))
 
 
-class StructuralSimilarityLoss(tf.keras.losses.Loss):
+class StructuralSimilarityLoss(ImageBasedLoss):
     r"""Calculates the structural similarity (SSIM) loss of two images of the shape (batch, height, width, channels).
 
     The structural similarity loss between two images $x$ and $y$ is defined as: $\mathcal{L}_{SSIM}=1-SSIM(x,y)$.
@@ -126,10 +188,13 @@ class StructuralSimilarityLoss(tf.keras.losses.Loss):
             loss_reduction (tf.keras.losses.Reduction, optional): Determines how the loss is reduced. Defaults to
                 tf.keras.losses.Reduction.AUTO.
         """
-        super(StructuralSimilarityLoss, self).__init__(reduction=loss_reduction)
-        self.global_batch_size = global_batch_size
-        self.calculation_type = calculation_type
-        self.normalize_depth_channel = normalize_depth_channel
+        super(StructuralSimilarityLoss, self).__init__(
+            global_batch_size=global_batch_size,
+            calculation_type=calculation_type,
+            normalize_depth_channel=normalize_depth_channel,
+            loss_reduction=loss_reduction,
+        )
+
         self.alpha = alpha
         self.beta = beta
         self.gamma = gamma
@@ -158,37 +223,8 @@ class StructuralSimilarityLoss(tf.keras.losses.Loss):
         structure = (covar + self.c3) / (sigma1 * sigma2 + self.c3)
 
         ssim = luminance**self.alpha * contrast**self.beta * structure**self.gamma
-        return (1 - ssim) * (1.0 / self.global_batch_size)
+        return 1 - ssim
 
-    def call(self, img1: tf.Tensor, img2: tf.Tensor) -> tf.Tensor:
-        """Calculates the SSIM loss between `img1` and `img2`.
-
-        Args:
-            img1 (tf.Tensor): Image of shape (`batch_size`, `height`, `width`,`channel`).
-            img2 (tf.Tensor): Image of shape (`batch_size`, `height`, `width`,`channel`).
-
-        Raises:
-            ValueError: if `self.calculation_type` is not a valid option.
-
-        Returns:
-            Tensor containing the loss value.
-        """
-        img1 = tf.cast(img1, tf.dtypes.float32)
-        img2 = tf.cast(img2, tf.dtypes.float32)
-        ssim_loss = 0.0
-
-        if self.calculation_type == "per_image":
-            ssim_loss = self._calc_ssim_loss(img1, img2)
-        elif self.calculation_type == "per_channel":
-            # initialize all weights with 1
-            channel_weight = np.ones(img1.shape[-1])
-            if self.normalize_depth_channel:
-                # set weight of the depth channel according to the number of color channels: e.g. for RGB = 3
-                channel_weight[-1] = len(channel_weight) - 1
-            # loop over all channels of the image
-            for i in range(img1.shape[-1]):
-                ssim_loss += channel_weight[i] * self._calc_ssim_loss(img1[:, :, :, i], img2[:, :, :, i])
-        else:
-            raise ValueError(f"ssim calculation type '{self.calculation_type}' is not defined")
-
-        return ssim_loss
+    # Override abstract method
+    def _error_func(self, tensor1: tf.Tensor, tensor2: tf.Tensor) -> tf.Tensor:
+        return self._calc_ssim_loss(tensor1, tensor2)

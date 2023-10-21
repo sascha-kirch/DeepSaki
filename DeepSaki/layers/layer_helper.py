@@ -48,7 +48,10 @@ class InitializerFunc(Enum):
     HE_ALPHA_UNIFORM = 8
 
 
-def get_initializer(initializer: InitializerFunc, seed: Optional[int] = None,) -> tf.keras.initializers.Initializer:
+def get_initializer(
+    initializer: InitializerFunc,
+    seed: Optional[int] = None,
+) -> tf.keras.initializers.Initializer:
     """Wrapper to return a certain initializer given a descriptive string.
 
     Args:
@@ -76,7 +79,8 @@ def get_initializer(initializer: InitializerFunc, seed: Optional[int] = None,) -
 
 
 def pad_func(
-    pad_values: Tuple[int, int] = (1, 1), padding_type: PaddingType = PaddingType.ZERO,
+    pad_values: Tuple[int, int] = (1, 1),
+    padding_type: PaddingType = PaddingType.ZERO,
 ) -> tf.keras.layers.Layer:
     """Wrapper to obtain a padding layer instance.
 
@@ -119,7 +123,10 @@ def dropout_func(filters: int, dropout_rate: float) -> tf.keras.layers.Layer:
     raise ValueError(f"provided value '{filters}'for param 'filters' is unvalid. Provide an int bigger than 0.")
 
 
-def plot_layer(layer: tf.keras.layers.Layer, input_shape: List[int],) -> None:
+def plot_layer(
+    layer: tf.keras.layers.Layer,
+    input_shape: List[int],
+) -> None:
     """Creates a model from a given layer to be able to call model.summary() and to plot a graph image.
 
     Args:

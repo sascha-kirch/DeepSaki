@@ -49,7 +49,8 @@ class TestGetMask:
         output = _get_mask(input_shape)
         assert output.dtype == expected_dtype
 
-class TestInvertMask():
+
+class TestInvertMask:
     @pytest.mark.parametrize(
         "input, expected",
         [
