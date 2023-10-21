@@ -5,7 +5,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # deactivate tensorflow warnings and i
 import tensorflow as tf
 import numpy as np
 
-from DeepSaki.augmentations.grid_cutting import _random_boundingbox, _get_mask, cut_mix, cut_out
+from DeepSaki.augmentations.grid_cutting import _random_boundingbox, _get_mask, _invert_mask, cut_mix, cut_out
 
 
 class TestRandomBoundingBox:
@@ -48,6 +48,18 @@ class TestGetMask:
     def test_get_mask_dtype(self, input_shape, expected_dtype):
         output = _get_mask(input_shape)
         assert output.dtype == expected_dtype
+
+class TestInvertMask():
+    @pytest.mark.parametrize(
+        "input, expected",
+        [
+            (tf.constant([1, 0]), tf.constant([0, 1])),
+            (tf.constant([[1, 0], [1, 0]]), tf.constant([[0, 1], [0, 1]])),
+        ],
+    )
+    def test_invert_mask(self, input, expected):
+        output = _invert_mask(input)
+        assert tf.math.reduce_all(output == expected)
 
 
 @pytest.mark.skip(reason="Not implemented yet.")
