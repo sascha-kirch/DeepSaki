@@ -33,12 +33,12 @@ def make_initializer_complex(
         Wrapper function with same function signature as a `tf.keras.initializers.Initializer` object.
     """
 
-    def complex_initializer(shape: List[int], dtype: tf.DType = tf.float64) -> tf.complex:
+    def complex_initializer(shape: List[int], dtype: tf.DType = tf.complex64) -> tf.complex:
         """Function that applies a given `initializer` to generate a complex-valued tensor for initialization.
 
         Args:
             shape (List[int]): Shape of the tensor to be initialized.
-            dtype (tf.DType, optional): dtype of the individual terms of the complex number. Defaults to `tf.float64`.
+            dtype (tf.DType, optional): dtype of the individual terms of the complex number. Defaults to `tf.complex64`.
 
         Returns:
             Complex-valued tensor with values drawn from the `initializer`, seperatly for `real` and `imaginary` part.
