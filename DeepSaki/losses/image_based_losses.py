@@ -51,6 +51,13 @@ class ImageBasedLoss(tf.keras.losses.Loss, ABC):
     def _error_func(self, tensor1: tf.Tensor, tensor2: tf.Tensor) -> tf.Tensor:
         pass
 
+    def _get_channel_weights(self, img_shape:tf.TensorShape, normalize_last_channel:bool)-> np.ndarray:
+        channel_weight = np.ones(img_shape[-1])
+        if normalize_last_channel:
+            # set weight of the depth channel according to the number of color channels: e.g. for RGB = 3
+            channel_weight[-1] = len(channel_weight) - 1
+        return channel_weight
+
     def _calc_loss_per_channel(
         self,
         img1: tf.Tensor,
@@ -58,11 +65,8 @@ class ImageBasedLoss(tf.keras.losses.Loss, ABC):
         error_func: Callable[[tf.Tensor, tf.Tensor], tf.Tensor],
     ) -> tf.Tensor:
         # initialize all weights with 1
-        channel_weight = np.ones(img1.shape[-1])
+        channel_weight = self._get_channel_weights(img1.shape, self.normalize_depth_channel)
         loss = 0.0
-        if self.normalize_depth_channel:
-            # set weight of the depth channel according to the number of color channels: e.g. for RGB = 3
-            channel_weight[-1] = len(channel_weight) - 1
         for i in range(img1.shape[-1]):
             loss += channel_weight[i] * error_func(img1[:, :, :, i], img2[:, :, :, i]) * (1.0 / self.global_batch_size)
         return loss
@@ -88,7 +92,7 @@ class ImageBasedLoss(tf.keras.losses.Loss, ABC):
         img1 = tf.cast(img1, tf.dtypes.float32)
         img2 = tf.cast(img2, tf.dtypes.float32)
 
-        return self.loss_calc_func(img1, img2, self.error_func)
+        return self.loss_calc_func(img1, img2, self._error_func)
 
 
 class PixelDistanceLoss(ImageBasedLoss):
