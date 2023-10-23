@@ -21,8 +21,8 @@ class Conv2DSplitted(tf.keras.layers.Layer):
 
     def __init__(
         self,
-        filters: int,
-        kernels: int,
+        filters: int = 3,
+        kernels: int = 3,
         use_spec_norm: bool = False,
         strides: Tuple[int, int] = (1, 1),
         use_bias: bool = True,
@@ -31,9 +31,9 @@ class Conv2DSplitted(tf.keras.layers.Layer):
         """Initialize the `Conv2DSplitted` object.
 
         Args:
-            filters (int): Number of filters in the output feature map
-            kernels (int): Size of the convolutions' kernels, which will be translated to (kernels, 1) and (1,kernels)
-                for the first and seccond convolution respectivly.
+            filters (int, optional): Number of filters in the output feature map. Defaults to 3.
+            kernels (int, optional): Size of the convolutions' kernels, which will be translated to (kernels, 1) and
+                (1,kernels) for the first and seccond convolution respectivly. Defaults to 3.
             use_spec_norm (bool, optional): Applies spectral normalization to convolutional and dense layers. Defaults
                 to False.
             strides (Tuple[int, int], optional): Strides of the convolution layers. Defaults to (1, 1).
@@ -106,8 +106,8 @@ class Conv2DBlock(tf.keras.layers.Layer):
 
     def __init__(
         self,
-        filters: int,
-        kernels: int,
+        filters: int = 3,
+        kernels: int = 3,
         use_residual_Conv2DBlock: bool = False,
         split_kernels: bool = False,
         number_of_convs: int = 1,
@@ -125,8 +125,8 @@ class Conv2DBlock(tf.keras.layers.Layer):
         """Initializes the `Conv2DBlock` layer.
 
         Args:
-            filters (int): Number of individual filters.
-            kernels (int): Size of the convolutions kernels.
+            filters (int, optional): Number of individual filters. Defaults to 3.
+            kernels (int, optional): Size of the convolutions kernels. Defaults to 3.
             use_residual_Conv2DBlock (bool, optional): Adds a residual connection in parallel to the `Conv2DBlock`.
                 Defaults to False.
             split_kernels (bool, optional): To decrease the number of parameters, a convolution with the kernel_size
@@ -296,7 +296,6 @@ class Conv2DBlock(tf.keras.layers.Layer):
                 "padding": self.padding,
                 "apply_final_normalization": self.apply_final_normalization,
                 "use_bias": self.use_bias,
-                "pad": self.pad,
                 "kernel_initializer": self.kernel_initializer,
                 "gamma_initializer": self.gamma_initializer,
             }
@@ -630,7 +629,6 @@ class UpSampleBlock(tf.keras.layers.Layer):
         config.update(
             {
                 "kernels": self.kernels,
-                "split_kernels": self.split_kernels,
                 "activation": self.activation,
                 "use_spec_norm": self.use_spec_norm,
                 "upsampling": self.upsampling,
@@ -648,8 +646,8 @@ class ResidualBlock(tf.keras.layers.Layer):
 
     def __init__(
         self,
-        filters: int,
-        kernels: int,
+        filters: int = 3,
+        kernels: int = 3,
         activation: str = "leaky_relu",
         number_of_blocks: int = 1,
         use_spec_norm: bool = False,
@@ -663,8 +661,8 @@ class ResidualBlock(tf.keras.layers.Layer):
         """Initializes the `ResidualBlock` layer.
 
         Args:
-            filters (int): Number of individual filters.
-            kernels (int): Size of the convolutions kernels.
+            filters (int, optional): Number of individual filters. Defaults to 3.
+            kernels (int, optional): Size of the convolutions kernels. Defaults to 3.
             activation (str, optional): String literal or tensorflow activation function object to obtain activation
                 function. Defaults to "leaky_relu".
             number_of_blocks (int, optional): Number of residual subblocks. Defaults to 1.
@@ -1177,7 +1175,7 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
         """
         super(ScalarGatedSelfAttention, self).__init__()
         self.use_spec_norm = use_spec_norm
-        self.intermediateChannel = intermediate_channel
+        self.intermediate_channel = intermediate_channel
         self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
         self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
 
@@ -1189,11 +1187,11 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
         """
         super(ScalarGatedSelfAttention, self).build(input_shape)
         batch_size, height, width, num_channel = input_shape
-        if self.intermediateChannel is None:
-            self.intermediateChannel = num_channel // 8
+        if self.intermediate_channel is None:
+            self.intermediate_channel = num_channel // 8
 
         self.w_f = DenseBlock(
-            units=self.intermediateChannel,
+            units=self.intermediate_channel,
             use_spec_norm=self.use_spec_norm,
             number_of_layers=1,
             activation=None,
@@ -1203,7 +1201,7 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
             gamma_initializer=self.gamma_initializer,
         )
         self.w_g = DenseBlock(
-            units=self.intermediateChannel,
+            units=self.intermediate_channel,
             use_spec_norm=self.use_spec_norm,
             number_of_layers=1,
             activation=None,
@@ -1213,7 +1211,7 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
             gamma_initializer=self.gamma_initializer,
         )
         self.w_h = DenseBlock(
-            units=self.intermediateChannel,
+            units=self.intermediate_channel,
             use_spec_norm=self.use_spec_norm,
             number_of_layers=1,
             activation=None,
@@ -1273,7 +1271,7 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
         config.update(
             {
                 "use_spec_norm": self.use_spec_norm,
-                "intermediateChannel": self.intermediateChannel,
+                "intermediate_channel": self.intermediate_channel,
                 "gamma_initializer": self.gamma_initializer,
                 "kernel_initializer": self.kernel_initializer,
             }

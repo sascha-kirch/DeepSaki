@@ -30,7 +30,7 @@ class ReflectionPadding2D(tf.keras.layers.Layer):
             padded_tensor: Padded tensor of shape `(batch, height+2*padding, width+2*padding, channel)`.
             custom_grad: Function returning the gradients during backprop.
         """
-        padding_width, padding_height = self.padding
+        padding_height, padding_width  = self.padding
         padding_tensor = [
             [0, 0],
             [padding_height, padding_height],
@@ -52,7 +52,7 @@ class ReflectionPadding2D(tf.keras.layers.Layer):
 
         return padded_tensor, custom_grad
 
-    def compute_output_shape(self, input_shape: tf.TensorShape) -> Tuple[int, int, int, int]:
+    def compute_output_shape(self, input_shape: tf.TensorShape) -> tf.TensorShape:
         """Calculates the expected output shape after calling the layer.
 
         Assumes "channels_last" configuration.
@@ -63,12 +63,12 @@ class ReflectionPadding2D(tf.keras.layers.Layer):
         Returns:
             output_shape: expected output shape of the layer.
         """
-        return (
+        return tf.TensorShape((
             input_shape[0],
             input_shape[1] + 2 * self.padding[0],
             input_shape[2] + 2 * self.padding[1],
             input_shape[3],
-        )
+        ))
 
     def call(self, input_tensor: tf.Tensor) -> tf.Tensor:
         """Calls the `ReflectionPadding2D` layer.

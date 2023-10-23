@@ -7,20 +7,6 @@ from typing import Optional
 
 import tensorflow as tf
 
-class FrequencyFilter(Enum):
-    """`Enum` used to define valid filters for `rFFT2DFilter`.
-
-    Attributes:
-        LOW_PASS (int): Indicates that low frequency components shall be kept and high frequency components shall be
-            filtered.
-        HIGH_PASS (int): Indicates that high frequency components shall be kept and low frequency components shall be
-            filtered.
-    """
-
-    LOW_PASS = 1
-    HIGH_PASS = 2
-
-
 class GlobalSumPooling2D(tf.keras.layers.Layer):
     """Global sum pooling operation for spatial data.
 
@@ -79,157 +65,10 @@ class GlobalSumPooling2D(tf.keras.layers.Layer):
         return config
 
 
-class rFFT2DFilter(tf.keras.layers.Layer):
-    """Low or high pass filtering by truncating higher or lower frequencies in the frequency domain.
-
-    Layer input is asumed to be in spatial domain. It is transformed into the frequency domain applying a 2D real FFT.
-    Then the center-crop operation is performed and depending of the shift, either low or high frequencies are removed.
-    Afterwards, the cropped region is zero padded and then the inverse real 2D FFT is calculated to transform back into
-    the spatial domain.
-    """
-
-    def __init__(
-        self,
-        is_channel_first: bool = False,
-        filter_type: Literal[FrequencyFilter.LOW_PASS, FrequencyFilter.HIGH_PASS] = FrequencyFilter.LOW_PASS,
-        **kwargs: Any,
-    ) -> None:
-        """Initialize the `rFFT2DFilter` object.
-
-        Args:
-            is_channel_first (bool, optional): If True, input shape is assumed to be (`batch`,`channel`,`height`,`width`).
-                If False, input shape is assumed to be (`batch`,`height`,`width`,`channel`). Defaults to False.
-            filter_type (Literal[Frequency_Filter.LOW_PASS,Frequency_Filter.HIGH_PASS], optional): If
-                `Frequency_Filter.LOW_PASS`, high frequency values are truncated, if `Frequency_Filter.HIGH_PASS`, low
-                frequencies are truncated. Defaults to `Frequency_Filter.LOW_PASS`.
-            kwargs (Any): Additional key word arguments passed to the base class.
-        """
-        super(rFFT2DFilter, self).__init__(**kwargs)
-        self.is_channel_first = is_channel_first
-        self.filter_type = filter_type
-
-    def build(self, input_shape: tf.TensorShape) -> None:
-        """Build layer depending on the `input_shape` (output shape of the previous layer).
-
-        Args:
-            input_shape (tf.TensorShape): Shape of the input tensor to this layer.
-        """
-        super(rFFT2DFilter, self).build(input_shape)
-        if self.is_channel_first:
-            batch_size, inp_filter, inp_height, inp_width = input_shape
-        else:
-            batch_size, inp_height, inp_width, inp_filter = input_shape
-        self.offset_height = inp_height // 2
-        self.offset_width = 0
-        self.target_height = inp_height // 2
-        self.target_width = int(
-            inp_width / 4 + 1
-        )  # 1/4 because real spectrum has allready half width and filter only applies to positive frequencies in width
-
-    def call(self, inputs: tf.Tensor) -> tf.Tensor:
-        """Calls the `rFFT2DFilter` layer.
-
-        Args:
-            inputs (tf.Tensor): Tensor of shape (`batch`,`height`,`width`,`channel`) or
-                (`batch`,`channel`,`height`,`width`).
-
-        Raises:
-            ValueError: If Layer has not been built.
-
-        Returns:
-            Filtered tensor with shape (`batch`,`channel`,`height`,`width`).
-        """
-        if not self.built:
-            raise ValueError("This model has not yet been built.")
-
-        if not self.is_channel_first:  # layer assumes channel first due to FFT
-            inputs = tf.einsum("bhwc->bchw", inputs)
-
-        inputs_f_domain = tf.signal.rfft2d(inputs)
-
-        if self.filter_type == FrequencyFilter.LOW_PASS:
-            inputs_f_domain = tf.signal.fftshift(
-                inputs_f_domain, axes=[-2]
-            )  # shift frequencies to be able to crop in center
-        shape = tf.shape(inputs_f_domain)
-        outputs_f_domain = tf.slice(
-            inputs_f_domain,
-            begin=[0, 0, self.offset_height, self.offset_width],
-            size=[shape[0], shape[1], self.target_height, self.target_width],
-        )  # Tf.slice instead of tf.image.crop, because the latter assumes channel last
-        if self.filter_type == FrequencyFilter.LOW_PASS:
-            outputs_f_domain = tf.signal.ifftshift(outputs_f_domain, axes=[-2])  # reverse shift
-        outputs = tf.signal.irfft2d(outputs_f_domain)
-
-        # reverse to previous channel config!
-        if not self.is_channel_first:
-            outputs = tf.einsum("bchw->bhwc", outputs)
-        return outputs
-
-    def get_config(self) -> Dict[str, Any]:
-        """Serialization of the object.
-
-        Returns:
-            Dictionary with the class' variable names as keys.
-        """
-        config = super(rFFT2DFilter, self).get_config()
-        config.update({"is_channel_first": self.is_channel_first, "filter_type": self.filter_type})
-        return config
 
 
-class FourierPooling2D(tf.keras.layers.Layer):
-    """Pooling in frequency domain by truncating high frequencies using a center crop operation.
 
-    Layer input is asumed to be in frequency domain and shifted, such that the center frequency is in the center of
-    the grid.
 
-    If this is the case, the center represents the frequency of 0Hz (hence an offset). The further away from the center
-    the higher the frequency component. Center cropping removes high frequency components, hence can be seen as a low
-    pass filter
-
-    """
-
-    def __init__(self, is_channel_first: bool = False, **kwargs: Any) -> None:
-        """Initializes an instance of `FourierPooling2D`.
-
-        Args:
-            is_channel_first (bool, optional): If True, input shape is assumed to be (`batch`,`channel`,`height`,`width`).
-                If False, input shape is assumed to be (`batch`,`height`,`width`,`channel`). Defaults to False.
-            kwargs (Any): Additional key word arguments passed to the base class.
-        """
-        super(FourierPooling2D, self).__init__(**kwargs)
-        self.is_channel_first = is_channel_first
-
-    def call(self, inputs: tf.Tensor) -> tf.Tensor:
-        """Calls the `FourierPooling2D` layer.
-
-        Args:
-            inputs (tf.Tensor): Tensor of shape (`batch`,`height`,`width`,`channel`) or
-                (`batch`,`channel`,`height`,`width`). Tensor is asumed to be in frequency domain of type `tf.complex64`
-                or `tf.complex128`.
-
-        Returns:
-            Pooled tensor of shape (`batch`,`channel`,`height/2`,`width/2`) or (`batch`,`height/2`,`width/2`,`channel`)
-        """
-        if self.is_channel_first:
-            inputs = tf.einsum("bchw->bhwc", inputs)
-
-        outputs = tf.image.central_crop(inputs, 0.5)  # assumes channel last
-
-        # reverse to previous channel config!
-        if self.is_channel_first:
-            outputs = tf.einsum("bhwc->bchw", outputs)
-        return outputs
-
-    def get_config(self) -> Dict[str, Any]:
-        """Serialization of the object.
-
-        Returns:
-            Dictionary with the class' variable names as keys.
-        """
-        config = super(FourierPooling2D, self).get_config()
-        config.update({"is_channel_first": self.is_channel_first})
-        return config
 
 
 class LearnedPooling(tf.keras.layers.Layer):

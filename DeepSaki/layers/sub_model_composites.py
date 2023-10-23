@@ -694,6 +694,7 @@ class Decoder(tf.keras.layers.Layer):
                 "channel_list": self.channel_list,
                 "use_spec_norm": self.use_spec_norm,
                 "dropout_rate": self.dropout_rate,
+                "use_bias": self.use_bias,
                 "use_self_attention": self.use_self_attention,
                 "enable_skip_connections_input": self.enable_skip_connections_input,
                 "padding": self.padding,
