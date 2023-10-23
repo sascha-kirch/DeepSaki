@@ -6,16 +6,16 @@ LeakyReLU activation.
 from typing import Any
 from typing import Dict
 from typing import List
-from typing import NoReturn
 from typing import Optional
 from typing import Tuple
 from typing import Union
 
 import numpy as np
 import tensorflow as tf
+from abc import ABC, abstractmethod
 
-class HeAlpha(tf.keras.initializers.Initializer):
-    """Parent class for HeAlpha initializers. Can not be called, must be inherited from.
+class HeAlpha(tf.keras.initializers.Initializer, ABC):
+    """Abstract base class for HeAlpha initializers. Can not be instanciated, must be inherited from.
 
     HeAlpha is a [He initializer](https://arxiv.org/abs/1502.01852) that considers the negative slope of the LeakyReLU
     activation.
@@ -32,7 +32,11 @@ class HeAlpha(tf.keras.initializers.Initializer):
         self.alpha = alpha
         self.seed = seed
 
-    def __call__(self, shape: List[int], dtype: Optional[Union[tf.DType, np.dtype]] = None) -> NoReturn:
+    @abstractmethod
+    def _call_initializer(self, shape: List[int], dtype: Optional[Union[tf.DType, np.dtype]] = None)->tf.Tensor:
+        ...
+
+    def __call__(self, shape: List[int], dtype: Optional[Union[tf.DType, np.dtype]] = None) -> tf.Tensor:
         """Abstract dunder method to call the object instance that must be overridden by child classes.
 
         Args:
@@ -40,10 +44,11 @@ class HeAlpha(tf.keras.initializers.Initializer):
             dtype (Optional[tf.DType | np.dtype], optional): dtype to which the data should be casted to.
                 Defaults to None.
 
-        Raises:
-            NotImplementedError: if calling child class does not override `__call()__`
+        Returns:
+            Tensor containing the weights sampled from a initialization function `_call_initializer` overriden by a
+                subclass.
         """
-        raise NotImplementedError()
+        return self._call_initializer(shape, dtype)
 
     def get_config(self) -> Dict[str, Any]:
         """Serialize object and return dictionary containing member variables.
@@ -99,8 +104,9 @@ class HeAlphaUniform(HeAlpha):
         """
         super(HeAlphaUniform, self).__init__(alpha, seed)
 
-    def __call__(self, shape: List[int], dtype: Optional[Union[tf.DType, np.dtype]] = None) -> tf.Tensor:
-        """Dunder method to call the object instance.
+    # overrides abstract base class method.
+    def _call_initializer(self, shape: List[int], dtype: Optional[Union[tf.DType, np.dtype]] = None) -> tf.Tensor:
+        """Defines the logic of the initializer and calls it.
 
         Args:
             shape (List[int]): Shape of the tensor that shall be initialized.
@@ -135,8 +141,9 @@ class HeAlphaNormal(HeAlpha):
         """
         super(HeAlphaNormal, self).__init__(alpha, seed)
 
-    def __call__(self, shape: List[int], dtype: Optional[Union[tf.DType, np.dtype]] = None) -> tf.Tensor:
-        """Dunder method to call the object instance.
+    # overrides abstract base class method.
+    def _call_initializer(self, shape: List[int], dtype: Optional[Union[tf.DType, np.dtype]] = None) -> tf.Tensor:
+        """Defines the logic of the initializer and calls it.
 
         Args:
             shape (List[int]): Shape of the tensor that shall be initialized.

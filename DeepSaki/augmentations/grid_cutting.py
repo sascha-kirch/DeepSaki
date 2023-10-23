@@ -49,6 +49,10 @@ def _get_mask(shape: Tuple[int, int, int, int]) -> tf.Tensor:
     return tf.convert_to_tensor(mask, dtype=tf.float32)
 
 
+def _invert_mask(mask: tf.Tensor) -> tf.Tensor:
+    return 1 - mask
+
+
 def cut_mix(
     batch1: tf.Tensor,
     batch2: tf.Tensor,
@@ -89,9 +93,9 @@ def cut_mix(
         ground_truth_mask = mask
 
     if invert_mask:
-        ground_truth_mask = 1 - ground_truth_mask
+        ground_truth_mask = _invert_mask(ground_truth_mask)
 
-    new_batch = batch1 * ground_truth_mask + batch2 * (1 - ground_truth_mask)
+    new_batch = batch1 * ground_truth_mask + batch2 * _invert_mask(ground_truth_mask)
 
     return ground_truth_mask, new_batch
 
@@ -117,7 +121,7 @@ def cut_out(
         mask = _get_mask(shape=batch.shape)
 
     if invert_mask:
-        mask = 1 - mask
+        mask = _invert_mask(mask)
 
     new_batch = batch * mask
     return mask, new_batch

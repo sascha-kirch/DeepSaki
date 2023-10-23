@@ -48,7 +48,10 @@ class InitializerFunc(Enum):
     HE_ALPHA_UNIFORM = 8
 
 
-def get_initializer(initializer: InitializerFunc, seed: Optional[int] = None) -> tf.keras.initializers.Initializer:
+def get_initializer(
+    initializer: InitializerFunc,
+    seed: Optional[int] = None,
+) -> tf.keras.initializers.Initializer:
     """Wrapper to return a certain initializer given a descriptive string.
 
     Args:
@@ -70,13 +73,14 @@ def get_initializer(initializer: InitializerFunc, seed: Optional[int] = None) ->
     }
 
     if initializer not in valid_options:
-        raise ValueError(f"Undefined initializer provided: {initializer}")
+        raise ValueError(f"Undefined initializer provided: '{initializer}'. Valid options are: '{valid_options.keys()}")
 
     return valid_options.get(initializer)
 
 
 def pad_func(
-    pad_values: Tuple[int, int] = (1, 1), padding_type: PaddingType = PaddingType.ZERO
+    pad_values: Tuple[int, int] = (1, 1),
+    padding_type: PaddingType = PaddingType.ZERO,
 ) -> tf.keras.layers.Layer:
     """Wrapper to obtain a padding layer instance.
 
@@ -109,12 +113,20 @@ def dropout_func(filters: int, dropout_rate: float) -> tf.keras.layers.Layer:
     Returns:
         layer: Returns `tf.keras.layers.SpatialDropout2D` if number of filters > 1, otherwise 'tf.keras.layers.Dropout'.
     """
+    if not isinstance(filters, int):
+        raise TypeError(f"Parameter 'filters' shall be of type int but is: '{type(filters)}'")
+
     if filters > 1:
         return tf.keras.layers.SpatialDropout2D(dropout_rate)
-    return tf.keras.layers.Dropout(dropout_rate)
+    if filters == 1:
+        return tf.keras.layers.Dropout(dropout_rate)
+    raise ValueError(f"provided value '{filters}'for param 'filters' is unvalid. Provide an int bigger than 0.")
 
 
-def plot_layer(layer: tf.keras.layers.Layer, input_shape: List[int]) -> None:
+def plot_layer(
+    layer: tf.keras.layers.Layer,
+    input_shape: List[int],
+) -> None:
     """Creates a model from a given layer to be able to call model.summary() and to plot a graph image.
 
     Args:

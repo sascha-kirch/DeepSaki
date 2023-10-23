@@ -5,7 +5,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # deactivate tensorflow warnings and i
 import tensorflow as tf
 import numpy as np
 
-from DeepSaki.augmentations.grid_cutting import _random_boundingbox, _get_mask, cut_mix, cut_out
+from DeepSaki.augmentations.grid_cutting import _random_boundingbox, _get_mask, _invert_mask, cut_mix, cut_out
 
 
 class TestRandomBoundingBox:
@@ -34,8 +34,8 @@ class TestGetMask:
     @pytest.mark.parametrize("width", [32, 50, 128])
     @pytest.mark.parametrize("channel", [32, 50, 128])
     def test_get_mask_shape_equal_input_shape(self, batch, height, width, channel):
-        output = _get_mask([batch, height, width, channel])
-        assert output.shape == [batch, height, width, channel]
+        result = _get_mask([batch, height, width, channel])
+        assert result.shape == [batch, height, width, channel]
 
     @pytest.mark.parametrize(
         "input_shape, expected_dtype",
@@ -46,8 +46,21 @@ class TestGetMask:
         ],
     )
     def test_get_mask_dtype(self, input_shape, expected_dtype):
-        output = _get_mask(input_shape)
-        assert output.dtype == expected_dtype
+        result = _get_mask(input_shape)
+        assert result.dtype == expected_dtype
+
+
+class TestInvertMask:
+    @pytest.mark.parametrize(
+        "input, expected",
+        [
+            (tf.constant([1, 0]), tf.constant([0, 1])),
+            (tf.constant([[1, 0], [1, 0]]), tf.constant([[0, 1], [0, 1]])),
+        ],
+    )
+    def test_invert_mask(self, input, expected):
+        result = _invert_mask(input)
+        assert tf.math.reduce_all(result.numpy() == pytest.approx(expected.numpy(),0.01))
 
 
 @pytest.mark.skip(reason="Not implemented yet.")

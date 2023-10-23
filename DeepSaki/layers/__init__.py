@@ -1,7 +1,6 @@
 # pooling.py
 from DeepSaki.layers.pooling import GlobalSumPooling2D
-from DeepSaki.layers.pooling import FourierPooling2D
-from DeepSaki.layers.pooling import rFFT2DFilter
+from DeepSaki.layers.pooling import LearnedPooling
 
 # fourier_layer.py
 from DeepSaki.layers.fourier_layer import FourierConvolution2D
@@ -10,6 +9,8 @@ from DeepSaki.layers.fourier_layer import FFT2D
 from DeepSaki.layers.fourier_layer import iFFT2D
 from DeepSaki.layers.fourier_layer import FFT2D
 from DeepSaki.layers.fourier_layer import FFT3D
+from DeepSaki.layers.fourier_layer import FourierPooling2D
+from DeepSaki.layers.fourier_layer import rFFT2DFilter
 
 # padding.py
 from DeepSaki.layers.padding import ReflectionPadding2D
@@ -41,3 +42,5 @@ from DeepSaki.layers.layer_helper import dropout_func
 # Enums
 from DeepSaki.layers.layer_helper import PaddingType
 from DeepSaki.layers.layer_helper import InitializerFunc
+from DeepSaki.layers.fourier_layer import MultiplicationType
+from DeepSaki.layers.fourier_layer import FrequencyFilter
