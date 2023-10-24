@@ -1,6 +1,5 @@
 import tensorflow as tf
 
-from DeepSaki.initializers.he_alpha import HeAlphaUniform
 from DeepSaki.layers.layer_helper import PaddingType
 from DeepSaki.layers.sub_model_composites import Encoder, Decoder,Bottleneck
 from DeepSaki.layers.layer_composites import Conv2DBlock, DenseBlock, ScalarGatedSelfAttention
@@ -58,7 +57,7 @@ class LayoutContentDiscriminator(tf.keras.Model):
             fully_connected:str = "MLP",
             use_self_attention:bool = False,
             kernel_initializer:Optional[tf.keras.initializers.Initializer] = None,
-            gamma_initializer:tf.keras.initializers.Initializer =  HeAlphaUniform()
+            gamma_initializer:Optional[tf.keras.initializers.Initializer] = None
             ):
     """Initialize the `LayoutContentDiscriminator` object.
 
@@ -191,7 +190,7 @@ class PatchDiscriminator(tf.keras.Model):
             use_self_attention:bool=False,
             padding:PaddingType=PaddingType.NONE,
             kernel_initializer:Optional[tf.keras.initializers.Initializer] = None,
-            gamma_initializer:tf.keras.initializers.Initializer =  HeAlphaUniform()
+            gamma_initializer:Optional[tf.keras.initializers.Initializer] = None
             ):
     """Initialize the `PatchDiscriminator` object.
 
@@ -307,7 +306,7 @@ class UNetDiscriminator(tf.keras.Model):
             fully_connected:str = "MLP",
             padding:PaddingType=PaddingType.ZERO,
             kernel_initializer:Optional[tf.keras.initializers.Initializer] = None,
-            gamma_initializer:tf.keras.initializers.Initializer =  HeAlphaUniform()
+            gamma_initializer:Optional[tf.keras.initializers.Initializer] =  None
             ):
     """Initialize the `UNetDiscriminator` object.
 
@@ -357,7 +356,7 @@ class UNetDiscriminator(tf.keras.Model):
     if fully_connected == "MLP":
       self.img_reconstruction = DenseBlock(units = 1, use_spec_norm = use_spec_norm, number_of_layers = 1, activation = None, apply_final_normalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     elif fully_connected == "1x1_conv":
-      self.img_reconstruction =Conv2DBlock(filters = 1, use_residual_Conv2DBlock = False, kernels = 1, split_kernels  = False, number_of_convs = 1, activation = None,use_spec_norm=use_spec_norm, apply_final_normalization = False, use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+      self.img_reconstruction = Conv2DBlock(filters = 1, use_residual_Conv2DBlock = False, kernels = 1, split_kernels  = False, number_of_convs = 1, activation = None,use_spec_norm=use_spec_norm, apply_final_normalization = False, use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     self.linear = DenseBlock(units = 1, use_spec_norm = use_spec_norm, number_of_layers = 1, activation = None, apply_final_normalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     #To enable mixed precission support for matplotlib and distributed training and to increase training stability
     self.linear_dtype = tf.keras.layers.Activation("linear", dtype = tf.float32)

@@ -211,9 +211,6 @@ class Encoder(tf.keras.layers.Layer):
         Args:
             inputs (tf.Tensor): Input tensor of shape (batch, height, width, channel)
 
-        Raises:
-            ValueError: If layer has not been built by calling build() on to layer.
-
         Returns:
             If `output_skips=False` only the final output of the Encoder is returned as a tensor of shape
                 (`batch`, `height/2**number_of_levels`, `width/2**number_of_levels`,
@@ -221,9 +218,6 @@ class Encoder(tf.keras.layers.Layer):
                 of tensor (one for each level of the encoder) of shape (`batch`, `height/2**level`, `width/2**level`,
                 `min(channel*2**level, limit_filters)`.
         """
-        if not self.built:
-            raise ValueError("This model has not yet been built.")
-
         x = inputs
         skips = []
 
@@ -410,14 +404,9 @@ class Bottleneck(tf.keras.layers.Layer):
         Args:
             inputs (tf.Tensor): Input tensor of shape (batch, height, width, channel)
 
-        Raises:
-            ValueError: If layer has not been built by calling build() on to layer.
-
         Returns:
             Tensor of shape (batch, height, width, channel)
         """
-        if not self.built:
-            raise ValueError("This model has not yet been built.")
         x = inputs
 
         for layer in self.layers:
@@ -647,14 +636,9 @@ class Decoder(tf.keras.layers.Layer):
                 `enable_skip_connections_input=True`, additonally at every level of the decoder, skip connections from
                 an encoder can be inserted.
 
-        Raises:
-            ValueError: If layer has not been built by calling build() on to layer.
-
         Returns:
             tf.Tensor: Tensor of shape (`batch`, `height*2**number_of_levels`, `width*2**number_of_levels`,`filters`).
         """
-        if not self.built:
-            raise ValueError("This model has not yet been built.")
         skip_connections = None
         if self.enable_skip_connections_input:
             x, skip_connections = inputs

@@ -26,6 +26,7 @@ class Conv2DSplitted(tf.keras.layers.Layer):
         use_spec_norm: bool = False,
         strides: Tuple[int, int] = (1, 1),
         use_bias: bool = True,
+        padding:str = "valid",
         kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
     ) -> None:
         """Initialize the `Conv2DSplitted` object.
@@ -38,6 +39,7 @@ class Conv2DSplitted(tf.keras.layers.Layer):
                 to False.
             strides (Tuple[int, int], optional): Strides of the convolution layers. Defaults to (1, 1).
             use_bias (bool, optional): Whether or not to use bias weights. Defaults to True.
+            padding (str, optional): ["valid"|"same"]
             kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions
                 kernels. Defaults to None.
         """
@@ -47,21 +49,25 @@ class Conv2DSplitted(tf.keras.layers.Layer):
         self.use_spec_norm = use_spec_norm
         self.strides = strides
         self.use_bias = use_bias
+        self.padding = padding
         self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
         self.conv1 = tf.keras.layers.Conv2D(
-            filters=filters,
-            kernel_size=(1, kernels),
-            kernel_initializer=kernel_initializer,
-            use_bias=use_bias,
-            strides=strides,
-        )
-        self.conv2 = tf.keras.layers.Conv2D(
             filters=filters,
             kernel_size=(kernels, 1),
             kernel_initializer=kernel_initializer,
             use_bias=use_bias,
-            strides=strides,
+            padding=padding,
+            strides=(strides[0], 1),
+        )
+        self.conv2 = tf.keras.layers.Conv2D(
+            filters=filters,
+            kernel_size=(1, kernels),
+            kernel_initializer=kernel_initializer,
+            use_bias=use_bias,
+            padding=padding,
+            strides=(1,strides[1]),
         )
 
         if use_spec_norm:
@@ -95,6 +101,7 @@ class Conv2DSplitted(tf.keras.layers.Layer):
                 "use_spec_norm": self.use_spec_norm,
                 "strides": self.strides,
                 "use_bias": self.use_bias,
+                "padding": self.padding,
                 "kernel_initializer": self.kernel_initializer,
             }
         )
@@ -236,17 +243,12 @@ class Conv2DBlock(tf.keras.layers.Layer):
         Args:
             inputs (tf.Tensor): Tensor of shape (batch, height, width, channel)
 
-        Raises:
-            ValueError: If layer has not been built by calling build() on to layer.
-
         Returns:
             Tensor of shape (batch, `H`, `W`, `filters`). The values for `H`, `W`, `C` depend on the stride as well on
             the padding. If padding is applied in the stride is (1,1), the output shape matches the input shape. If for
             example the stride is(2,2) the output shape would be (batch, `height/(2*number_of_convs)`,
             `width/(2*number_of_convs)`, `filters`).
         """
-        if not self.built:
-            raise ValueError("This model has not yet been built.")
         x = inputs
 
         for block in range(self.number_of_convs):
@@ -690,6 +692,8 @@ class ResidualBlock(tf.keras.layers.Layer):
         self.padding = padding
         self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
         self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
+
 
         self.pad = int((kernels - 1) / 2)  # assumes odd kernel size, which is typical!
 
@@ -774,8 +778,6 @@ class ResidualBlock(tf.keras.layers.Layer):
             )
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
-        if not self.built:
-            raise ValueError("This model has not yet been built.")
         x = inputs
 
         if self.conv0 is not None:
@@ -1112,6 +1114,7 @@ class ScaleLayer(tf.keras.layers.Layer):
         super(ScaleLayer, self).__init__()
         self.initializer = tf.keras.initializers.Ones() if initializer is None else initializer
         self.scale = self.add_weight(shape=[1], initializer=initializer, constraint=NonNegative(), trainable=True)
+        self.input_spec = tf.keras.layers.InputSpec(min_ndim=1)
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         """Calls the `ScaleLayer` layer.
@@ -1188,7 +1191,7 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
         super(ScalarGatedSelfAttention, self).build(input_shape)
         batch_size, height, width, num_channel = input_shape
         if self.intermediate_channel is None:
-            self.intermediate_channel = num_channel // 8
+            self.intermediate_channel = num_channel
 
         self.w_f = DenseBlock(
             units=self.intermediate_channel,
@@ -1238,15 +1241,20 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
         self.scale = ScaleLayer()
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
-        if not self.built:
-            raise ValueError("This model has not yet been built.")
+        """Calls the `ScalarGatedSelfAttention` layer.
 
+        Args:
+            inputs (tf.Tensor): Tensor of shape (batch, height, width, channel)
+
+        Returns:
+            Tensor with same shape as input.
+        """
         f = self.w_f(inputs)
         f = self.LN_f(f)
         f = tf.keras.layers.Permute(dims=(2, 1, 3))(f)
 
-        g = self.w_f(inputs)
-        g = self.LN_f(g)
+        g = self.w_g(inputs)
+        g = self.LN_g(g)
 
         h = self.w_h(inputs)
         h = self.LN_h(h)

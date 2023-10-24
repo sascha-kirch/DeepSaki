@@ -136,14 +136,9 @@ class FourierConvolution2D(tf.keras.layers.Layer):
             inputs (tf.Tensor): Tensor of data in spatial domain of shape `(b,h,w,c)` or `(b,c,h,w)` depending on
                 `is_channel_first`
 
-        Raises:
-            ValueError: If Layer has not been built.
-
         Returns:
             Tensor in spatial domain of same shape as input.
         """
-        if not self.built:
-            raise ValueError("This model has not yet been built.")
 
         # FFT2D is calculated over last two dimensions!
         if not self.is_channel_first:
@@ -345,8 +340,6 @@ class FourierFilter2D(tf.keras.layers.Layer):
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         """I take advantage of broadcasting to calculate the batches: https://numpy.org/doc/stable/user/basics.broadcasting.html"""
-        if not self.built:
-            raise ValueError("This model has not yet been built.")
 
         if not self.is_channel_first:  # FFT2D is calculated over last two dimensions!
             inputs = tf.einsum("bhwc->bchw", inputs)
@@ -733,15 +726,9 @@ class rFFT2DFilter(tf.keras.layers.Layer):
             inputs (tf.Tensor): Tensor of shape (`batch`,`height`,`width`,`channel`) or
                 (`batch`,`channel`,`height`,`width`).
 
-        Raises:
-            ValueError: If Layer has not been built.
-
         Returns:
             Filtered tensor with shape (`batch`,`channel`,`height`,`width`).
         """
-        if not self.built:
-            raise ValueError("This model has not yet been built.")
-
         if not self.is_channel_first:  # layer assumes channel first due to FFT
             inputs = tf.einsum("bhwc->bchw", inputs)
 

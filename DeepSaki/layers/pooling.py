@@ -15,17 +15,27 @@ class GlobalSumPooling2D(tf.keras.layers.Layer):
         and [GlobalAveragePooling2D](https://www.tensorflow.org/api_docs/python/tf/keras/layers/GlobalAveragePooling2D)
     """
 
-    def __init__(self, **kwargs: Any) -> None:
+    def __init__(self,data_format:str = "channels_last", **kwargs: Any) -> None:
         """Initialize the `GlobalSumPooling2D` object.
 
+        Raises:
+            ValueError: If `data_format` is not supported.
+
         Args:
+            data_format (str, optional): ["channels_last"|"data_format"]
             kwargs (Any): Additional key word arguments passed to the base class.
         """
         super(GlobalSumPooling2D, self).__init__(**kwargs)
-        self.data_format = "channels_last"
+        match data_format:
+            case "channels_last" | "channels_first":
+                self.data_format = data_format
+            case _ :
+                raise ValueError("Unsupported channel configuration provided")
+        self.channel_axis = 3 if self.data_format == "channels_last" else 1
+        self.axis_to_sum = (1,2) if self.data_format == "channels_last" else (2,3)
         self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
-    def compute_output_shape(self, input_shape: tf.TensorShape) -> Optional[tf.TensorShape]:
+    def compute_output_shape(self, input_shape: tf.TensorShape) -> tf.TensorShape:
         """Computes the output shape of the layer.
 
         This method will cause the layer's state to be built, if that has not happened before. This requires that the
@@ -38,9 +48,7 @@ class GlobalSumPooling2D(tf.keras.layers.Layer):
             A TensorShape instance representing the shape of the layer's output Tensor.
         """
         input_shape = tf.TensorShape(input_shape).as_list()
-        if self.data_format == "channels_last":
-            return tf.TensorShape([input_shape[0], input_shape[3]])
-        return None
+        return tf.TensorShape([input_shape[0], input_shape[self.channel_axis]])
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         """Calls the `GlobalSumPooling2D` layer.
@@ -52,7 +60,7 @@ class GlobalSumPooling2D(tf.keras.layers.Layer):
         Returns:
             Tensor of shape (`batch`,`channel`) where the elements are summed to reduce the axis.
         """
-        return tf.reduce_sum(input_tensor=inputs, axis=[1, 2], keepdims=False)
+        return tf.reduce_sum(input_tensor=inputs, axis=self.axis_to_sum, keepdims=False)
 
     def get_config(self) -> Dict[str, Any]:
         """Serialization of the object.
@@ -63,12 +71,6 @@ class GlobalSumPooling2D(tf.keras.layers.Layer):
         config = super(GlobalSumPooling2D, self).get_config()
         config.update({"data_format": self.data_format})
         return config
-
-
-
-
-
-
 
 
 class LearnedPooling(tf.keras.layers.Layer):
@@ -92,6 +94,7 @@ class LearnedPooling(tf.keras.layers.Layer):
         """
         super(LearnedPooling, self).__init__(**kwargs)
         self.pool_size = pool_size
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).
