@@ -1,9 +1,27 @@
 # DeepSaki
+>[!Note]
+> **Great News!** DeepSaki will get a major update soon!
+> In the first update I focus on transforming what started as a learning project into a modern and professional software project featuring CI/CT, documentation and clean code.
+> Once the framework is prepared, I will add further features like for example a CycleGAN framework or Denoising Diffusion Probabilistic Models (DDPM).
+> I'll also call for contributions so people can participate and for some it will serve as a learning project as it did for me.
+
 Welcome AI enthuisiasts to DeepSaki, a collection of reusable machine learning code. :muscle::robot::metal:
 
 The ML framework used is tensorflow and the entire code is suitable to run Google's TPUs.
 
+![Python](https://img.shields.io/badge/python-3.9+-blue)
 ![GitHub](https://img.shields.io/github/license/sascha-kirch/deepsaki)
+
+Main:<br>
+[![Build](https://github.com/sascha-kirch/DeepSaki/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/sascha-kirch/DeepSaki/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/sascha-kirch/DeepSaki/branch/main/graph/badge.svg?token=FD7IE1T9EO)](https://codecov.io/gh/sascha-kirch/DeepSaki)
+[![Documentation](https://img.shields.io/badge/ref-Documentation-blue)](https://sascha-kirch.github.io/DeepSaki/latest/)
+
+Develop:<br>
+[![Build](https://github.com/sascha-kirch/DeepSaki/actions/workflows/test.yml/badge.svg?branch=develop)](https://github.com/sascha-kirch/DeepSaki/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/sascha-kirch/DeepSaki/branch/develop/graph/badge.svg?token=FD7IE1T9EO)](https://codecov.io/gh/sascha-kirch/DeepSaki)
+[![Documentation](https://img.shields.io/badge/ref-Documentation-blue)](https://sascha-kirch.github.io/DeepSaki/develop/)
+
 
 # Installation
 
