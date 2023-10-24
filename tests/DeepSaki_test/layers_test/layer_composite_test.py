@@ -18,6 +18,7 @@ from DeepSaki.layers.layer_composites import (
     ResBlockUp,
     ScaleLayer,
     ScalarGatedSelfAttention,
+    PaddingType
 )
 
 
@@ -81,9 +82,25 @@ class TestResidualBlock:
         with expected_context:
             _ = layer(tf.ones(shape=input_shape))
 
-    @pytest.mark.skip(reason="Not implemented yet.")
-    def test_call_correct_shape(self):
-        ...
+
+    @pytest.mark.parametrize("use_spec_norm", [False])
+    @pytest.mark.parametrize("use_bias", [True])
+    @pytest.mark.parametrize("activation", ["leaky_relu"])
+    @pytest.mark.parametrize("kernels", [3])
+    @pytest.mark.parametrize("dropout_rate", [0.0, 0.5])
+    @pytest.mark.parametrize("number_of_blocks", [1, 2])
+    @pytest.mark.parametrize("residual_cardinality", [1, 3])
+    @pytest.mark.parametrize("padding", [PaddingType.ZERO])
+    @pytest.mark.parametrize("input, filters, expected_shape", [
+        (tf.ones((1, 16, 16, 3)), 3, tf.TensorShape((1,16,16,3))),
+        (tf.ones((1, 16, 16, 3)), 8, tf.TensorShape((1,16,16,8))),
+        (tf.ones((1, 16, 16, 3)), 5, tf.TensorShape((1,16,16,5))),
+        (tf.ones((4, 8, 8, 4)), 12, tf.TensorShape((4,8,8,12))),
+    ])
+    def test_call_correct_shape(self, input, expected_shape, filters, kernels, activation, number_of_blocks, use_spec_norm, residual_cardinality,dropout_rate,use_bias,padding):
+        layer = ResidualBlock(filters, kernels, activation, number_of_blocks, use_spec_norm, residual_cardinality,dropout_rate,use_bias,padding)
+        output = layer(input)
+        assert output.shape == expected_shape
 
     @pytest.mark.parametrize("number_of_blocks", [1, 2, 3])
     def test_number_of_blocks_correct(self, number_of_blocks):

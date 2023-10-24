@@ -174,6 +174,7 @@ class Conv2DBlock(tf.keras.layers.Layer):
         self.use_bias = use_bias
         self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
         self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
         self.pad = int((kernels - 1) / 2)  # assumes odd kernel size, which is typical!
 
@@ -450,6 +451,7 @@ class DownSampleBlock(tf.keras.layers.Layer):
         self.use_bias = use_bias
         self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
         self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).
@@ -555,6 +557,7 @@ class UpSampleBlock(tf.keras.layers.Layer):
         self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
         self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
         self.padding = padding
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).
@@ -748,9 +751,7 @@ class ResidualBlock(tf.keras.layers.Layer):
                 ]
                 for _ in range(residual_cardinality)
             ]
-
             self.blocks.append(cardinals)
-
         self.dropout = dropout_func(filters, dropout_rate)
 
     def build(self, input_shape: tf.TensorShape) -> None:
@@ -777,6 +778,14 @@ class ResidualBlock(tf.keras.layers.Layer):
             )
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """Calls the `ResidualBlock` layer.
+
+        Args:
+            inputs (tf.Tensor): Tensor of shape (batch, height, width, channel)
+
+        Returns:
+            Tensor of shape (batch, height, width, `filters`)
+        """
         x = inputs
 
         if self.conv0 is not None:
@@ -883,6 +892,7 @@ class ResBlockDown(tf.keras.layers.Layer):
         self.padding = padding
         self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
         self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).
@@ -1015,6 +1025,7 @@ class ResBlockUp(tf.keras.layers.Layer):
         self.padding = padding
         self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
         self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).
@@ -1180,6 +1191,7 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
         self.intermediate_channel = intermediate_channel
         self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
         self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).

@@ -75,7 +75,7 @@ def detect_accelerator(
 
 def enable_xla_acceleration() -> None:
     """Enable compiler acceleration for linear algebra operations."""
-    tf.config.optimizer.set_jit(enabled=True)
+    tf.config.optimizer.set_jit(enabled="autoclustering")
     print("Linear algebra acceleration enabled")
 
 
