@@ -1,9 +1,9 @@
 from enum import Enum
 from typing import Any
 from typing import Dict
+from typing import Literal
 from typing import Optional
 from typing import Tuple
-from typing import Literal
 
 import numpy as np
 import tensorflow as tf
@@ -20,6 +20,7 @@ class MultiplicationType(Enum):
 
     ELEMENT_WISE = 1
     MATRIX_PRODUCT = 2
+
 
 class FrequencyFilter(Enum):
     """`Enum` used to define valid filters for `rFFT2DFilter`.
@@ -139,7 +140,6 @@ class FourierConvolution2D(tf.keras.layers.Layer):
         Returns:
             Tensor in spatial domain of same shape as input.
         """
-
         # FFT2D is calculated over last two dimensions!
         if not self.is_channel_first:
             inputs = tf.einsum("bhwc->bchw", inputs)
@@ -340,7 +340,6 @@ class FourierFilter2D(tf.keras.layers.Layer):
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         """I take advantage of broadcasting to calculate the batches: https://numpy.org/doc/stable/user/basics.broadcasting.html"""
-
         if not self.is_channel_first:  # FFT2D is calculated over last two dimensions!
             inputs = tf.einsum("bhwc->bchw", inputs)
 
@@ -616,6 +615,7 @@ class iFFT3D(tf.keras.layers.Layer):
         config = super(iFFT3D, self).get_config()
         config.update({"apply_real_fft": self.apply_real_fft, "shift_fft": self.shift_fft})
         return config
+
 
 class FourierPooling2D(tf.keras.layers.Layer):
     """Pooling in frequency domain by truncating high frequencies using a center crop operation.

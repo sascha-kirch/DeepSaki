@@ -1,9 +1,6 @@
 """Collection of pooling layer operations to reduce the spatial dimensionality of a feature map."""
-from enum import Enum
 from typing import Any
 from typing import Dict
-from typing import Literal
-from typing import Optional
 
 import tensorflow as tf
 
@@ -15,7 +12,7 @@ class GlobalSumPooling2D(tf.keras.layers.Layer):
         and [GlobalAveragePooling2D](https://www.tensorflow.org/api_docs/python/tf/keras/layers/GlobalAveragePooling2D)
     """
 
-    def __init__(self,data_format:str = "channels_last", **kwargs: Any) -> None:
+    def __init__(self, data_format: str = "channels_last", **kwargs: Any) -> None:
         """Initialize the `GlobalSumPooling2D` object.
 
         Raises:
@@ -29,10 +26,10 @@ class GlobalSumPooling2D(tf.keras.layers.Layer):
         match data_format:
             case "channels_last" | "channels_first":
                 self.data_format = data_format
-            case _ :
+            case _:
                 raise ValueError("Unsupported channel configuration provided")
         self.channel_axis = 3 if self.data_format == "channels_last" else 1
-        self.axis_to_sum = (1,2) if self.data_format == "channels_last" else (2,3)
+        self.axis_to_sum = (1, 2) if self.data_format == "channels_last" else (2, 3)
         self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
     def compute_output_shape(self, input_shape: tf.TensorShape) -> tf.TensorShape:

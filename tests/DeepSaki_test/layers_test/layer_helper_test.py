@@ -94,6 +94,7 @@ def test_dropout_func_raises_error(input_filters, error_type):
     with pytest.raises(error_type):
         _ = dropout_func(filters=input_filters, dropout_rate=0.5)
 
+
 @pytest.mark.skip(reason="Not implemented yet.")
 def test_plot_layer():
     ...

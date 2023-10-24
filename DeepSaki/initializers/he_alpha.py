@@ -3,6 +3,8 @@
 In contrast to the tensorflow implementation, an alpha value can be set to consider the non-zero slope of a
 LeakyReLU activation.
 """
+from abc import ABC
+from abc import abstractmethod
 from typing import Any
 from typing import Dict
 from typing import List
@@ -12,7 +14,6 @@ from typing import Union
 
 import numpy as np
 import tensorflow as tf
-from abc import ABC, abstractmethod
 
 class HeAlpha(tf.keras.initializers.Initializer, ABC):
     """Abstract base class for HeAlpha initializers. Can not be instanciated, must be inherited from.
@@ -33,7 +34,7 @@ class HeAlpha(tf.keras.initializers.Initializer, ABC):
         self.seed = seed
 
     @abstractmethod
-    def _call_initializer(self, shape: List[int], dtype: Optional[Union[tf.DType, np.dtype]] = None)->tf.Tensor:
+    def _call_initializer(self, shape: List[int], dtype: Optional[Union[tf.DType, np.dtype]] = None) -> tf.Tensor:
         ...
 
     def __call__(self, shape: List[int], dtype: Optional[Union[tf.DType, np.dtype]] = None) -> tf.Tensor:

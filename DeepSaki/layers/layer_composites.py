@@ -26,7 +26,7 @@ class Conv2DSplitted(tf.keras.layers.Layer):
         use_spec_norm: bool = False,
         strides: Tuple[int, int] = (1, 1),
         use_bias: bool = True,
-        padding:str = "valid",
+        padding: str = "valid",
         kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
     ) -> None:
         """Initialize the `Conv2DSplitted` object.
@@ -67,7 +67,7 @@ class Conv2DSplitted(tf.keras.layers.Layer):
             kernel_initializer=kernel_initializer,
             use_bias=use_bias,
             padding=padding,
-            strides=(1,strides[1]),
+            strides=(1, strides[1]),
         )
 
         if use_spec_norm:
@@ -693,7 +693,6 @@ class ResidualBlock(tf.keras.layers.Layer):
         self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
         self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
         self.input_spec = tf.keras.layers.InputSpec(ndim=4)
-
 
         self.pad = int((kernels - 1) / 2)  # assumes odd kernel size, which is typical!
 

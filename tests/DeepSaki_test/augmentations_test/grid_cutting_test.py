@@ -60,7 +60,7 @@ class TestInvertMask:
     )
     def test_invert_mask(self, input, expected):
         result = _invert_mask(input)
-        assert tf.math.reduce_all(result.numpy() == pytest.approx(expected.numpy(),0.01))
+        assert tf.math.reduce_all(result.numpy() == pytest.approx(expected.numpy(), 0.01))
 
 
 @pytest.mark.skip(reason="Not implemented yet.")
