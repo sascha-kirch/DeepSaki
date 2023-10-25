@@ -11,7 +11,7 @@ from DeepSaki.layers.padding import ReflectionPadding2D
 
 class TestReflectionPadding2D:
     @pytest.mark.parametrize(
-        "input, padding, expected_shape",
+        ("input", "padding", "expected_shape"),
         [
             (tf.ones(shape=(8, 64, 64, 3)), (0, 0), tf.TensorShape((8, 64, 64, 3))),
             (tf.ones(shape=(8, 64, 64, 3)), (1, 1), tf.TensorShape((8, 66, 66, 3))),
@@ -26,7 +26,7 @@ class TestReflectionPadding2D:
         assert output.shape == expected_shape
 
     @pytest.mark.parametrize(
-        "input, padding, expected_shape",
+        ("input", "padding", "expected_shape"),
         [
             (tf.TensorShape((8, 64, 64, 3)), (0, 0), tf.TensorShape((8, 64, 64, 3))),
             (tf.TensorShape((8, 64, 64, 3)), (1, 1), tf.TensorShape((8, 66, 66, 3))),
@@ -41,7 +41,7 @@ class TestReflectionPadding2D:
         assert output == expected_shape
 
     @pytest.mark.parametrize(
-        "input, padding, expected_shape",
+        ("input", "padding", "expected_shape"),
         [
             (tf.ones(shape=(8, 64, 64, 3)), (0, 0), tf.TensorShape((8, 64, 64, 3))),
             (tf.ones(shape=(8, 64, 64, 3)), (1, 1), tf.TensorShape((8, 66, 66, 3))),

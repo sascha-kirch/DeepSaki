@@ -18,7 +18,7 @@ from DeepSaki.layers.layer_composites import (
     ResBlockUp,
     ScaleLayer,
     ScalarGatedSelfAttention,
-    PaddingType
+    PaddingType,
 )
 
 
@@ -26,7 +26,7 @@ class TestConv2DSplitted:
     @pytest.mark.parametrize("use_spec_norm", [True, False])
     @pytest.mark.parametrize("use_bias", [True, False])
     @pytest.mark.parametrize(
-        "input, filters, kernels, strides, padding, expected_shape",
+        ("input", "filters", "kernels", "strides", "padding", "expected_shape"),
         [
             (tf.ones((1, 16, 16, 3)), 3, 3, (1, 1), "same", tf.TensorShape((1, 16, 16, 3))),
             (tf.ones((8, 16, 16, 3)), 5, 5, (1, 1), "same", tf.TensorShape((8, 16, 16, 5))),
@@ -46,7 +46,7 @@ class TestConv2DSplitted:
         assert output.shape == expected_shape
 
     @pytest.mark.parametrize(
-        "input_shape, expected_context",
+        ("input_shape", "expected_context"),
         [
             (tf.TensorShape((8, 64, 64, 4)), does_not_raise()),
             (tf.TensorShape((1, 32, 32, 3)), does_not_raise()),
@@ -65,7 +65,7 @@ class TestConv2DSplitted:
 
 class TestResidualBlock:
     @pytest.mark.parametrize(
-        "input_shape, expected_context",
+        ("input_shape", "expected_context"),
         [
             (tf.TensorShape((8, 64, 64, 4)), does_not_raise()),
             (tf.TensorShape((1, 32, 32, 3)), does_not_raise()),
@@ -82,7 +82,6 @@ class TestResidualBlock:
         with expected_context:
             _ = layer(tf.ones(shape=input_shape))
 
-
     @pytest.mark.parametrize("use_spec_norm", [False])
     @pytest.mark.parametrize("use_bias", [True])
     @pytest.mark.parametrize("activation", ["leaky_relu"])
@@ -91,14 +90,40 @@ class TestResidualBlock:
     @pytest.mark.parametrize("number_of_blocks", [1, 2])
     @pytest.mark.parametrize("residual_cardinality", [1, 3])
     @pytest.mark.parametrize("padding", [PaddingType.ZERO])
-    @pytest.mark.parametrize("input, filters, expected_shape", [
-        (tf.ones((1, 16, 16, 3)), 3, tf.TensorShape((1,16,16,3))),
-        (tf.ones((1, 16, 16, 3)), 8, tf.TensorShape((1,16,16,8))),
-        (tf.ones((1, 16, 16, 3)), 5, tf.TensorShape((1,16,16,5))),
-        (tf.ones((4, 8, 8, 4)), 12, tf.TensorShape((4,8,8,12))),
-    ])
-    def test_call_correct_shape(self, input, expected_shape, filters, kernels, activation, number_of_blocks, use_spec_norm, residual_cardinality,dropout_rate,use_bias,padding):
-        layer = ResidualBlock(filters, kernels, activation, number_of_blocks, use_spec_norm, residual_cardinality,dropout_rate,use_bias,padding)
+    @pytest.mark.parametrize(
+        ("input", "filters", "expected_shape"),
+        [
+            (tf.ones((1, 16, 16, 3)), 3, tf.TensorShape((1, 16, 16, 3))),
+            (tf.ones((1, 16, 16, 3)), 8, tf.TensorShape((1, 16, 16, 8))),
+            (tf.ones((1, 16, 16, 3)), 5, tf.TensorShape((1, 16, 16, 5))),
+            (tf.ones((4, 8, 8, 4)), 12, tf.TensorShape((4, 8, 8, 12))),
+        ],
+    )
+    def test_call_correct_shape(
+        self,
+        input,
+        expected_shape,
+        filters,
+        kernels,
+        activation,
+        number_of_blocks,
+        use_spec_norm,
+        residual_cardinality,
+        dropout_rate,
+        use_bias,
+        padding,
+    ):
+        layer = ResidualBlock(
+            filters,
+            kernels,
+            activation,
+            number_of_blocks,
+            use_spec_norm,
+            residual_cardinality,
+            dropout_rate,
+            use_bias,
+            padding,
+        )
         output = layer(input)
         assert output.shape == expected_shape
 
@@ -139,7 +164,7 @@ class TestScaleLayer:
         assert output.shape == input_shape
 
     @pytest.mark.parametrize(
-        "input_shape, expected_context",
+        ("input_shape", "expected_context"),
         [
             (tf.TensorShape((8)), does_not_raise()),
             (tf.TensorShape((8, 16)), does_not_raise()),

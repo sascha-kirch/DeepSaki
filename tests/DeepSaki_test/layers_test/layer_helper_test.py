@@ -19,7 +19,7 @@ from DeepSaki.layers.padding import ReflectionPadding2D
 
 class TestGetInitializerFunc:
     @pytest.mark.parametrize(
-        "initializer_func, expected",
+        ("initializer_func", "expected"),
         [
             (InitializerFunc.RANDOM_NORMAL, tf.keras.initializers.RandomNormal),
             (InitializerFunc.RANDOM_UNIFORM, tf.keras.initializers.RandomUniform),
@@ -46,7 +46,7 @@ class TestGetInitializerFunc:
 
 class TestPadFunc:
     @pytest.mark.parametrize(
-        "padding_type, expected",
+        ("padding_type", "expected"),
         [
             (PaddingType.ZERO, tf.keras.layers.ZeroPadding2D),
             (PaddingType.REFLECTION, ReflectionPadding2D),
@@ -66,7 +66,7 @@ class TestPadFunc:
 
 
 @pytest.mark.parametrize(
-    "input_filters, expected",
+    ("input_filters", "expected"),
     [
         (1, tf.keras.layers.Dropout),
         (2, tf.keras.layers.SpatialDropout2D),
@@ -80,7 +80,7 @@ def test_dropout_func_returns_correct_dropout(input_filters, expected):
 
 
 @pytest.mark.parametrize(
-    "input_filters, error_type",
+    ("input_filters", "error_type"),
     [
         (0, ValueError),
         (-10, ValueError),

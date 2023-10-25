@@ -44,12 +44,12 @@ class FourierConvolution2D(tf.keras.layers.Layer):
         filters: int = 3,
         kernels: Optional[Tuple[int, int]] = None,
         use_bias: bool = True,
-        kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
-        bias_initializer: Optional[tf.keras.initializers.Initializer] = None,
         is_channel_first: bool = False,
         apply_conjugate: bool = False,
         pad_to_power_2: bool = True,
-        method: MultiplicationType = MultiplicationType.ELEMENT_WISE,
+        multiplication_type: MultiplicationType = MultiplicationType.ELEMENT_WISE,
+        kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
+        bias_initializer: Optional[tf.keras.initializers.Initializer] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize the `FourierConvolution2D` object.
@@ -59,10 +59,6 @@ class FourierConvolution2D(tf.keras.layers.Layer):
             kernels (Optional[Tuple[int, int]], optional): Kernel of the spatial convolution. Expected input
                 `[height,width]`. If `None`, kernel size is set to the input height and width. Defaults to `None`.
             use_bias (bool, optional): Whether or not to us bias weights. Defaults to `True`.
-            kernel_initializer (tf.keras.initializers.Initializer, optional): Initializer to initialize the kernels of
-                the convolution layer. Defaults to `None`.
-            bias_initializer (tf.keras.initializers.Initializer, optional): Initializer to initialize the bias weights
-                of the convolution layer. Defaults to `None`.
             is_channel_first (bool, optional): Set true if input shape is (b,c,h,w) and false if input shape is
                 (b,h,w,c). Defaults to `False`.
             apply_conjugate (bool, optional): If true, the kernels are conjugated. If so, a multiplication in the
@@ -70,9 +66,14 @@ class FourierConvolution2D(tf.keras.layers.Layer):
                 convolution layer is doing. Defaults to `False`.
             pad_to_power_2 (bool, optional): If true, input tensor is padded. FFT algorithm runs faster for lengths of
                 power of two. Defaults to `True`.
-            method (MultiplicationType, optional): Type of multiplication of the input and the weights:
-                [`MultiplicationType.ELEMENT_WISE` | `MultiplicationType.MATRIX_PRODUCT`]. Defaults to
-                `MultiplicationType.ELEMENT_WISE`.
+            multiplication_type (MultiplicationType, optional): Type of algo used for the element wise multiplication
+                and reduction of the input and the convolution kernel. [`MultiplicationType.ELEMENT_WISE` |
+                `MultiplicationType.MATRIX_PRODUCT`]. MATRIX_PRODUCT is faster, but requires more memory. ELEMENT_WISE
+                is slower but requires less memory. Defaults to `MultiplicationType.ELEMENT_WISE`.
+            kernel_initializer (tf.keras.initializers.Initializer, optional): Initializer to initialize the kernels of
+                the convolution layer. Defaults to `None`.
+            bias_initializer (tf.keras.initializers.Initializer, optional): Initializer to initialize the bias weights
+                of the convolution layer. Defaults to `None`.
             kwargs (Any): Additional key word arguments passed to the base class.
         """
         super(FourierConvolution2D, self).__init__(**kwargs)
@@ -86,14 +87,20 @@ class FourierConvolution2D(tf.keras.layers.Layer):
         self.is_channel_first = is_channel_first
         self.apply_conjugate = apply_conjugate
         self.pad_to_power_2 = pad_to_power_2
-        self.method = method
+        self.multiplication_type = multiplication_type
 
-        if method == MultiplicationType.MATRIX_PRODUCT:
-            self.multiply = self._matrix_product
-        elif method == MultiplicationType.ELEMENT_WISE:
-            self.multiply = self._elementwise_product
-        else:
-            raise ValueError(f'Entered method: {self.method.name} unkown. Use "MATRIX_PRODUCT" or "ELEMENT_WISE".')
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
+
+        valid_multiplication_types = {
+            MultiplicationType.MATRIX_PRODUCT: self._matrix_product,
+            MultiplicationType.ELEMENT_WISE: self._elementwise_product,
+        }
+
+        if multiplication_type not in valid_multiplication_types:
+            raise ValueError(
+                f"Entered multiplication_type: {self.multiplication_type.name} unkown. Valid options are: {valid_multiplication_types.keys()}"
+            )
+        self.multiply = valid_multiplication_types.get(multiplication_type)
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).
@@ -121,8 +128,8 @@ class FourierConvolution2D(tf.keras.layers.Layer):
         self.paddedImageShape = (
             self.batch_size,
             self.inp_filter,
-            self.inp_height + 2 * self.padding,
-            self.inp_width + 2 * self.padding,
+            self.inp_height + 2 * self.padding[0],
+            self.inp_width + 2 * self.padding[1],
         )
 
         if self.use_bias:
@@ -146,7 +153,8 @@ class FourierConvolution2D(tf.keras.layers.Layer):
 
         # Optionally pad to power of 2, to speed up FFT
         if self.pad_to_power_2:
-            image_shape = self._fill_image_shape_power_2()
+            # TODO: image_shape not correctly set! should be self.paddedImageShape.
+            self.paddedImageShape = self._fill_image_shape_power_2(self.paddedImageShape)
 
         # Compute DFFTs for both inputs and kernel weights
         inputs_f_domain = tf.signal.rfft2d(
@@ -162,12 +170,13 @@ class FourierConvolution2D(tf.keras.layers.Layer):
 
         # Inverse rDFFT
         output = tf.signal.irfft2d(outputs_f_domain, fft_length=[self.paddedImageShape[-2], self.paddedImageShape[-1]])
-        output = tf.roll(
-            output, shift=[2 * self.padding, 2 * self.padding], axis=[-2, -1]
-        )  # shift the samples to obtain linear conv from circular conv
+        # shift the samples to obtain linear conv from circular conv
+        output = tf.roll(output, shift=[2 * self.padding[0], 2 * self.padding[1]], axis=[-2, -1])
+
+        # obtain initial shape by removing padding
         output = tf.slice(
             output,
-            begin=[0, 0, self.padding, self.padding],
+            begin=[0, 0, self.padding[0], self.padding[1]],
             size=[self.batch_size, self.filters, self.inp_height, self.inp_width],
         )
 
@@ -178,6 +187,8 @@ class FourierConvolution2D(tf.keras.layers.Layer):
         # reverse the channel configuration to its initial config
         if not self.is_channel_first:
             output = tf.einsum("bchw->bhwc", output)
+
+        return output
 
     def _matrix_product(self, a: tf.Tensor, b: tf.Tensor) -> tf.Tensor:
         """Calculates the elementwise product for all batches and filters, by reshaping and taking the matrix product.
@@ -193,7 +204,7 @@ class FourierConvolution2D(tf.keras.layers.Layer):
         # Matrix Multiplication
         c = a @ b
         c = tf.squeeze(c, axis=-2)
-        return tf.einsum("bhwc->bchw", c)
+        return tf.einsum("bhwo->bohw", c)
 
     def _elementwise_product(self, a: tf.Tensor, b: tf.Tensor) -> tf.Tensor:
         """Calculates the element-wise product multiple times taking advantage of array broadcasting.
@@ -201,29 +212,32 @@ class FourierConvolution2D(tf.keras.layers.Layer):
         Info:
             Is slower as the matrix multiplication, but requires less memory!
         """
-        a = tf.einsum("bchw->bhwc", a)
-        a = tf.expand_dims(a, -1)  # [b,w,h,c,1]
-        b = tf.einsum("oihw->hwio", b)  # [k, k, in, out]
+        a = tf.einsum("bchw->bhwc", a)  # [b,c,h,w] -> [b,h,w,c]
+        a = tf.expand_dims(a, -1)  # [b,h,w,c] -> [b,h,w,c,1]
+        # in & out are the number of input and output filters of the conv layer. in = channels, out=filters
+        b = tf.einsum("oihw->hwio", b)  # [in ,out h, w] -> [h, w, in, out]
 
         c = a * b
-        c = tf.einsum("bhwxc->bchwx", c)
+        c = tf.einsum("bhwco->bohwc", c)
 
         return tf.math.reduce_sum(c, axis=-1)
 
-    def _get_image_padding(self) -> int:
+    def _get_image_padding(self) -> Tuple[int, int]:
         """Gets the amount of padding required to have the same spatial width before and after applying the convolution."""
-        return int((self.kernels[0] - 1) / 2)
+        return (int((self.kernels[0] - 1) / 2), int((self.kernels[1] - 1) / 2))
 
-    def _fill_image_shape_power_2(self) -> Tuple[int, int, int, int]:
+    def _fill_image_shape_power_2(self, tensor_shape: Tuple[int, int, int, int]) -> Tuple[int, int, int, int]:
         """Pads the shape of the image to be a power of two. FFT is faster for such shapes.
+
+        Args:
+            tensor_shape (Tuple[int,int]): Shape of the tensor (b, c, h, w)
 
         Returns:
             Tuple[int, int, int, int]: Image shape with padded dimensions.
         """
-        width = self.paddedImageShape[-1]
-        log2 = np.log2(width)
-        new_power = int(np.ceil(log2))
-        return (self.paddedImageShape[0], self.paddedImageShape[1], 2**new_power, 2**new_power)
+        new_power_width = int(np.ceil(np.log2(tensor_shape[3])))
+        new_power_height = int(np.ceil(np.log2(tensor_shape[2])))
+        return (tensor_shape[0], tensor_shape[1], 2**new_power_height, 2**new_power_width)
 
     def get_config(self) -> Dict[str, Any]:
         """Serialization of the object.
@@ -242,7 +256,7 @@ class FourierConvolution2D(tf.keras.layers.Layer):
                 "is_channel_first": self.is_channel_first,
                 "apply_conjugate": self.apply_conjugate,
                 "pad_to_power_2": self.pad_to_power_2,
-                "method": self.method,
+                "multiplication_type": self.multiplication_type,
             }
         )
         return config
@@ -413,6 +427,7 @@ class FFT2D(tf.keras.layers.Layer):
         self.apply_real_fft = apply_real_fft
         self.shift_fft = shift_fft
         self.policy_compute_dtype = tf.keras.mixed_precision.global_policy().compute_dtype
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         inputs = tf.cast(inputs, tf.float32)  # mixed precision not supported with float16
@@ -452,12 +467,13 @@ class FFT2D(tf.keras.layers.Layer):
         return config
 
 
+# TODO: add channel first option
 class FFT3D(tf.keras.layers.Layer):
     """Calculates the 3D descrete fourier transform over the 3 innermost channels.
 
-    For a 4D input like a batch of images of shape (batch, height, width, channel), the 3DFFT would be calculated over
-    (height, width).
-    For a 5D input, like a batch of videos of shape (batch, frame, height, width, channel), the 3DFFT would be
+    For a 4D input like a batch of images of shape (batch, channel, height, width ), the 3DFFT would be calculated over
+    (channel, height, width).
+    For a 5D input, like a batch of videos of shape (batch, channel, frame, height, width), the 3DFFT would be
     calculated over (frame, height, width).
 
     """
@@ -475,6 +491,7 @@ class FFT3D(tf.keras.layers.Layer):
         self.apply_real_fft = apply_real_fft
         self.shift_fft = shift_fft
         self.policy_compute_dtype = tf.keras.mixed_precision.global_policy().compute_dtype
+        self.input_spec = tf.keras.layers.InputSpec(min_ndim=4, max_ndim=5)
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         inputs = tf.cast(inputs, tf.float32)  # mixed precision not supported with float16
@@ -533,6 +550,7 @@ class iFFT2D(tf.keras.layers.Layer):
         self.is_channel_first = is_channel_first
         self.apply_real_fft = apply_real_fft
         self.shift_fft = shift_fft
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         if not self.is_channel_first:
@@ -591,6 +609,7 @@ class iFFT3D(tf.keras.layers.Layer):
         super(iFFT3D, self).__init__(**kwargs)
         self.apply_real_fft = apply_real_fft
         self.shift_fft = shift_fft
+        self.input_spec = tf.keras.layers.InputSpec(min_ndim=4, max_ndim=5)
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         x = inputs
@@ -639,6 +658,7 @@ class FourierPooling2D(tf.keras.layers.Layer):
         """
         super(FourierPooling2D, self).__init__(**kwargs)
         self.is_channel_first = is_channel_first
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         """Calls the `FourierPooling2D` layer.
@@ -700,6 +720,7 @@ class rFFT2DFilter(tf.keras.layers.Layer):
         super(rFFT2DFilter, self).__init__(**kwargs)
         self.is_channel_first = is_channel_first
         self.filter_type = filter_type
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).

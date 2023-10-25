@@ -24,7 +24,7 @@ class TestImageBasedLossAbstractBase:
             _ = ImageBasedLoss(global_batch_size=64, calculation_type=calculation_type)
 
     @pytest.mark.parametrize(
-        "calculation_type, expected",
+        ("calculation_type", "expected"),
         [
             ("per_channel", "_calc_loss_per_channel"),
             ("per_image", "_calc_loss_per_image"),
@@ -39,7 +39,7 @@ class TestImageBasedLossAbstractBase:
         assert instance.loss_calc_func.__name__ == expected
 
     @pytest.mark.parametrize(
-        "img1, img2, global_batch_size",
+        ("img1", "img2", "global_batch_size"),
         [
             (tf.ones(shape=(1, 1, 1, 4)), tf.ones(shape=(1, 1, 1, 4)), 1),
             (tf.ones(shape=(1, 1, 1, 3)), tf.ones(shape=(1, 1, 1, 3)), 64),
@@ -62,7 +62,7 @@ class TestImageBasedLossAbstractBase:
         assert tf.math.reduce_all(result.numpy() == pytest.approx(expected.numpy(), 0.01))
 
     @pytest.mark.parametrize(
-        "img1, img2, global_batch_size, channel_weights",
+        ("img1", "img2", "global_batch_size", "channel_weights"),
         [
             (tf.ones(shape=(1, 1, 1, 4)), tf.ones(shape=(1, 1, 1, 4)), 1, [1, 1, 1, 3]),
             (tf.ones(shape=(1, 1, 1, 3)), tf.ones(shape=(1, 1, 1, 3)), 64, [1, 1, 2]),
@@ -88,7 +88,7 @@ class TestImageBasedLossAbstractBase:
         assert tf.math.reduce_all(result.numpy() == pytest.approx(expected.numpy(), 0.01))
 
     @pytest.mark.parametrize(
-        "img_shape, normalize_last_channel, expected",
+        ("img_shape", "normalize_last_channel", "expected"),
         [
             (tf.TensorShape([1, 64, 64, 3]), False, [1, 1, 1]),
             (tf.TensorShape([1, 64, 64, 3]), True, [1, 1, 2]),
@@ -125,7 +125,7 @@ class TestPixelDistanceLoss:
             _ = PixelDistanceLoss(global_batch_size=64, loss_type=loss_type)
 
     @pytest.mark.parametrize(
-        "loss_type, expected",
+        ("loss_type", "expected"),
         [
             ("mae", tf.abs),
             ("mse", tf.square),
@@ -136,7 +136,7 @@ class TestPixelDistanceLoss:
         assert loss.error_func_type == expected
 
     @pytest.mark.parametrize(
-        "tensor1, tensor2, loss_type, expected",
+        ("tensor1", "tensor2", "loss_type", "expected"),
         [
             (3 * tf.ones(shape=[1, 1, 1, 1]), tf.ones(shape=[1, 1, 1, 1]), "mae", tf.constant(2.0)),
             (3 * tf.ones(shape=[8, 64, 64, 4]), tf.ones(shape=[8, 64, 64, 4]), "mae", tf.constant(2.0)),
@@ -160,7 +160,7 @@ class TestPixelDistanceLoss:
 
 class TestSsimLoss:
     @pytest.mark.parametrize(
-        "tensor1, tensor2, expected",
+        ("tensor1", "tensor2", "expected"),
         [
             (tf.ones(shape=[1, 1, 1, 1]), tf.ones(shape=[1, 1, 1, 1]), tf.constant(0.0)),
             (tf.ones(shape=[8, 64, 64, 4]), tf.ones(shape=[8, 64, 64, 4]), tf.constant(0.0)),

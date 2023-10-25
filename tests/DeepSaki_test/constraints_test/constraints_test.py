@@ -40,7 +40,7 @@ class TestNonNegativeConstraint:
         assert output.shape == input_tensor.shape
 
     @pytest.mark.parametrize(
-        "input, expected",
+        ("input", "expected"),
         [
             (tf.constant([1.0]), tf.constant([1.0])),
             (tf.constant([-1.0]), tf.constant([0.0])),

@@ -178,10 +178,10 @@ target-version = "py311"
 select = ["F", "E", "I", "D", "PL","N"]
 extend-select = ["W", "C90", "YTT", "ANN", "ASYNC", "A", "C4", "RET", "SIM", "PLC", "PLE", "PLR", "PLW", "FLY", "PERF", "RUF","ARG","ERA","TRY","NPY","FURB", "B","PYI","PT","Q","RET", "ICN","FIX","SLF","PIE","FBT","BLE","S"]
 ignore = ["E402","E501", "B905", "SIM300", "PD901","ANN101","FBT001","FBT002"]
-fixable = ["W", "C90", "YTT", "ANN", "ASYNC", "A", "C4", "RET", "PLC", "PLE", "PLR", "PLW", "FLY", "PERF", "RUF", "F401", "D205", "D403", "D200", "D202", "D209","I001","E711","Q","Q002"]
+fixable = ["W", "C90", "YTT", "ANN", "ASYNC", "A", "C4", "RET", "PLC", "PLE", "PLR", "PLW", "FLY", "PERF", "RUF", "F401", "D205", "D403", "D200", "D202", "D209","I001","E711","Q","Q002","PT"]
 unfixable = ["SIM"]
 line-length = 120
-extend-exclude = ["tests", "test","__init__.py"]
+extend-exclude = ["tests","test","__init__.py"]
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 [tool.ruff.isort]
 force-single-line = true
@@ -201,7 +201,7 @@ known-third-party = [
 known-first-party = []
 known-local-folder = []
 [tool.ruff.mccabe]
-max-complexity = 24
+max-complexity = 8
 [tool.ruff.pycodestyle]
 ignore-overlong-task-comments = true
 [tool.ruff.pydocstyle]
@@ -211,13 +211,20 @@ allow-star-arg-any = true
 ignore-fully-untyped = false
 mypy-init-return = true
 [tool.ruff.pylint]
-max-branches = 24
-max-returns = 12
-max-statements = 100
+max-branches = 8
+max-returns = 3
+max-statements = 30
 max-args = 15
 allow-magic-value-types = ["str", "bytes", "complex", "float", "int", "tuple"]
 [tool.ruff.pep8-naming]
 ignore-names = ["iFFT2D","iFFT3D","rFFT2D","use_residual_Conv2DBlock","use_ResidualBlock","rFFT2DFilter"]
+[tool.ruff.flake8-pytest-style]
+fixture-parentheses = true
+mark-parentheses = true
+parametrize-names-type = "tuple"
+parametrize-values-row-type = "tuple"
+parametrize-values-type = "list"
+
 
 # Static type checker
 [tool.pyright]

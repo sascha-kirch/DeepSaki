@@ -15,7 +15,7 @@ from DeepSaki.layers.pooling import (
 
 class TestGlobalSumPooling2D:
     @pytest.mark.parametrize(
-        "data_format, expected_context",
+        ("data_format", "expected_context"),
         [
             ("channels_last", does_not_raise()),
             ("channels_first", does_not_raise()),
@@ -28,7 +28,7 @@ class TestGlobalSumPooling2D:
             _ = GlobalSumPooling2D(data_format=data_format)
 
     @pytest.mark.parametrize(
-        "input_shape, expected_context",
+        ("input_shape", "expected_context"),
         [
             (tf.TensorShape((8, 64, 64, 4)), does_not_raise()),
             (tf.TensorShape((1, 32, 32, 3)), does_not_raise()),
@@ -45,7 +45,7 @@ class TestGlobalSumPooling2D:
             _ = layer(tf.ones(shape=input_shape))
 
     @pytest.mark.parametrize(
-        "input,data_format, expected_shape",
+        ("input", "data_format", "expected_shape"),
         [
             (tf.ones(shape=(8, 64, 64, 3)), "channels_last", tf.TensorShape((8, 3))),
             (tf.ones(shape=(5, 32, 32, 4)), "channels_last", tf.TensorShape((5, 4))),
@@ -63,7 +63,7 @@ class TestGlobalSumPooling2D:
         assert result.shape == expected_shape
 
     @pytest.mark.parametrize(
-        "input, expected",
+        ("input", "expected"),
         [
             (tf.ones(shape=(8, 64, 64, 3)), 64 * 64 * tf.ones(shape=(8, 3))),
             (tf.ones(shape=(5, 32, 32, 4)), 32 * 32 * tf.ones(shape=(5, 4))),
@@ -77,7 +77,7 @@ class TestGlobalSumPooling2D:
         assert tf.math.reduce_all(result.numpy() == pytest.approx(expected.numpy(), 0.01))
 
     @pytest.mark.parametrize(
-        "input, data_format, expected_shape",
+        ("input", "data_format", "expected_shape"),
         [
             (tf.TensorShape((8, 64, 64, 3)), "channels_last", tf.TensorShape((8, 3))),
             (tf.TensorShape((5, 32, 32, 4)), "channels_last", tf.TensorShape((5, 4))),
@@ -97,7 +97,7 @@ class TestGlobalSumPooling2D:
 
 class TestLearnedPooling:
     @pytest.mark.parametrize(
-        "input_shape, expected_context",
+        ("input_shape", "expected_context"),
         [
             (tf.TensorShape((8)), pytest.raises(ValueError)),
             (tf.TensorShape((8, 16)), pytest.raises(ValueError)),
@@ -114,7 +114,7 @@ class TestLearnedPooling:
             _ = layer(tf.ones(shape=input_shape))
 
     @pytest.mark.parametrize(
-        "input, pool_size, expected_shape",
+        ("input", "pool_size", "expected_shape"),
         [
             (tf.ones(shape=(8, 64, 64, 3)), 2, tf.TensorShape((8, 32, 32, 3))),
             (tf.ones(shape=(5, 32, 32, 4)), 4, tf.TensorShape((5, 8, 8, 4))),
