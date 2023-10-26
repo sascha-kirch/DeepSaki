@@ -51,7 +51,7 @@ class ImageBasedLoss(tf.keras.losses.Loss, ABC):
     def _error_func(self, tensor1: tf.Tensor, tensor2: tf.Tensor) -> tf.Tensor:
         pass
 
-    def _get_channel_weights(self, img_shape:tf.TensorShape, normalize_last_channel:bool)-> np.ndarray:
+    def _get_channel_weights(self, img_shape: tf.TensorShape, normalize_last_channel: bool) -> np.ndarray:
         channel_weight = np.ones(img_shape[-1])
         if normalize_last_channel:
             # set weight of the depth channel according to the number of color channels: e.g. for RGB = 3

@@ -5,6 +5,7 @@ Tips:
     * Tutorial of using [tf.distrubute](https://www.tensorflow.org/tutorials/distribute/custom_training) on custom
         training.
 """
+import logging
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -51,32 +52,32 @@ def detect_accelerator(
         strategy = tf.distribute.TPUStrategy(
             tpu
         )  # Going back and forth between TPU and host is expensive. Better to run 128 batches on the TPU before reporting back.
-        print("Running on TPU ", tpu.cluster_spec().as_dict()["worker"])
+        logging.info(f"Running on TPU {tpu.cluster_spec().as_dict()['worker']}")
     elif len(gpus) > 1:
         runtime_environment = "GPU"
         strategy = tf.distribute.MirroredStrategy([gpu.name for gpu in gpus])
-        print("Running on multiple GPUs ", [gpu.name for gpu in gpus])
+        logging.info(f"Running on multiple GPUs {[gpu.name for gpu in gpus]}")
     elif len(gpus) == 1:
         runtime_environment = "GPU"
         strategy = tf.distribute.get_strategy()  # default strategy that works on CPU and single GPU
-        print("Running on single GPU ", gpus[0].name)
+        logging.info(f"Running on single GPU {gpus[0].name}")
     else:
         runtime_environment = "CPU"
         strategy = tf.distribute.get_strategy()  # default strategy that works on CPU and single GPU
-        print("Running on CPU")
+        logging.info("Running on CPU")
 
-    print("Number of accelerators: ", strategy.num_replicas_in_sync)
-    print("____________________________________________________________________________________")
-    print("Device List: ")
-    print(device_lib.list_local_devices())
+    logging.info(f"Number of accelerators: {strategy.num_replicas_in_sync}")
+    logging.info("____________________________________________________________________________________")
+    logging.info("Device List: ")
+    logging.info(device_lib.list_local_devices())
 
     return strategy, runtime_environment, hw_accelerator_handle
 
 
 def enable_xla_acceleration() -> None:
     """Enable compiler acceleration for linear algebra operations."""
-    tf.config.optimizer.set_jit(enabled=True)
-    print("Linear algebra acceleration enabled")
+    tf.config.optimizer.set_jit(enabled="autoclustering")
+    logging.info("Linear algebra acceleration enabled")
 
 
 def enable_mixed_precision() -> None:
@@ -89,4 +90,4 @@ def enable_mixed_precision() -> None:
     policy_config = "mixed_bfloat16" if tpu else "mixed_float16"
     policy = tf.keras.mixed_precision.Policy(policy_config)
     tf.keras.mixed_precision.set_global_policy(policy)
-    print("Mixed precision enabled to {}".format(policy_config))
+    logging.info("Mixed precision enabled to {}".format(policy_config))

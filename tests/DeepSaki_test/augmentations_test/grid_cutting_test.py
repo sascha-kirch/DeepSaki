@@ -15,7 +15,8 @@ class TestRandomBoundingBox:
         # I loop because I hope to cover the randomness of the function...
         for _ in range(1000):
             x1, y1, x2, y2 = _random_boundingbox(height, width)
-            assert (x2 - x1) <= width and (y2 - y1) <= height
+            assert (x2 - x1) <= width
+            assert (y2 - y1) <= height
 
     @pytest.mark.parametrize("height", [10, 50, 100])
     @pytest.mark.parametrize("width", [10, 50, 100])
@@ -38,7 +39,7 @@ class TestGetMask:
         assert result.shape == [batch, height, width, channel]
 
     @pytest.mark.parametrize(
-        "input_shape, expected_dtype",
+        ("input_shape", "expected_dtype"),
         [
             ([8, 512, 512, 3], tf.float32),
             ([16, 256, 256, 64], tf.float32),
@@ -52,7 +53,7 @@ class TestGetMask:
 
 class TestInvertMask:
     @pytest.mark.parametrize(
-        "input, expected",
+        ("input", "expected"),
         [
             (tf.constant([1, 0]), tf.constant([0, 1])),
             (tf.constant([[1, 0], [1, 0]]), tf.constant([[0, 1], [0, 1]])),
@@ -60,7 +61,7 @@ class TestInvertMask:
     )
     def test_invert_mask(self, input, expected):
         result = _invert_mask(input)
-        assert tf.math.reduce_all(result.numpy() == pytest.approx(expected.numpy(),0.01))
+        assert tf.math.reduce_all(result.numpy() == pytest.approx(expected.numpy(), 0.01))
 
 
 @pytest.mark.skip(reason="Not implemented yet.")

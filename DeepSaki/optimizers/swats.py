@@ -219,6 +219,11 @@ class SwatsAdam(optimizer_v2.OptimizerV2):
         raise Exception("Optimizer is not Defined. Use adam or sgd.")
 
     def get_config(self) -> Dict[str, Any]:
+        """Serialization of the object.
+
+        Returns:
+            Dictionary with the class' variable names as keys.
+        """
         config = super(SwatsAdam, self).get_config()
         config.update(
             {
@@ -427,6 +432,11 @@ class SwatsNadam(optimizer_v2.OptimizerV2):
         raise Exception("Optimizer is not Defined. Use nadam or sgd.")
 
     def get_config(self) -> Dict[str, Any]:
+        """Serialization of the object.
+
+        Returns:
+            Dictionary with the class' variable names as keys.
+        """
         config = super(SwatsNadam, self).get_config()
         config.update(
             {

@@ -17,7 +17,7 @@ theme:
     - navigation.top
     - navigation.footer
     - toc.follow
-    #- toc.integrate
+    - toc.integrate
   name: "material"
   # https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/
   palette:

@@ -9,7 +9,7 @@ from DeepSaki.activations.complex_valued_activations import ComplexActivation
 
 class TestComplexActivation:
     @pytest.mark.parametrize(
-        "activation, input, expected",
+        ("activation", "input", "expected"),
         [
             (tf.keras.layers.ReLU(), tf.constant([1.0, -1.0]), tf.complex(real=[1.0, 0.0], imag=[0.0, 0.0])),
             (tf.keras.layers.ReLU(), tf.constant([1.0, 1.0]), tf.complex(real=[1.0, 1.0], imag=[0.0, 0.0])),
