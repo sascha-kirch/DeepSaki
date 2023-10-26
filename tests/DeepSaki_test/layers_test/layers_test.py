@@ -5,6 +5,7 @@ import inspect
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # deactivate tensorflow warnings and infos. Keep Errors
 import tensorflow as tf
 import numpy as np
+from abc import ABC, abstractmethod
 
 from DeepSaki.layers.layer_composites import (
     Conv2DSplitted,
@@ -42,6 +43,35 @@ from DeepSaki.layers.sub_model_composites import (
     Bottleneck,
     Decoder,
 )
+
+
+class DeepSakiLayerChecks(ABC):
+
+    @abstractmethod
+    def test_call_raises_error_wrong_input_dim(self):
+        ...
+
+    @abstractmethod
+    def test_call_correct_output_shape(self):
+        ...
+
+class CommonLayerChecks:
+
+    @staticmethod
+    def has_call_correct_output_shape(layer_instance, input_shape, expected_shape, make_input_complex = False):
+        input = tf.ones(shape=input_shape)
+        if make_input_complex:
+            input = tf.complex(real=input,imag=input)
+        output = layer_instance(input)
+        assert output.shape == expected_shape
+
+    @staticmethod
+    def does_call_raises_error_wrong_input_dim(layer_instance, input_shape, expected_context, make_input_complex = False):
+        with expected_context:
+            input = tf.ones(shape=input_shape)
+            if make_input_complex:
+                input = tf.complex(real=input,imag=input)
+            _ = layer_instance(input)
 
 
 @pytest.mark.parametrize(

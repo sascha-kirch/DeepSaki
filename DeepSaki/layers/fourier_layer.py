@@ -124,7 +124,7 @@ class FourierConvolution2D(tf.keras.layers.Layer):
             initializer=self.kernel_initializer,
             trainable=True,
         )
-        self.padding = self._get_image_padding()
+        self.padding = self._get_image_padding(self.kernels)
         self.paddedImageShape = (
             self.batch_size,
             self.inp_filter,
@@ -153,7 +153,6 @@ class FourierConvolution2D(tf.keras.layers.Layer):
 
         # Optionally pad to power of 2, to speed up FFT
         if self.pad_to_power_2:
-            # TODO: image_shape not correctly set! should be self.paddedImageShape.
             self.paddedImageShape = self._fill_image_shape_power_2(self.paddedImageShape)
 
         # Compute DFFTs for both inputs and kernel weights
@@ -222,9 +221,9 @@ class FourierConvolution2D(tf.keras.layers.Layer):
 
         return tf.math.reduce_sum(c, axis=-1)
 
-    def _get_image_padding(self) -> Tuple[int, int]:
+    def _get_image_padding(self, kernels:tf.Tensor) -> Tuple[int, int]:
         """Gets the amount of padding required to have the same spatial width before and after applying the convolution."""
-        return (int((self.kernels[0] - 1) / 2), int((self.kernels[1] - 1) / 2))
+        return (int((kernels[0] - 1) / 2), int((kernels[1] - 1) / 2))
 
     def _fill_image_shape_power_2(self, tensor_shape: Tuple[int, int, int, int]) -> Tuple[int, int, int, int]:
         """Pads the shape of the image to be a power of two. FFT is faster for such shapes.
@@ -400,9 +399,10 @@ class FourierFilter2D(tf.keras.layers.Layer):
 
 
 class FFT2D(tf.keras.layers.Layer):
-    """Calculates the 2D descrete fourier transform over the 2 innermost channels.
+    """Calculates the 2D descrete fourier transform over the 2 last dimensions.
 
-    For a 4D input of shape (batch, height, width, channel), the 2DFFT would be calculated over (height, width)
+    For a 4D input of shape (batch, channel, height, width), the 2DFFT would be calculated over (height, width).
+    Height and width are expected to be equal for now.
     """
 
     def __init__(
@@ -418,8 +418,9 @@ class FFT2D(tf.keras.layers.Layer):
             is_channel_first (bool, optional): Set true if input shape is (b,c,h,w) and false if input shape is
                 (b,h,w,c). Defaults to `False`.
             apply_real_fft (bool, optional): If True, rfft2D is applied, which assumes real valued inputs and halves the
-                width of the output. If False, fft2D is applied, which assumes complex input. Defaults to False.
-            shift_fft (bool, optional): If true, low frequency componentes are centered. Defaults to True.
+                width of the output(width/2+1 because center frequency is kept). If False, fft2D is applied, which
+                assumes complex input. Defaults to False.
+            shift_fft (bool, optional): If true, low frequency components are centered. Defaults to True.
             kwargs (Any): keyword arguments passed to the parent class tf.keras.layers.Layer.
         """
         super(FFT2D, self).__init__(**kwargs)
@@ -429,7 +430,39 @@ class FFT2D(tf.keras.layers.Layer):
         self.policy_compute_dtype = tf.keras.mixed_precision.global_policy().compute_dtype
         self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
+
+    def build(self, input_shape:tf.TensorShape)->None:
+        """Build layer depending on the `input_shape` (output shape of the previous layer).
+
+        Args:
+            input_shape (tf.TensorShape): Shape of the input tensor to this layer.
+
+        Raises:
+            ValueError: if height and width of the inputShape are not equal.
+        """
+        if len(input_shape) != self.input_spec.ndim:
+            raise ValueError(f"Rank of input tensor not supported. Got '{len(input_shape)}', but expected '{self.input_spec.ndim}'")
+
+        if self.is_channel_first:
+            height, width = input_shape[-2],input_shape[-1]
+        else:
+            height, width = input_shape[-3],input_shape[-2]
+
+        if height != width:
+            raise ValueError(f"Height and width is expected to be equal but got: {height=} and {width=}")
+
+
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        r"""Calls the `FFT2D` layer.
+
+        Args:
+            inputs (tf.Tensor): Tensor of shape (b,h,w,c) if `is_channel_first=False` or  Tensor of shape (b,c,h,w) if
+                `is_channel_first=True`. `h` and `w` should be equal for now.
+
+        Returns:
+            Tensor of shape (b,h,W,c) if `is_channel_first=False` or  Tensor of shape (b,c,h,W) if
+                `is_channel_first=True`. If `apply_real_fft=True` $W=\frac{w}{2}+1$.
+        """
         inputs = tf.cast(inputs, tf.float32)  # mixed precision not supported with float16
         if not self.is_channel_first:
             inputs = tf.einsum("bhwc->bchw", inputs)
@@ -469,32 +502,65 @@ class FFT2D(tf.keras.layers.Layer):
 
 # TODO: add channel first option
 class FFT3D(tf.keras.layers.Layer):
-    """Calculates the 3D descrete fourier transform over the 3 innermost channels.
+    """Calculates the 3D descrete fourier transform over the 3 last dimensions.
 
-    For a 4D input like a batch of images of shape (batch, channel, height, width ), the 3DFFT would be calculated over
+    For a 4D input like a batch of images of shape (batch, channel, height, width), the 3DFFT would be calculated over
     (channel, height, width).
     For a 5D input, like a batch of videos of shape (batch, channel, frame, height, width), the 3DFFT would be
     calculated over (frame, height, width).
 
     """
 
-    def __init__(self, apply_real_fft: bool = False, shift_fft: bool = True, **kwargs: Any) -> None:
+    def __init__(self,
+        is_channel_first: bool = False,
+        apply_real_fft: bool = False,
+        shift_fft: bool = True,
+        **kwargs: Any,
+        ) -> None:
         """Initializes the `FFT3D` layer.
 
         Args:
+            is_channel_first (bool, optional): Set true if input shape is (b,c,h,w) or (b,c,f,w,h) and false if input
+                shape is (b,h,w,c) or (b,f,w,h,c). Defaults to `False`.
             apply_real_fft (bool, optional): If True, rfft3D is applied, which assumes real valued inputs and halves the
                 width of the output. If False, fft3D is applied, which assumes complex input. Defaults to False.
-            shift_fft (bool, optional): If true, low frequency componentes are centered. Defaults to True.
+            shift_fft (bool, optional): If true, low frequency components are centered. Defaults to True.
             kwargs (Any): keyword arguments passed to the parent class tf.keras.layers.Layer.
         """
         super(FFT3D, self).__init__(**kwargs)
+        self.is_channel_first = is_channel_first
         self.apply_real_fft = apply_real_fft
         self.shift_fft = shift_fft
         self.policy_compute_dtype = tf.keras.mixed_precision.global_policy().compute_dtype
         self.input_spec = tf.keras.layers.InputSpec(min_ndim=4, max_ndim=5)
 
+
+    def _change_to_channel_first(self, input_tensor:tf.Tensor)->tf.Tensor:
+        rank = tf.rank(input_tensor)
+        if rank==4:
+            return tf.einsum("bhwc->bchw", input_tensor)
+
+        if rank==5:
+            return tf.einsum("bfhwc->bcfhw", input_tensor)
+
+        raise ValueError(f"Only supported for rank 4 and 5 tensors but got {rank=}")
+
+
+    def _change_to_channel_last(self, input_tensor:tf.Tensor)->tf.Tensor:
+        rank = tf.rank(input_tensor)
+        if rank==4:
+            return tf.einsum("bchw->bhwc", input_tensor)
+
+        if rank==5:
+            return tf.einsum("bcfhw->bfhwc", input_tensor)
+
+        raise ValueError(f"Only supported for rank 4 and 5 tensors but got {rank=}")
+
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         inputs = tf.cast(inputs, tf.float32)  # mixed precision not supported with float16
+
+        if not self.is_channel_first:
+            inputs = self._change_to_channel_first(inputs)
 
         if self.apply_real_fft:
             x = tf.signal.rfft3d(inputs)
@@ -507,6 +573,9 @@ class FFT3D(tf.keras.layers.Layer):
             if self.shift_fft:
                 x = tf.signal.fftshift(x)
 
+        if not self.is_channel_first:
+            x = self._change_to_channel_last(x)
+
         return tf.cast(tf.math.real(x), self.policy_compute_dtype)
 
     def get_config(self) -> Dict[str, Any]:
@@ -518,6 +587,7 @@ class FFT3D(tf.keras.layers.Layer):
         config = super(FFT3D, self).get_config()
         config.update(
             {
+                "is_channel_first":self.is_channel_first,
                 "apply_real_fft": self.apply_real_fft,
                 "shift_fft": self.shift_fft,
                 "policy_compute_dtype": self.policy_compute_dtype,
@@ -543,16 +613,30 @@ class iFFT2D(tf.keras.layers.Layer):
                 (b,h,w,c). Defaults to `False`.
             apply_real_fft (bool, optional): If True, rfft2D is applied, which assumes real valued inputs and halves the
                 width of the output. If False, fft2D is applied, which assumes complex input. Defaults to False.
-            shift_fft (bool, optional): If true, low frequency componentes are centered. Defaults to True.
+            shift_fft (bool, optional): If true, low frequency components are centered. Defaults to True.
             kwargs (Any): keyword arguments passed to the parent class tf.keras.layers.Layer.
         """
         super(iFFT2D, self).__init__(**kwargs)
         self.is_channel_first = is_channel_first
         self.apply_real_fft = apply_real_fft
         self.shift_fft = shift_fft
-        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4, dtype=tf.complex64)
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """Calls the `iFFT2D` layer.
+
+        Args:
+            inputs (tf.Tensor): Input Tensor. shape depends on attributes `is_channel_first` and `apply_real_fft`. <br>
+                `is_channel_first=False`, `apply_real_fft=False`: Expected shape of input tensor: (b,h,w,c) <br>
+                `is_channel_first=True`, `apply_real_fft=False`: Expected shape of input tensor: (b,c,h,w) <br>
+                `is_channel_first=False`, `apply_real_fft=True`: Expected shape of input tensor: (b,h,w=h/2+1,c) <br>
+                `is_channel_first=True`, `apply_real_fft=True`: Expected shape of input tensor: (b,c,h,w=h/2+1)
+
+        Returns:
+            Tensor of shape: <br>
+                `is_channel_first=False`: Expected shape of input tensor: (b,h,w=h,c) <br>
+                `is_channel_first=True`: Expected shape of input tensor: (b,c,h,w=h)
+        """
         if not self.is_channel_first:
             inputs = tf.einsum("bhwc->bchw", inputs)
         x = inputs
@@ -603,13 +687,13 @@ class iFFT3D(tf.keras.layers.Layer):
         Args:
             apply_real_fft (bool, optional): If True, rfft3D is applied, which assumes real valued inputs and halves the
                 width of the output. If False, fft3D is applied, which assumes complex input. Defaults to False.
-            shift_fft (bool, optional): If true, low frequency componentes are centered. Defaults to True.
+            shift_fft (bool, optional): If true, low frequency components are centered. Defaults to True.
             kwargs (Any): keyword arguments passed to the parent class tf.keras.layers.Layer.
         """
         super(iFFT3D, self).__init__(**kwargs)
         self.apply_real_fft = apply_real_fft
         self.shift_fft = shift_fft
-        self.input_spec = tf.keras.layers.InputSpec(min_ndim=4, max_ndim=5)
+        self.input_spec = tf.keras.layers.InputSpec(min_ndim=4, max_ndim=5, dtype=tf.complex64)
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         x = inputs

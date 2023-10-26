@@ -18,6 +18,7 @@ class ReflectionPadding2D(tf.keras.layers.Layer):
         """
         super(ReflectionPadding2D, self).__init__(**kwargs)
         self.padding = tuple(padding)
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
     @tf.custom_gradient
     def _padding_func(self, input_tensor: tf.Tensor) -> Tuple[tf.Tensor, Callable[[tf.Tensor], tf.Tensor]]:
