@@ -3,6 +3,7 @@ from typing import List
 
 import tensorflow as tf
 
+
 def make_initializer_complex(
     initializer: tf.keras.initializers.Initializer,
 ) -> Callable[[List[int], tf.DType], tf.complex]:

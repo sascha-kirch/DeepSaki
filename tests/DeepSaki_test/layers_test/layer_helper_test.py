@@ -1,19 +1,17 @@
-import pytest
 import os
+
+import pytest
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # deactivate tensorflow warnings and infos. Keep Errors
 import tensorflow as tf
-import numpy as np
 
-from DeepSaki.layers.layer_helper import (
-    PaddingType,
-    InitializerFunc,
-    get_initializer,
-    pad_func,
-    dropout_func,
-    plot_layer,
-)
-from DeepSaki.initializers.he_alpha import HeAlphaNormal, HeAlphaUniform
+from DeepSaki.initializers.he_alpha import HeAlphaNormal
+from DeepSaki.initializers.he_alpha import HeAlphaUniform
+from DeepSaki.layers.layer_helper import InitializerFunc
+from DeepSaki.layers.layer_helper import PaddingType
+from DeepSaki.layers.layer_helper import dropout_func
+from DeepSaki.layers.layer_helper import get_initializer
+from DeepSaki.layers.layer_helper import pad_func
 from DeepSaki.layers.padding import ReflectionPadding2D
 
 

@@ -1,11 +1,13 @@
-import pytest
 import os
+
+import pytest
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # deactivate tensorflow warnings and infos. Keep Errors
 import tensorflow as tf
-import numpy as np
 
-from DeepSaki.losses.image_based_losses import PixelDistanceLoss, StructuralSimilarityLoss, ImageBasedLoss
+from DeepSaki.losses.image_based_losses import ImageBasedLoss
+from DeepSaki.losses.image_based_losses import PixelDistanceLoss
+from DeepSaki.losses.image_based_losses import StructuralSimilarityLoss
 
 
 class TestImageBasedLossAbstractBase:

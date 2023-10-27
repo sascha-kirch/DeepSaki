@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import Any
+from typing import Callable
 from typing import Dict
 from typing import Literal
 from typing import Optional
@@ -9,6 +10,7 @@ import numpy as np
 import tensorflow as tf
 
 from DeepSaki.initializers.initializer_helper import make_initializer_complex
+
 
 class MultiplicationType(Enum):
     """`Enum` used to define how two matrices shall be multiplied.
@@ -36,7 +38,78 @@ class FrequencyFilter(Enum):
     HIGH_PASS = 2
 
 
-class FourierConvolution2D(tf.keras.layers.Layer):
+# Base class below has no init. so if subclass calls super().__init__ it takes the one of tf.keras.Layer.
+class FourierLayer(tf.keras.layers.Layer):
+    """Base Class for Fourier Layers."""
+
+    def _change_to_channel_first(self, input_tensor: tf.Tensor) -> tf.Tensor:
+        rank = tf.rank(input_tensor)
+        if rank == 4:
+            return tf.einsum("bhwc->bchw", input_tensor)
+
+        if rank == 5:
+            return tf.einsum("bfhwc->bcfhw", input_tensor)
+
+        raise ValueError(f"Only supported for rank 4 and 5 tensors but got {rank=}")
+
+    def _change_to_channel_last(self, input_tensor: tf.Tensor) -> tf.Tensor:
+        rank = tf.rank(input_tensor)
+        if rank == 4:
+            return tf.einsum("bchw->bhwc", input_tensor)
+
+        if rank == 5:
+            return tf.einsum("bcfhw->bfhwc", input_tensor)
+
+        raise ValueError(f"Only supported for rank 4 and 5 tensors but got {rank=}")
+
+    def _matrix_product(self, a: tf.Tensor, b: tf.Tensor) -> tf.Tensor:
+        """Calculates the elementwise product for all batches and filters, by reshaping and taking the matrix product.
+
+        Info:
+            Is much faster, but requires more memory!
+        """
+        a = tf.einsum("bchw->bhwc", a)
+        a = tf.expand_dims(a, -2)  # [b,w,h,1,c]
+
+        b = tf.einsum("oihw->hwio", b)
+
+        # Matrix Multiplication
+        c = a @ b
+        c = tf.squeeze(c, axis=-2)
+        return tf.einsum("bhwo->bohw", c)
+
+    def _elementwise_product(self, a: tf.Tensor, b: tf.Tensor) -> tf.Tensor:
+        """Calculates the element-wise product multiple times taking advantage of array broadcasting.
+
+        Info:
+            Is slower as the matrix multiplication, but requires less memory!
+        """
+        a = tf.einsum("bchw->bhwc", a)  # [b,c,h,w] -> [b,h,w,c]
+        a = tf.expand_dims(a, -1)  # [b,h,w,c] -> [b,h,w,c,1]
+        # in & out are the number of input and output filters of the conv layer. in = channels, out=filters
+        b = tf.einsum("oihw->hwio", b)  # [in ,out h, w] -> [h, w, in, out]
+
+        c = a * b
+        c = tf.einsum("bhwco->bohwc", c)
+
+        return tf.math.reduce_sum(c, axis=-1)
+
+    def _get_multiplication_function(
+        self, multiplication_type: MultiplicationType
+    ) -> Callable[[tf.Tensor, tf.Tensor], tf.Tensor]:
+        valid_multiplication_types = {
+            MultiplicationType.MATRIX_PRODUCT: self._matrix_product,
+            MultiplicationType.ELEMENT_WISE: self._elementwise_product,
+        }
+
+        if multiplication_type not in valid_multiplication_types:
+            raise ValueError(
+                f"Entered multiplication_type: {self.multiplication_type.name} unkown. Valid options are: {valid_multiplication_types.keys()}"
+            )
+        return valid_multiplication_types.get(multiplication_type)
+
+
+class FourierConvolution2D(FourierLayer):
     """Performs a convolution by transforming into fourier domain. Layer input is asumed to be in spatial domain."""
 
     def __init__(
@@ -91,16 +164,7 @@ class FourierConvolution2D(tf.keras.layers.Layer):
 
         self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
-        valid_multiplication_types = {
-            MultiplicationType.MATRIX_PRODUCT: self._matrix_product,
-            MultiplicationType.ELEMENT_WISE: self._elementwise_product,
-        }
-
-        if multiplication_type not in valid_multiplication_types:
-            raise ValueError(
-                f"Entered multiplication_type: {self.multiplication_type.name} unkown. Valid options are: {valid_multiplication_types.keys()}"
-            )
-        self.multiply = valid_multiplication_types.get(multiplication_type)
+        self.multiply = self._get_multiplication_function(multiplication_type)
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).
@@ -124,7 +188,7 @@ class FourierConvolution2D(tf.keras.layers.Layer):
             initializer=self.kernel_initializer,
             trainable=True,
         )
-        self.padding = self._get_image_padding()
+        self.padding = self._get_image_padding(self.kernels)
         self.paddedImageShape = (
             self.batch_size,
             self.inp_filter,
@@ -149,11 +213,10 @@ class FourierConvolution2D(tf.keras.layers.Layer):
         """
         # FFT2D is calculated over last two dimensions!
         if not self.is_channel_first:
-            inputs = tf.einsum("bhwc->bchw", inputs)
+            inputs = self._change_to_channel_first(inputs)
 
         # Optionally pad to power of 2, to speed up FFT
         if self.pad_to_power_2:
-            # TODO: image_shape not correctly set! should be self.paddedImageShape.
             self.paddedImageShape = self._fill_image_shape_power_2(self.paddedImageShape)
 
         # Compute DFFTs for both inputs and kernel weights
@@ -186,45 +249,13 @@ class FourierConvolution2D(tf.keras.layers.Layer):
 
         # reverse the channel configuration to its initial config
         if not self.is_channel_first:
-            output = tf.einsum("bchw->bhwc", output)
+            output = self._change_to_channel_last(output)
 
         return output
 
-    def _matrix_product(self, a: tf.Tensor, b: tf.Tensor) -> tf.Tensor:
-        """Calculates the elementwise product for all batches and filters, by reshaping and taking the matrix product.
-
-        Info:
-            Is much faster, but requires more memory!
-        """
-        a = tf.einsum("bchw->bhwc", a)
-        a = tf.expand_dims(a, -2)  # [b,w,h,1,c]
-
-        b = tf.einsum("oihw->hwio", b)
-
-        # Matrix Multiplication
-        c = a @ b
-        c = tf.squeeze(c, axis=-2)
-        return tf.einsum("bhwo->bohw", c)
-
-    def _elementwise_product(self, a: tf.Tensor, b: tf.Tensor) -> tf.Tensor:
-        """Calculates the element-wise product multiple times taking advantage of array broadcasting.
-
-        Info:
-            Is slower as the matrix multiplication, but requires less memory!
-        """
-        a = tf.einsum("bchw->bhwc", a)  # [b,c,h,w] -> [b,h,w,c]
-        a = tf.expand_dims(a, -1)  # [b,h,w,c] -> [b,h,w,c,1]
-        # in & out are the number of input and output filters of the conv layer. in = channels, out=filters
-        b = tf.einsum("oihw->hwio", b)  # [in ,out h, w] -> [h, w, in, out]
-
-        c = a * b
-        c = tf.einsum("bhwco->bohwc", c)
-
-        return tf.math.reduce_sum(c, axis=-1)
-
-    def _get_image_padding(self) -> Tuple[int, int]:
+    def _get_image_padding(self, kernels: tf.Tensor) -> Tuple[int, int]:
         """Gets the amount of padding required to have the same spatial width before and after applying the convolution."""
-        return (int((self.kernels[0] - 1) / 2), int((self.kernels[1] - 1) / 2))
+        return (int((kernels[0] - 1) / 2), int((kernels[1] - 1) / 2))
 
     def _fill_image_shape_power_2(self, tensor_shape: Tuple[int, int, int, int]) -> Tuple[int, int, int, int]:
         """Pads the shape of the image to be a power of two. FFT is faster for such shapes.
@@ -262,8 +293,11 @@ class FourierConvolution2D(tf.keras.layers.Layer):
         return config
 
 
-class FourierFilter2D(tf.keras.layers.Layer):
+class FourierFilter2D(FourierLayer):
     """Complex-valued learnable filter in frequency domain. Expects input data to be in the fourier domain.
+
+    The filter has the same size as the input and can hence act as any type of filter: low-pass, high-pass, band-pass,
+    band-stop or any combination.
 
     To transform an image into the frequency domain you can use `DeepSaki.layers.FFT2D`.
 
@@ -273,7 +307,9 @@ class FourierFilter2D(tf.keras.layers.Layer):
     # pseudo code to load data
     image_dataset = load_data(data_path)
     x = dsk.layers.FFT2D()(image_dataset)
+    x = dsk.layers.FourierFilter2D(filters=32)(x)
     x = dsk.layers.FourierFilter2D(filters=64)(x)
+    x = dsk.layers.FourierFilter2D(filters=128)(x)
     x = dsk.layers.iFFT2D()(x)
 
     ```
@@ -283,9 +319,10 @@ class FourierFilter2D(tf.keras.layers.Layer):
         self,
         filters: int = 3,
         use_bias: bool = True,
+        is_channel_first: bool = False,
+        multiplication_type: MultiplicationType = MultiplicationType.ELEMENT_WISE,
         filter_initializer: Optional[tf.keras.initializers.Initializer] = None,
         bias_initializer: Optional[tf.keras.initializers.Initializer] = None,
-        is_channel_first: bool = False,
         **kwargs: Any,
     ) -> None:
         """Initialize the `FourierFilter2D` object.
@@ -293,17 +330,23 @@ class FourierFilter2D(tf.keras.layers.Layer):
         Args:
             filters (int, optional): Number of independent filters. Defaults to 3.
             use_bias (bool, optional): Whether or not to us bias weights. Defaults to `True`.
+            is_channel_first (bool, optional): Set true if input shape is (b,c,h,w) and false if input shape is
+                (b,h,w,c). Defaults to `False`.
+            multiplication_type (MultiplicationType, optional): Type of algo used for the element wise multiplication
+                and reduction of the input and the filter weights. [`MultiplicationType.ELEMENT_WISE` |
+                `MultiplicationType.MATRIX_PRODUCT`]. MATRIX_PRODUCT is faster, but requires more memory. ELEMENT_WISE
+                is slower but requires less memory. Defaults to `MultiplicationType.ELEMENT_WISE`.
             filter_initializer (tf.keras.initializers.Initializer, optional): Initializer to initialize the wheights of
                 the filter layer. Defaults to `None`.
             bias_initializer (tf.keras.initializers.Initializer, optional): Initializer to initialize the wheights of
                 the bias weights. Defaults to `None`.
-            is_channel_first (bool, optional): Set true if input shape is (b,c,h,w) and false if input shape is
-                (b,h,w,c). Defaults to `False`.
             kwargs (Any): Additional key word arguments passed to the base class.
         """
         super(FourierFilter2D, self).__init__(**kwargs)
         self.filters = filters
         self.use_bias = use_bias
+        self.is_channel_first = is_channel_first
+        self.multiplication_type = multiplication_type
 
         filter_initializer = (
             tf.keras.initializers.RandomUniform(-0.05, 0.05) if filter_initializer is None else filter_initializer
@@ -311,11 +354,9 @@ class FourierFilter2D(tf.keras.layers.Layer):
         bias_initializer = tf.keras.initializers.Zeros() if bias_initializer is None else bias_initializer
         self.filter_initializer = make_initializer_complex(filter_initializer)
         self.bias_initializer = make_initializer_complex(bias_initializer)
-        self.is_channel_first = is_channel_first
+        self.multiply = self._get_multiplication_function(multiplication_type)
 
-        self.fourier_filter = None  # shape: batch, height, width, input_filters, output_filters
-        self.fourier_bias = None
-        self.out_shape = None
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4, dtype=tf.complex64)
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).
@@ -325,22 +366,19 @@ class FourierFilter2D(tf.keras.layers.Layer):
         """
         super(FourierFilter2D, self).build(input_shape)
         if self.is_channel_first:
-            batch_size, inp_filter, inp_height, inp_width = input_shape
+            _, channel, height, width = input_shape
         else:
-            batch_size, inp_height, inp_width, inp_filter = input_shape
+            _, height, width, channel = input_shape
 
-        # weights are independent from batch size. Filter dimensions differ from convolution, since FFT2D is calculated over last 2 dimensions
         self.fourier_filter = self.add_weight(
             name="filter",
-            shape=[inp_filter, inp_height, inp_width, self.filters],
+            shape=[self.filters, channel, height, width],
             initializer=self.filter_initializer,
             trainable=True,
             dtype=tf.dtypes.complex64,
         )
 
-        if (
-            self.use_bias
-        ):  # shape: [filter,1,1] so it can be broadcasted when adding to the output, since FFT asumes channel first!
+        if self.use_bias:
             self.fourier_bias = self.add_weight(
                 name="bias",
                 shape=[self.filters, 1, 1],
@@ -349,34 +387,27 @@ class FourierFilter2D(tf.keras.layers.Layer):
                 dtype=tf.dtypes.complex64,
             )
 
-        # Output shape: batch_size, self.filters, inp_height, inp_width. Filters is zero, since concatenated later
-        self.out_shape = (batch_size, 0, inp_height, inp_width)
-
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
-        """I take advantage of broadcasting to calculate the batches: https://numpy.org/doc/stable/user/basics.broadcasting.html"""
-        if not self.is_channel_first:  # FFT2D is calculated over last two dimensions!
-            inputs = tf.einsum("bhwc->bchw", inputs)
+        """Calls the `FourierFilter2D` layer.
 
-        output = np.ndarray(shape=self.out_shape)
-        for current_filter in range(self.filters):
-            # inputs:(batch, inp_filter, height, width ), fourier_filter:(...,inp_filter,height, width, out_filter)
-            output = tf.concat(
-                [
-                    output,
-                    tf.reduce_sum(
-                        inputs * self.fourier_filter[:, :, :, current_filter],
-                        axis=-3,  # sum over all applied filters
-                        keepdims=True,
-                    ),
-                ],
-                axis=-3,  # is the new filter count, since channel first
-            )
+        Args:
+            inputs (tf.Tensor): Complex valued tensor of shape (b,h,w,c) if `is_channel_first=False` or Tensor of shape
+            (b,c,h,w) if `is_channel_first=True`.
+
+        Returns:
+            Complex valued tensor of shape (b,h,w,`filters`) if `is_channel_first=False` or Tensor of shape
+                (b,`filters`,h,w) if `is_channel_first=True`.
+        """
+        if not self.is_channel_first:  # FFT2D is calculated over last two dimensions!
+            inputs = self._change_to_channel_first(inputs)
+
+        output = self.multiply(inputs, self.fourier_filter)
 
         if self.use_bias:
             output += self.fourier_bias
 
         if not self.is_channel_first:  # reverse the channel configuration to its initial config
-            output = tf.einsum("bchw->bhwc", output)
+            output = self._change_to_channel_last(output)
 
         return output
 
@@ -394,15 +425,27 @@ class FourierFilter2D(tf.keras.layers.Layer):
                 "filter_initializer": self.filter_initializer,
                 "bias_initializer": self.bias_initializer,
                 "is_channel_first": self.is_channel_first,
+                "multiplication_type": self.multiplication_type,
             }
         )
         return config
 
 
-class FFT2D(tf.keras.layers.Layer):
-    """Calculates the 2D descrete fourier transform over the 2 innermost channels.
+class FFT2D(FourierLayer):
+    """Calculates the 2D descrete fourier transform over the 2 last dimensions.
 
-    For a 4D input of shape (batch, height, width, channel), the 2DFFT would be calculated over (height, width)
+    For a 4D input of shape (batch, channel, height, width), the 2DFFT would be calculated over (height, width).
+
+    Know what to expect:
+        | input shape | input dtype                 |   apply_real_fft   |  output dtype           | output shape |
+        |-------------|-----------------------------|:------------------:|------------------------:|-------------:|
+        | (1,8,8,3)   | real                        |  True              | complex                 |  (1,8,5,3)   |
+        | (1,8,8,3)   | real -> transformed complex |  false             | complex                 |  (1,8,8,3)   |
+        | (1,8,8,3)   | complex                     |  True(Value Error) | n.a.                    |     n.a.     |
+        | (1,8,8,3)   | complex                     |  False             | complex                 |  (1,8,8,3)   |
+
+    Limitations:
+        Height and width are expected to be equal for now.
     """
 
     def __init__(
@@ -418,8 +461,9 @@ class FFT2D(tf.keras.layers.Layer):
             is_channel_first (bool, optional): Set true if input shape is (b,c,h,w) and false if input shape is
                 (b,h,w,c). Defaults to `False`.
             apply_real_fft (bool, optional): If True, rfft2D is applied, which assumes real valued inputs and halves the
-                width of the output. If False, fft2D is applied, which assumes complex input. Defaults to False.
-            shift_fft (bool, optional): If true, low frequency componentes are centered. Defaults to True.
+                width of the output(width/2+1 because center frequency is kept). If False, fft2D is applied, which
+                assumes complex input. Defaults to False.
+            shift_fft (bool, optional): If true, low frequency components are centered. Defaults to True.
             kwargs (Any): keyword arguments passed to the parent class tf.keras.layers.Layer.
         """
         super(FFT2D, self).__init__(**kwargs)
@@ -427,27 +471,62 @@ class FFT2D(tf.keras.layers.Layer):
         self.apply_real_fft = apply_real_fft
         self.shift_fft = shift_fft
         self.policy_compute_dtype = tf.keras.mixed_precision.global_policy().compute_dtype
-        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
+
+        dtype = tf.float32 if self.apply_real_fft else tf.complex64
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4, dtype=dtype)
+
+    def build(self, input_shape: tf.TensorShape) -> None:
+        """Build layer depending on the `input_shape` (output shape of the previous layer).
+
+        Args:
+            input_shape (tf.TensorShape): Shape of the input tensor to this layer.
+
+        Raises:
+            ValueError: if height and width of the inputShape are not equal.
+        """
+        if len(input_shape) != self.input_spec.ndim:
+            raise ValueError(
+                f"Rank of input tensor not supported. Got '{len(input_shape)}', but expected '{self.input_spec.ndim}'"
+            )
+
+        if self.is_channel_first:
+            height, width = input_shape[-2], input_shape[-1]
+        else:
+            height, width = input_shape[-3], input_shape[-2]
+
+        if height != width:
+            raise ValueError(f"Height and width is expected to be equal but got: {height=} and {width=}")
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
-        inputs = tf.cast(inputs, tf.float32)  # mixed precision not supported with float16
+        r"""Calls the `FFT2D` layer.
+
+        Args:
+            inputs (tf.Tensor): Tensor of shape (b,h,w,c) if `is_channel_first=False` or Tensor of shape (b,c,h,w) if
+                `is_channel_first=True`. `h` and `w` should be equal for now.
+
+        Returns:
+            Tensor of shape (b,h,Wo,c) if `is_channel_first=False` or  Tensor of shape (b,c,h,Wo) if
+                `is_channel_first=True`. If `apply_real_fft=True` $Wo=\frac{w}{2}+1$.
+        """
         if not self.is_channel_first:
-            inputs = tf.einsum("bhwc->bchw", inputs)
+            inputs = self._change_to_channel_first(inputs)
 
         if self.apply_real_fft:
             x = tf.signal.rfft2d(inputs)
             if self.shift_fft:
                 x = tf.signal.fftshift(x, axes=[-2])
         else:
-            imag = tf.zeros_like(inputs)
-            inputs = tf.complex(inputs, imag)  # fft2d requires complex inputs -> create complex with 0 imaginary
+            if inputs.dtype not in [tf.complex64, tf.complex128]:
+                imag = tf.zeros_like(inputs)
+                inputs = tf.complex(inputs, imag)  # fft2d requires complex inputs -> create complex with 0 imaginary
             x = tf.signal.fft2d(inputs)
             if self.shift_fft:
                 x = tf.signal.fftshift(x)
 
         if not self.is_channel_first:  # reverse the channel configuration to its initial config
-            x = tf.einsum("bchw->bhwc", x)
-        return tf.cast(tf.math.real(x), self.policy_compute_dtype)
+            x = self._change_to_channel_last(x)
+
+        return x
 
     def get_config(self) -> Dict[str, Any]:
         """Serialization of the object.
@@ -467,47 +546,70 @@ class FFT2D(tf.keras.layers.Layer):
         return config
 
 
-# TODO: add channel first option
-class FFT3D(tf.keras.layers.Layer):
-    """Calculates the 3D descrete fourier transform over the 3 innermost channels.
+class FFT3D(FourierLayer):
+    """Calculates the 3D descrete fourier transform over the 3 last dimensions.
 
-    For a 4D input like a batch of images of shape (batch, channel, height, width ), the 3DFFT would be calculated over
+    For a 4D input like a batch of images of shape (batch, channel, height, width), the 3DFFT would be calculated over
     (channel, height, width).
     For a 5D input, like a batch of videos of shape (batch, channel, frame, height, width), the 3DFFT would be
     calculated over (frame, height, width).
-
     """
 
-    def __init__(self, apply_real_fft: bool = False, shift_fft: bool = True, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        is_channel_first: bool = False,
+        apply_real_fft: bool = False,
+        shift_fft: bool = True,
+        **kwargs: Any,
+    ) -> None:
         """Initializes the `FFT3D` layer.
 
         Args:
+            is_channel_first (bool, optional): Set true if input shape is (b,c,h,w) or (b,c,f,w,h) and false if input
+                shape is (b,h,w,c) or (b,f,w,h,c). Defaults to `False`.
             apply_real_fft (bool, optional): If True, rfft3D is applied, which assumes real valued inputs and halves the
                 width of the output. If False, fft3D is applied, which assumes complex input. Defaults to False.
-            shift_fft (bool, optional): If true, low frequency componentes are centered. Defaults to True.
+            shift_fft (bool, optional): If true, low frequency components are centered. Defaults to True.
             kwargs (Any): keyword arguments passed to the parent class tf.keras.layers.Layer.
         """
         super(FFT3D, self).__init__(**kwargs)
+        self.is_channel_first = is_channel_first
         self.apply_real_fft = apply_real_fft
         self.shift_fft = shift_fft
         self.policy_compute_dtype = tf.keras.mixed_precision.global_policy().compute_dtype
-        self.input_spec = tf.keras.layers.InputSpec(min_ndim=4, max_ndim=5)
+        dtype = tf.float32 if self.apply_real_fft else tf.complex64
+        self.input_spec = tf.keras.layers.InputSpec(min_ndim=4, max_ndim=5, dtype=dtype)
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
-        inputs = tf.cast(inputs, tf.float32)  # mixed precision not supported with float16
+        r"""Calls the `FFT3D` layer.
+
+        Args:
+            inputs (tf.Tensor): Tensor of shape (b,h,w,c) or (b,f,w,h,c) if `is_channel_first=False` or  Tensor of
+                shape (b,c,h,w) or (b,c,f,w,h) if `is_channel_first=True`. `h` and `w` should be equal for now.
+
+        Returns:
+            Tensor of shape (b,h,Wo,c) or (b,f,h,Wo,c) if `is_channel_first=False` or Tensor of shape (b,c,h,Wo) or
+                (b,f,c,h,Wo) if `is_channel_first=True`. If `apply_real_fft=True` $Wo=\frac{w}{2}+1$.
+        """
+        if not self.is_channel_first:
+            inputs = self._change_to_channel_first(inputs)
 
         if self.apply_real_fft:
             x = tf.signal.rfft3d(inputs)
             if self.shift_fft:
                 x = tf.signal.fftshift(x, axes=[-2])
         else:
-            imag = tf.zeros_like(inputs)
-            inputs = tf.complex(inputs, imag)  # fft3d requires complex inputs -> create complex with 0 imaginary
+            if inputs.dtype not in [tf.complex64, tf.complex128]:
+                imag = tf.zeros_like(inputs)
+                inputs = tf.complex(inputs, imag)  # fft3d requires complex inputs -> create complex with 0 imaginary
             x = tf.signal.fft3d(inputs)
             if self.shift_fft:
                 x = tf.signal.fftshift(x)
 
-        return tf.cast(tf.math.real(x), self.policy_compute_dtype)
+        if not self.is_channel_first:
+            x = self._change_to_channel_last(x)
+
+        return x
 
     def get_config(self) -> Dict[str, Any]:
         """Serialization of the object.
@@ -518,6 +620,7 @@ class FFT3D(tf.keras.layers.Layer):
         config = super(FFT3D, self).get_config()
         config.update(
             {
+                "is_channel_first": self.is_channel_first,
                 "apply_real_fft": self.apply_real_fft,
                 "shift_fft": self.shift_fft,
                 "policy_compute_dtype": self.policy_compute_dtype,
@@ -526,14 +629,45 @@ class FFT3D(tf.keras.layers.Layer):
         return config
 
 
-class iFFT2D(tf.keras.layers.Layer):
-    """Calculates the 2D inverse FFT."""
+class iFFT2D(FourierLayer):
+    """Calculates the 2D inverse FFT.
+
+    Know what to expect:
+        |   apply_real_fft   |input generated by          | input shape | input dtype  |  output dtype   | output shape |
+        |:------------------:|----------------------------|-------------|--------------|----------------:|-------------:|
+        |  True              | FFT2D(apply_real_fft=True) | (1,8,8,3)   | complex      | real            |  (1,8,5,3)   |
+        |  false             | FFT2D(apply_real_fft=False)| (1,8,8,3)   | complex      | complex         |  (1,8,8,3)   |
+
+    **Examples:**
+        ```python hl_lines="5"
+        import DeepSaki as dsk
+        import tensorflow as tf
+
+        real_data = tf.random.normal(shape=(8,64,64,3))
+        complex_data = tf.complex(real_data,real_data)
+
+        # Real FFT with real valued data
+        x = dsk.layers.FFT2D(apply_real_fft = True)(real_data) #<tf.Tensor: shape=(8, 64, 33, 3), dtype=complex64>
+        x = dsk.layers.iFFT2D(apply_real_fft = True)(x) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=float32>
+
+        # Standard FFT with complex valued data
+        x = dsk.layers.FFT2D(apply_real_fft = False)(complex_data) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
+        x = dsk.layers.iFFT2D(apply_real_fft = False)(x) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
+
+        # Standard FFT with real valued data - FFT2D will create a pseude complex tensor tf.complex(real, tf.zeros_like(real))
+        x = dsk.layers.FFT2D(apply_real_fft = False)(real_data) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
+        x = dsk.layers.iFFT2D(apply_real_fft = False)(x) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
+        x = tf.math.real(x) # can be casted to real without issues, since imag values are all zero
+        ```
+
+    """
 
     def __init__(
         self,
         is_channel_first: bool = False,
         apply_real_fft: bool = False,
         shift_fft: bool = True,
+        fft_length: Optional[Tuple[int, int]] = None,
         **kwargs: Any,
     ) -> None:
         """Initializes the `iFFT2D` layer.
@@ -543,33 +677,48 @@ class iFFT2D(tf.keras.layers.Layer):
                 (b,h,w,c). Defaults to `False`.
             apply_real_fft (bool, optional): If True, rfft2D is applied, which assumes real valued inputs and halves the
                 width of the output. If False, fft2D is applied, which assumes complex input. Defaults to False.
-            shift_fft (bool, optional): If true, low frequency componentes are centered. Defaults to True.
+            shift_fft (bool, optional): If true, low frequency components are centered. Defaults to True.
+            fft_length (Optional[Tuple[int,int]]): The FFT length for each dimension of the real FFT. Defaults to None.
             kwargs (Any): keyword arguments passed to the parent class tf.keras.layers.Layer.
         """
         super(iFFT2D, self).__init__(**kwargs)
         self.is_channel_first = is_channel_first
         self.apply_real_fft = apply_real_fft
         self.shift_fft = shift_fft
-        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
+        self.fft_length = fft_length
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4, dtype=tf.complex64)
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """Calls the `iFFT2D` layer.
+
+        Args:
+            inputs (tf.Tensor): Complex valued input Tensor. Shape depends on attributes `is_channel_first` and `apply_real_fft`. <br>
+                `is_channel_first=False`, `apply_real_fft=False`: Expected shape of input tensor: (b,h,w,c) <br>
+                `is_channel_first=True`, `apply_real_fft=False`: Expected shape of input tensor: (b,c,h,w) <br>
+                `is_channel_first=False`, `apply_real_fft=True`: Expected shape of input tensor: (b,h,w=h/2+1,c) <br>
+                `is_channel_first=True`, `apply_real_fft=True`: Expected shape of input tensor: (b,c,h,w=h/2+1)
+
+        Returns:
+            Tensor of shape: <br>
+                `is_channel_first=False`: Expected shape of input tensor: (b,h,w=h,c) <br>
+                `is_channel_first=True`: Expected shape of input tensor: (b,c,h,w=h)
+        """
         if not self.is_channel_first:
-            inputs = tf.einsum("bhwc->bchw", inputs)
+            inputs = self._change_to_channel_first(inputs)
         x = inputs
 
         if self.apply_real_fft:
             if self.shift_fft:
                 x = tf.signal.ifftshift(x, axes=[-2])
-            x = tf.signal.irfft2d(x)
+            x = tf.signal.irfft2d(x, fft_length=self.fft_length)
         else:
             if self.shift_fft:
                 x = tf.signal.ifftshift(x)
             x = tf.signal.ifft2d(x)
 
-        x = tf.math.real(x)
-
         if not self.is_channel_first:  # reverse the channel configuration to its initial config
-            x = tf.einsum("bchw->bhwc", x)
+            x = self._change_to_channel_last(x)
+
         return x
 
     def get_config(self) -> Dict[str, Any]:
@@ -584,46 +733,73 @@ class iFFT2D(tf.keras.layers.Layer):
                 "is_channel_first": self.is_channel_first,
                 "apply_real_fft": self.apply_real_fft,
                 "shift_fft": self.shift_fft,
+                "fft_length": self.fft_length,
             }
         )
         return config
 
 
-class iFFT3D(tf.keras.layers.Layer):
+class iFFT3D(FourierLayer):
     """Calculates the 3D inverse FFT."""
 
     def __init__(
         self,
+        is_channel_first: bool = False,
         apply_real_fft: bool = False,
         shift_fft: bool = True,
+        fft_length: Optional[Tuple[int, int, int]] = None,
         **kwargs: Any,
     ) -> None:
         """Initializes the `iFFT3D` layer.
 
         Args:
+            is_channel_first (bool, optional): Set true if input shape is (b,c,h,w) or (b,c,f,h,w) and false if input
+                shape is (b,h,w,c) or (b,f,h,w,c). Defaults to `False`.
             apply_real_fft (bool, optional): If True, rfft3D is applied, which assumes real valued inputs and halves the
                 width of the output. If False, fft3D is applied, which assumes complex input. Defaults to False.
-            shift_fft (bool, optional): If true, low frequency componentes are centered. Defaults to True.
+            shift_fft (bool, optional): If true, low frequency components are centered. Defaults to True.
+            fft_length (Optional[Tuple[int,int,int]]): The FFT length for each dimension of the real FFT. Defaults to None.
             kwargs (Any): keyword arguments passed to the parent class tf.keras.layers.Layer.
         """
         super(iFFT3D, self).__init__(**kwargs)
+        self.is_channel_first = is_channel_first
         self.apply_real_fft = apply_real_fft
         self.shift_fft = shift_fft
-        self.input_spec = tf.keras.layers.InputSpec(min_ndim=4, max_ndim=5)
+        self.fft_length = fft_length
+        self.input_spec = tf.keras.layers.InputSpec(min_ndim=4, max_ndim=5, dtype=tf.complex64)
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """Calls the `iFFT3D` layer.
+
+        Args:
+            inputs (tf.Tensor): Complex valued input Tensor. Shape depends on attributes `is_channel_first` and `apply_real_fft`. <br>
+                `is_channel_first=False`, `apply_real_fft=False`: Expected shape of input tensor: (b,h,w,c) or (b,f,h,w,c) <br>
+                `is_channel_first=True`, `apply_real_fft=False`: Expected shape of input tensor: (b,c,h,w) or (b,c,f,h,w) <br>
+                `is_channel_first=False`, `apply_real_fft=True`: Expected shape of input tensor: (b,h,w=h/2+1,c) or (b,f,h,w=h/2+1,c) <br>
+                `is_channel_first=True`, `apply_real_fft=True`: Expected shape of input tensor: (b,c,h,w=h/2+1) or (b,c,f,h,w=h/2+1)
+
+        Returns:
+            Tensor of shape: <br>
+                `is_channel_first=False`: Expected shape of input tensor: (b,h,w=h,c) or (b,f,h,w=h,c) <br>
+                `is_channel_first=True`: Expected shape of input tensor: (b,c,h,w=h) or (b,c,f,h,w=h)
+        """
+        if not self.is_channel_first:
+            inputs = self._change_to_channel_first(inputs)
         x = inputs
 
         if self.apply_real_fft:
             if self.shift_fft:
                 x = tf.signal.ifftshift(x, axes=[-2])
-            x = tf.signal.irfft3d(x)
+            x = tf.signal.irfft3d(x, fft_length=self.fft_length)
         else:
             if self.shift_fft:
                 x = tf.signal.ifftshift(x)
             x = tf.signal.ifft3d(x)
 
-        return tf.math.real(x)
+        if not self.is_channel_first:
+            x = self._change_to_channel_last(x)
+
+        return x
 
     def get_config(self) -> Dict[str, Any]:
         """Serialization of the object.
@@ -632,11 +808,18 @@ class iFFT3D(tf.keras.layers.Layer):
             Dictionary with the class' variable names as keys.
         """
         config = super(iFFT3D, self).get_config()
-        config.update({"apply_real_fft": self.apply_real_fft, "shift_fft": self.shift_fft})
+        config.update(
+            {
+                "is_channel_first": self.is_channel_first,
+                "apply_real_fft": self.apply_real_fft,
+                "shift_fft": self.shift_fft,
+                "fft_length": self.fft_length,
+            }
+        )
         return config
 
 
-class FourierPooling2D(tf.keras.layers.Layer):
+class FourierPooling2D(FourierLayer):
     """Pooling in frequency domain by truncating high frequencies using a center crop operation.
 
     Layer input is asumed to be in frequency domain and shifted, such that the center frequency is in the center of
@@ -648,38 +831,63 @@ class FourierPooling2D(tf.keras.layers.Layer):
 
     """
 
-    def __init__(self, is_channel_first: bool = False, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        is_channel_first: bool = False,
+        input_from_rfft: bool = False,
+        **kwargs: Any,
+    ) -> None:
         """Initializes an instance of `FourierPooling2D`.
 
         Args:
             is_channel_first (bool, optional): If True, input shape is assumed to be (`batch`,`channel`,`height`,`width`).
                 If False, input shape is assumed to be (`batch`,`height`,`width`,`channel`). Defaults to False.
+            input_from_rfft (bool, optional): If true, the input spectrum is assumed to be originated from an rFFT2D
+                operation.
             kwargs (Any): Additional key word arguments passed to the base class.
         """
         super(FourierPooling2D, self).__init__(**kwargs)
         self.is_channel_first = is_channel_first
-        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
+        self.input_from_rfft = input_from_rfft
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4, dtype=tf.complex64)
+
+    def build(self, input_shape: tf.TensorShape) -> None:
+        """Build layer depending on the `input_shape` (output shape of the previous layer).
+
+        Args:
+            input_shape (tf.TensorShape): Shape of the input tensor to this layer.
+        """
+        super(FourierPooling2D, self).build(input_shape)
+        if self.is_channel_first:
+            _, channels, height, width = input_shape
+        else:
+            _, height, width, channels = input_shape
+
+        offset_height = height // 4
+        offset_width = 0 if self.input_from_rfft else width // 4
+        target_height = height // 2
+        # + 1 is important. if real FFT width is usually odd.
+        target_width = (width + 1) // 2
+
+        if self.is_channel_first:
+            self.slice_begin = [0, 0, offset_height, offset_width]
+            self.slice_size = [-1, channels, target_height, target_width]
+        else:
+            self.slice_begin = [0, offset_height, offset_width, 0]
+            self.slice_size = [-1, target_height, target_width, channels]
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         """Calls the `FourierPooling2D` layer.
 
         Args:
-            inputs (tf.Tensor): Tensor of shape (`batch`,`height`,`width`,`channel`) or
+            inputs (tf.Tensor): Complex valued tensor of shape (`batch`,`height`,`width`,`channel`) or
                 (`batch`,`channel`,`height`,`width`). Tensor is asumed to be in frequency domain of type `tf.complex64`
                 or `tf.complex128`.
 
         Returns:
             Pooled tensor of shape (`batch`,`channel`,`height/2`,`width/2`) or (`batch`,`height/2`,`width/2`,`channel`)
         """
-        if self.is_channel_first:
-            inputs = tf.einsum("bchw->bhwc", inputs)
-
-        outputs = tf.image.central_crop(inputs, 0.5)  # assumes channel last
-
-        # reverse to previous channel config!
-        if self.is_channel_first:
-            outputs = tf.einsum("bhwc->bchw", outputs)
-        return outputs
+        return tf.slice(inputs, begin=self.slice_begin, size=self.slice_size)
 
     def get_config(self) -> Dict[str, Any]:
         """Serialization of the object.
@@ -688,11 +896,16 @@ class FourierPooling2D(tf.keras.layers.Layer):
             Dictionary with the class' variable names as keys.
         """
         config = super(FourierPooling2D, self).get_config()
-        config.update({"is_channel_first": self.is_channel_first})
+        config.update(
+            {
+                "is_channel_first": self.is_channel_first,
+                "input_from_rfft": self.input_from_rfft,
+            }
+        )
         return config
 
 
-class rFFT2DFilter(tf.keras.layers.Layer):
+class rFFT2DFilter(FourierLayer):
     """Low or high pass filtering by truncating higher or lower frequencies in the frequency domain.
 
     Layer input is asumed to be in spatial domain. It is transformed into the frequency domain applying a 2D real FFT.
@@ -720,7 +933,9 @@ class rFFT2DFilter(tf.keras.layers.Layer):
         super(rFFT2DFilter, self).__init__(**kwargs)
         self.is_channel_first = is_channel_first
         self.filter_type = filter_type
-        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4, dtype=tf.float32)
+
+        self.shift_fft = self.filter_type == FrequencyFilter.LOW_PASS
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).
@@ -730,15 +945,15 @@ class rFFT2DFilter(tf.keras.layers.Layer):
         """
         super(rFFT2DFilter, self).build(input_shape)
         if self.is_channel_first:
-            batch_size, inp_filter, inp_height, inp_width = input_shape
+            _, _, height, width = input_shape
         else:
-            batch_size, inp_height, inp_width, inp_filter = input_shape
-        self.offset_height = inp_height // 2
-        self.offset_width = 0
-        self.target_height = inp_height // 2
-        self.target_width = int(
-            inp_width / 4 + 1
-        )  # 1/4 because real spectrum has allready half width and filter only applies to positive frequencies in width
+            _, height, width, _ = input_shape
+
+        self.rfft2d = FFT2D(self.is_channel_first, apply_real_fft=True, shift_fft=self.shift_fft)
+        self.fourier_pooling_2d = FourierPooling2D(self.is_channel_first, input_from_rfft=True)
+        self.irfft2d = iFFT2D(
+            self.is_channel_first, apply_real_fft=True, shift_fft=self.shift_fft, fft_length=(height, width)
+        )
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         """Calls the `rFFT2DFilter` layer.
@@ -750,29 +965,9 @@ class rFFT2DFilter(tf.keras.layers.Layer):
         Returns:
             Filtered tensor with shape (`batch`,`channel`,`height`,`width`).
         """
-        if not self.is_channel_first:  # layer assumes channel first due to FFT
-            inputs = tf.einsum("bhwc->bchw", inputs)
-
-        inputs_f_domain = tf.signal.rfft2d(inputs)
-
-        if self.filter_type == FrequencyFilter.LOW_PASS:
-            inputs_f_domain = tf.signal.fftshift(
-                inputs_f_domain, axes=[-2]
-            )  # shift frequencies to be able to crop in center
-        shape = tf.shape(inputs_f_domain)
-        outputs_f_domain = tf.slice(
-            inputs_f_domain,
-            begin=[0, 0, self.offset_height, self.offset_width],
-            size=[shape[0], shape[1], self.target_height, self.target_width],
-        )  # Tf.slice instead of tf.image.crop, because the latter assumes channel last
-        if self.filter_type == FrequencyFilter.LOW_PASS:
-            outputs_f_domain = tf.signal.ifftshift(outputs_f_domain, axes=[-2])  # reverse shift
-        outputs = tf.signal.irfft2d(outputs_f_domain)
-
-        # reverse to previous channel config!
-        if not self.is_channel_first:
-            outputs = tf.einsum("bchw->bhwc", outputs)
-        return outputs
+        x = self.rfft2d(inputs)
+        x = self.fourier_pooling_2d(x)
+        return self.irfft2d(x)
 
     def get_config(self) -> Dict[str, Any]:
         """Serialization of the object.

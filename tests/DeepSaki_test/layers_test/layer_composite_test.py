@@ -1,49 +1,45 @@
-import pytest
 import os
-import inspect
 from contextlib import nullcontext as does_not_raise
+
+import pytest
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # deactivate tensorflow warnings and infos. Keep Errors
 import tensorflow as tf
-import numpy as np
 
-from DeepSaki.layers.layer_composites import (
-    Conv2DSplitted,
-    Conv2DBlock,
-    DenseBlock,
-    DownSampleBlock,
-    UpSampleBlock,
-    ResidualBlock,
-    ResBlockDown,
-    ResBlockUp,
-    ScaleLayer,
-    ScalarGatedSelfAttention,
-    PaddingType,
-)
+from DeepSaki.layers.layer_composites import Conv2DSplitted
+from DeepSaki.layers.layer_composites import PaddingType
+from DeepSaki.layers.layer_composites import ResidualBlock
+from DeepSaki.layers.layer_composites import ScalarGatedSelfAttention
+from DeepSaki.layers.layer_composites import ScaleLayer
+from tests.DeepSaki_test.layers_test.layers_test import CommonLayerChecks
+from tests.DeepSaki_test.layers_test.layers_test import DeepSakiLayerChecks
 
 
-class TestConv2DSplitted:
+class TestConv2DSplitted(DeepSakiLayerChecks):
+    @pytest.fixture()
+    def conv_2d_splitted(self):
+        return Conv2DSplitted()
+
     @pytest.mark.parametrize("use_spec_norm", [True, False])
     @pytest.mark.parametrize("use_bias", [True, False])
     @pytest.mark.parametrize(
         ("input", "filters", "kernels", "strides", "padding", "expected_shape"),
         [
-            (tf.ones((1, 16, 16, 3)), 3, 3, (1, 1), "same", tf.TensorShape((1, 16, 16, 3))),
-            (tf.ones((8, 16, 16, 3)), 5, 5, (1, 1), "same", tf.TensorShape((8, 16, 16, 5))),
-            (tf.ones((1, 16, 16, 3)), 3, 3, (2, 2), "same", tf.TensorShape((1, 8, 8, 3))),
-            (tf.ones((1, 16, 16, 3)), 3, 5, (1, 2), "same", tf.TensorShape((1, 16, 8, 3))),
-            (tf.ones((1, 16, 16, 3)), 3, 3, (2, 1), "same", tf.TensorShape((1, 8, 16, 3))),
-            (tf.ones((1, 16, 16, 3)), 3, 5, (1, 1), "valid", tf.TensorShape((1, 12, 12, 3))),
-            (tf.ones((1, 16, 16, 3)), 5, 3, (1, 1), "valid", tf.TensorShape((1, 14, 14, 5))),
-            (tf.ones((1, 16, 16, 3)), 3, 3, (2, 2), "valid", tf.TensorShape((1, 7, 7, 3))),
+            (tf.TensorShape((1, 16, 16, 3)), 3, 3, (1, 1), "same", tf.TensorShape((1, 16, 16, 3))),
+            (tf.TensorShape((8, 16, 16, 3)), 5, 5, (1, 1), "same", tf.TensorShape((8, 16, 16, 5))),
+            (tf.TensorShape((1, 16, 16, 3)), 3, 3, (2, 2), "same", tf.TensorShape((1, 8, 8, 3))),
+            (tf.TensorShape((1, 16, 16, 3)), 3, 5, (1, 2), "same", tf.TensorShape((1, 16, 8, 3))),
+            (tf.TensorShape((1, 16, 16, 3)), 3, 3, (2, 1), "same", tf.TensorShape((1, 8, 16, 3))),
+            (tf.TensorShape((1, 16, 16, 3)), 3, 5, (1, 1), "valid", tf.TensorShape((1, 12, 12, 3))),
+            (tf.TensorShape((1, 16, 16, 3)), 5, 3, (1, 1), "valid", tf.TensorShape((1, 14, 14, 5))),
+            (tf.TensorShape((1, 16, 16, 3)), 3, 3, (2, 2), "valid", tf.TensorShape((1, 7, 7, 3))),
         ],
     )
-    def test_call_correct_shape(
+    def test_call_correct_output_shape(
         self, input, filters, strides, padding, use_bias, use_spec_norm, kernels, expected_shape
     ):
-        layer = Conv2DSplitted(filters, kernels, use_spec_norm, strides, use_bias, padding)
-        output = layer(input)
-        assert output.shape == expected_shape
+        layer_instance = Conv2DSplitted(filters, kernels, use_spec_norm, strides, use_bias, padding)
+        CommonLayerChecks.has_call_correct_output_shape(layer_instance, input, expected_shape)
 
     @pytest.mark.parametrize(
         ("input_shape", "expected_context"),
@@ -57,13 +53,15 @@ class TestConv2DSplitted:
             (tf.TensorShape((8, 64, 64, 4, 5, 6)), pytest.raises(ValueError)),
         ],
     )
-    def test_call_raises_error_wrong_input(self, input_shape, expected_context):
-        layer = Conv2DSplitted()
-        with expected_context:
-            _ = layer(tf.ones(shape=input_shape))
+    def test_call_raises_error_wrong_input_spec(self, conv_2d_splitted, input_shape, expected_context):
+        CommonLayerChecks.does_call_raises_error_wrong_input_spec(conv_2d_splitted, input_shape, expected_context)
 
 
-class TestResidualBlock:
+class TestResidualBlock(DeepSakiLayerChecks):
+    @pytest.fixture()
+    def residual_block(self):
+        return ResidualBlock()
+
     @pytest.mark.parametrize(
         ("input_shape", "expected_context"),
         [
@@ -77,10 +75,8 @@ class TestResidualBlock:
         ],
     )
     @pytest.mark.skip(reason="Not implemented yet.")
-    def test_call_raises_error_wrong_input(self, input_shape, expected_context):
-        layer = ResidualBlock()
-        with expected_context:
-            _ = layer(tf.ones(shape=input_shape))
+    def test_call_raises_error_wrong_input_spec(self, residual_block, input_shape, expected_context):
+        CommonLayerChecks.does_call_raises_error_wrong_input_spec(residual_block, input_shape, expected_context)
 
     @pytest.mark.parametrize("use_spec_norm", [False])
     @pytest.mark.parametrize("use_bias", [True])
@@ -93,13 +89,13 @@ class TestResidualBlock:
     @pytest.mark.parametrize(
         ("input", "filters", "expected_shape"),
         [
-            (tf.ones((1, 16, 16, 3)), 3, tf.TensorShape((1, 16, 16, 3))),
-            (tf.ones((1, 16, 16, 3)), 8, tf.TensorShape((1, 16, 16, 8))),
-            (tf.ones((1, 16, 16, 3)), 5, tf.TensorShape((1, 16, 16, 5))),
-            (tf.ones((4, 8, 8, 4)), 12, tf.TensorShape((4, 8, 8, 12))),
+            (tf.TensorShape((1, 16, 16, 3)), 3, tf.TensorShape((1, 16, 16, 3))),
+            (tf.TensorShape((1, 16, 16, 3)), 8, tf.TensorShape((1, 16, 16, 8))),
+            (tf.TensorShape((1, 16, 16, 3)), 5, tf.TensorShape((1, 16, 16, 5))),
+            (tf.TensorShape((4, 8, 8, 4)), 12, tf.TensorShape((4, 8, 8, 12))),
         ],
     )
-    def test_call_correct_shape(
+    def test_call_correct_output_shape(
         self,
         input,
         expected_shape,
@@ -113,7 +109,7 @@ class TestResidualBlock:
         use_bias,
         padding,
     ):
-        layer = ResidualBlock(
+        layer_instance = ResidualBlock(
             filters,
             kernels,
             activation,
@@ -124,8 +120,7 @@ class TestResidualBlock:
             use_bias,
             padding,
         )
-        output = layer(input)
-        assert output.shape == expected_shape
+        CommonLayerChecks.has_call_correct_output_shape(layer_instance, input, expected_shape)
 
     @pytest.mark.parametrize("number_of_blocks", [1, 2, 3])
     def test_number_of_blocks_correct(self, number_of_blocks):
@@ -140,7 +135,11 @@ class TestResidualBlock:
             assert len(block) == residual_cardinality
 
 
-class TestScaleLayer:
+class TestScaleLayer(DeepSakiLayerChecks):
+    @pytest.fixture()
+    def scale_layer(self):
+        return ScaleLayer()
+
     @pytest.mark.skip(reason="Not implemented yet.")
     def test_init(self):
         ...
@@ -158,10 +157,8 @@ class TestScaleLayer:
             tf.TensorShape([8, 16, 16, 4]),
         ],
     )
-    def test_call_expected_shape(self, input_shape):
-        layer = ScaleLayer()
-        output = layer(tf.ones(shape=input_shape))
-        assert output.shape == input_shape
+    def test_call_correct_output_shape(self, scale_layer, input_shape):
+        CommonLayerChecks.has_call_correct_output_shape(scale_layer, input_shape, input_shape)
 
     @pytest.mark.parametrize(
         ("input_shape", "expected_context"),
@@ -174,24 +171,42 @@ class TestScaleLayer:
             (tf.TensorShape(()), pytest.raises(ValueError)),
         ],
     )
-    def test_call_raises_error_wrong_input(self, input_shape, expected_context):
-        layer = ScaleLayer()
-        with expected_context:
-            _ = layer(tf.ones(shape=input_shape))
+    def test_call_raises_error_wrong_input_spec(self, scale_layer, input_shape, expected_context):
+        CommonLayerChecks.does_call_raises_error_wrong_input_spec(scale_layer, input_shape, expected_context)
 
 
-class TestScalarGatedSelfAttention:
+class TestScalarGatedSelfAttention(DeepSakiLayerChecks):
+    @pytest.fixture()
+    def scalar_gated_self_attention(self):
+        return ScalarGatedSelfAttention()
+
     @pytest.mark.parametrize("use_spec_norm", [True, False])
     @pytest.mark.parametrize("intermediate_channel", [3, 7, 12, None])
     @pytest.mark.parametrize(
-        "input",
+        "input_shape",
         [
-            tf.ones((1, 8, 8, 3)),
-            tf.ones((8, 8, 8, 4)),
-            tf.ones((1, 3, 3, 1)),
+            tf.TensorShape((1, 8, 8, 3)),
+            tf.TensorShape((8, 8, 8, 4)),
+            tf.TensorShape((1, 3, 3, 1)),
         ],
     )
-    def test_call_correct_shape(self, input, intermediate_channel, use_spec_norm):
-        layer = ScalarGatedSelfAttention(use_spec_norm, intermediate_channel)
-        output = layer(input)
-        assert output.shape == input.shape
+    def test_call_correct_output_shape(self, input_shape, intermediate_channel, use_spec_norm):
+        layer_instance = ScalarGatedSelfAttention(use_spec_norm, intermediate_channel)
+        CommonLayerChecks.has_call_correct_output_shape(layer_instance, input_shape, input_shape)
+
+    @pytest.mark.parametrize(
+        ("input_shape", "expected_context"),
+        [
+            (tf.TensorShape((8, 64, 64, 4)), does_not_raise()),
+            (tf.TensorShape((1, 32, 32, 3)), does_not_raise()),
+            (tf.TensorShape((8, 64, 64)), pytest.raises(ValueError)),
+            (tf.TensorShape((8, 64)), pytest.raises(ValueError)),
+            (tf.TensorShape((8)), pytest.raises(ValueError)),
+            (tf.TensorShape((8, 64, 64, 4, 5)), pytest.raises(ValueError)),
+            (tf.TensorShape((8, 64, 64, 4, 5, 6)), pytest.raises(ValueError)),
+        ],
+    )
+    def test_call_raises_error_wrong_input_spec(self, scalar_gated_self_attention, input_shape, expected_context):
+        CommonLayerChecks.does_call_raises_error_wrong_input_spec(
+            scalar_gated_self_attention, input_shape, expected_context
+        )

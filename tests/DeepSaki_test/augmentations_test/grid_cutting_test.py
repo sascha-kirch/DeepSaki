@@ -1,11 +1,13 @@
-import pytest
 import os
+
+import pytest
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # deactivate tensorflow warnings and infos. Keep Errors
 import tensorflow as tf
-import numpy as np
 
-from DeepSaki.augmentations.grid_cutting import _random_boundingbox, _get_mask, _invert_mask, cut_mix, cut_out
+from DeepSaki.augmentations.grid_cutting import _get_mask
+from DeepSaki.augmentations.grid_cutting import _invert_mask
+from DeepSaki.augmentations.grid_cutting import _random_boundingbox
 
 
 class TestRandomBoundingBox:

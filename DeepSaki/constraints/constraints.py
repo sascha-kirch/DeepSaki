@@ -9,6 +9,7 @@ Description of TensorFlow's `tf.keras.constraints.Constraint` base class:
 
 import tensorflow as tf
 
+
 class NonNegative(tf.keras.constraints.Constraint):
     """Constraint that enforces positive activations."""
 
