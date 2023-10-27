@@ -855,8 +855,7 @@ mask is generated randomly. Defaults to None.</p>
 
           <details class="quote">
             <summary>Source code in <code>DeepSaki/augmentations/grid_cutting.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 56</span>
-<span class="normal"> 57</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 57</span>
 <span class="normal"> 58</span>
 <span class="normal"> 59</span>
 <span class="normal"> 60</span>
@@ -899,7 +898,8 @@ mask is generated randomly. Defaults to None.</p>
 <span class="normal"> 97</span>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
-<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">cut_mix</span><span class="p">(</span>
+<span class="normal">100</span>
+<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">cut_mix</span><span class="p">(</span>
     <span class="n">batch1</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
     <span class="n">batch2</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
     <span class="n">ignore_background</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1071,8 +1071,7 @@ mask is generated randomly. Defaults to None.</p>
 
           <details class="quote">
             <summary>Source code in <code>DeepSaki/augmentations/grid_cutting.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
-<span class="normal">104</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span>
 <span class="normal">107</span>
@@ -1095,7 +1094,8 @@ mask is generated randomly. Defaults to None.</p>
 <span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span>
-<span class="normal">127</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">cut_out</span><span class="p">(</span>
+<span class="normal">127</span>
+<span class="normal">128</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">cut_out</span><span class="p">(</span>
     <span class="n">batch</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">invert_mask</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Performs the cutout operation of a batch of images.</span>
