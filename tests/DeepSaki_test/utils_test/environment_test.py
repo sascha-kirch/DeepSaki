@@ -1,26 +1,22 @@
-import pytest
 import os
-import inspect
-from contextlib import nullcontext as does_not_raise
-import logging
 
-from unittest import mock
+import pytest
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # deactivate tensorflow warnings and infos. Keep Errors
 import tensorflow as tf
-import numpy as np
 
-from DeepSaki.utils.environment import detect_accelerator, enable_mixed_precision, enable_xla_acceleration
-
-
-@pytest.fixture()
-def tf_policy_restorer():
-    policy = tf.keras.mixed_precision.global_policy()
-    yield
-    tf.keras.mixed_precision.set_global_policy(policy)
+from DeepSaki.utils.environment import detect_accelerator
+from DeepSaki.utils.environment import enable_mixed_precision
+from DeepSaki.utils.environment import enable_xla_acceleration
 
 
 class TestEnvironment:
+    @pytest.fixture()
+    def _tf_policy_restorer(self):
+        policy = tf.keras.mixed_precision.global_policy()
+        yield
+        tf.keras.mixed_precision.set_global_policy(policy)
+
     def _mock_tpu(self, mocker, tpu_available):
         mock_tpu = mocker.patch("DeepSaki.utils.environment.tf.distribute.cluster_resolver.TPUClusterResolver")
         if tpu_available:
@@ -71,7 +67,7 @@ class TestEnvironment:
             ),
         ],
     )
-    @pytest.mark.usefixtures("tf_policy_restorer")
+    @pytest.mark.usefixtures("_tf_policy_restorer")
     def test_enable_mixed_precision(self, mocker, enable, tpu_available, expected):
         self._mock_tpu(mocker, tpu_available)
 

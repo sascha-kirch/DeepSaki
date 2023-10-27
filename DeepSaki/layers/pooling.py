@@ -4,6 +4,7 @@ from typing import Dict
 
 import tensorflow as tf
 
+
 class GlobalSumPooling2D(tf.keras.layers.Layer):
     """Global sum pooling operation for spatial data.
 

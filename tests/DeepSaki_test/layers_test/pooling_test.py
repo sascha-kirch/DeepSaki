@@ -1,27 +1,22 @@
-import pytest
 import os
-import inspect
 from contextlib import nullcontext as does_not_raise
+
+import pytest
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # deactivate tensorflow warnings and infos. Keep Errors
 import tensorflow as tf
-import numpy as np
-from tests.DeepSaki_test.layers_test.layers_test import CommonLayerChecks,DeepSakiLayerChecks
 
-from DeepSaki.layers.pooling import (
-    GlobalSumPooling2D,
-    LearnedPooling,
-)
+from DeepSaki.layers.pooling import GlobalSumPooling2D
+from DeepSaki.layers.pooling import LearnedPooling
+from tests.DeepSaki_test.layers_test.layers_test import CommonLayerChecks
+from tests.DeepSaki_test.layers_test.layers_test import DeepSakiLayerChecks
 
-@pytest.fixture()
-def global_sum_pooling():
-    return GlobalSumPooling2D()
-
-@pytest.fixture()
-def learned_pooling():
-    return LearnedPooling()
 
 class TestGlobalSumPooling2D(DeepSakiLayerChecks):
+    @pytest.fixture()
+    def global_sum_pooling(self):
+        return GlobalSumPooling2D()
+
     @pytest.mark.parametrize(
         ("data_format", "expected_context"),
         [
@@ -47,8 +42,8 @@ class TestGlobalSumPooling2D(DeepSakiLayerChecks):
             (tf.TensorShape((8, 64, 64, 4, 5, 6)), pytest.raises(ValueError)),
         ],
     )
-    def test_call_raises_error_wrong_input_dim(self, global_sum_pooling, input_shape, expected_context):
-        CommonLayerChecks.does_call_raises_error_wrong_input_dim(global_sum_pooling,input_shape,expected_context)
+    def test_call_raises_error_wrong_input_spec(self, global_sum_pooling, input_shape, expected_context):
+        CommonLayerChecks.does_call_raises_error_wrong_input_spec(global_sum_pooling, input_shape, expected_context)
 
     @pytest.mark.parametrize(
         ("input_shape", "data_format", "expected_shape"),
@@ -76,7 +71,7 @@ class TestGlobalSumPooling2D(DeepSakiLayerChecks):
             (tf.ones(shape=(2, 64, 8, 512)), 64 * 8 * tf.ones(shape=(2, 512))),
         ],
     )
-    def test_call_correct_output(self,global_sum_pooling, input, expected):
+    def test_call_correct_output(self, global_sum_pooling, input, expected):
         result = global_sum_pooling(input)
         assert tf.math.reduce_all(result.numpy() == pytest.approx(expected.numpy(), 0.01))
 
@@ -100,6 +95,10 @@ class TestGlobalSumPooling2D(DeepSakiLayerChecks):
 
 
 class TestLearnedPooling(DeepSakiLayerChecks):
+    @pytest.fixture()
+    def learned_pooling(self):
+        return LearnedPooling()
+
     @pytest.mark.parametrize(
         ("input_shape", "expected_context"),
         [
@@ -112,8 +111,8 @@ class TestLearnedPooling(DeepSakiLayerChecks):
             (tf.TensorShape(()), pytest.raises(ValueError)),
         ],
     )
-    def test_call_raises_error_wrong_input_dim(self, learned_pooling, input_shape, expected_context):
-        CommonLayerChecks.does_call_raises_error_wrong_input_dim(learned_pooling,input_shape,expected_context)
+    def test_call_raises_error_wrong_input_spec(self, learned_pooling, input_shape, expected_context):
+        CommonLayerChecks.does_call_raises_error_wrong_input_spec(learned_pooling, input_shape, expected_context)
 
     @pytest.mark.parametrize(
         ("input_shape", "pool_size", "expected_shape"),

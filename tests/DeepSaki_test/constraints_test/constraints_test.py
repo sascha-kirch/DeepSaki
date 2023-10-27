@@ -1,5 +1,6 @@
-import pytest
 import os
+
+import pytest
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # deactivate tensorflow warnings and infos. Keep Errors
 import tensorflow as tf
@@ -7,12 +8,11 @@ import tensorflow as tf
 from DeepSaki.constraints.constraints import NonNegative
 
 
-@pytest.fixture(scope="class")
-def non_negative_constraint():
-    return NonNegative()
-
-
 class TestNonNegativeConstraint:
+    @pytest.fixture(scope="class")
+    def non_negative_constraint(self):
+        return NonNegative()
+
     @pytest.mark.parametrize(
         "input_dtype",
         [

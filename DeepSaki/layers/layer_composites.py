@@ -12,6 +12,7 @@ from DeepSaki.layers.layer_helper import PaddingType
 from DeepSaki.layers.layer_helper import dropout_func
 from DeepSaki.layers.layer_helper import pad_func
 
+
 class Conv2DSplitted(tf.keras.layers.Layer):
     """Convolution layer where a single convolution is splitted into two consecutive convolutions.
 

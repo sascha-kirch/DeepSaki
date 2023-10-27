@@ -1,13 +1,14 @@
-import pytest
-import os
 import inspect
+import os
+
+import pytest
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # deactivate tensorflow warnings and infos. Keep Errors
-import tensorflow as tf
-import numpy as np
 
-from DeepSaki.optimizers.swats import SwatsAdam, SwatsNadam
 from tensorflow.python.keras.optimizer_v2 import optimizer_v2
+
+from DeepSaki.optimizers.swats import SwatsAdam
+from DeepSaki.optimizers.swats import SwatsNadam
 
 
 @pytest.mark.parametrize(

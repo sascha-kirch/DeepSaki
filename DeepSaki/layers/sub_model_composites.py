@@ -18,6 +18,7 @@ from DeepSaki.layers.layer_composites import UpSampleBlock
 from DeepSaki.layers.layer_helper import PaddingType
 from DeepSaki.layers.layer_helper import dropout_func
 
+
 class Encoder(tf.keras.layers.Layer):
     """Combines conv blocks with down sample blocks.
 

@@ -1,45 +1,25 @@
-import pytest
 import os
-import inspect
 from contextlib import nullcontext as does_not_raise
+
+import pytest
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # deactivate tensorflow warnings and infos. Keep Errors
 import tensorflow as tf
-import numpy as np
 
-from tests.DeepSaki_test.layers_test.layers_test import CommonLayerChecks,DeepSakiLayerChecks
+from DeepSaki.layers.layer_composites import Conv2DSplitted
+from DeepSaki.layers.layer_composites import PaddingType
+from DeepSaki.layers.layer_composites import ResidualBlock
+from DeepSaki.layers.layer_composites import ScalarGatedSelfAttention
+from DeepSaki.layers.layer_composites import ScaleLayer
+from tests.DeepSaki_test.layers_test.layers_test import CommonLayerChecks
+from tests.DeepSaki_test.layers_test.layers_test import DeepSakiLayerChecks
 
-from DeepSaki.layers.layer_composites import (
-    Conv2DSplitted,
-    Conv2DBlock,
-    DenseBlock,
-    DownSampleBlock,
-    UpSampleBlock,
-    ResidualBlock,
-    ResBlockDown,
-    ResBlockUp,
-    ScaleLayer,
-    ScalarGatedSelfAttention,
-    PaddingType,
-)
-
-@pytest.fixture()
-def conv_2d_splitted():
-    return Conv2DSplitted()
-
-@pytest.fixture()
-def residual_block():
-    return ResidualBlock()
-
-@pytest.fixture()
-def scale_layer():
-    return ScaleLayer()
-
-@pytest.fixture()
-def scalar_gated_self_attention():
-    return ScalarGatedSelfAttention()
 
 class TestConv2DSplitted(DeepSakiLayerChecks):
+    @pytest.fixture()
+    def conv_2d_splitted(self):
+        return Conv2DSplitted()
+
     @pytest.mark.parametrize("use_spec_norm", [True, False])
     @pytest.mark.parametrize("use_bias", [True, False])
     @pytest.mark.parametrize(
@@ -73,10 +53,15 @@ class TestConv2DSplitted(DeepSakiLayerChecks):
             (tf.TensorShape((8, 64, 64, 4, 5, 6)), pytest.raises(ValueError)),
         ],
     )
-    def test_call_raises_error_wrong_input_dim(self,conv_2d_splitted, input_shape, expected_context):
-        CommonLayerChecks.does_call_raises_error_wrong_input_dim(conv_2d_splitted,input_shape,expected_context)
+    def test_call_raises_error_wrong_input_spec(self, conv_2d_splitted, input_shape, expected_context):
+        CommonLayerChecks.does_call_raises_error_wrong_input_spec(conv_2d_splitted, input_shape, expected_context)
+
 
 class TestResidualBlock(DeepSakiLayerChecks):
+    @pytest.fixture()
+    def residual_block(self):
+        return ResidualBlock()
+
     @pytest.mark.parametrize(
         ("input_shape", "expected_context"),
         [
@@ -90,8 +75,8 @@ class TestResidualBlock(DeepSakiLayerChecks):
         ],
     )
     @pytest.mark.skip(reason="Not implemented yet.")
-    def test_call_raises_error_wrong_input_dim(self,residual_block, input_shape, expected_context):
-        CommonLayerChecks.does_call_raises_error_wrong_input_dim(residual_block,input_shape,expected_context)
+    def test_call_raises_error_wrong_input_spec(self, residual_block, input_shape, expected_context):
+        CommonLayerChecks.does_call_raises_error_wrong_input_spec(residual_block, input_shape, expected_context)
 
     @pytest.mark.parametrize("use_spec_norm", [False])
     @pytest.mark.parametrize("use_bias", [True])
@@ -151,6 +136,10 @@ class TestResidualBlock(DeepSakiLayerChecks):
 
 
 class TestScaleLayer(DeepSakiLayerChecks):
+    @pytest.fixture()
+    def scale_layer(self):
+        return ScaleLayer()
+
     @pytest.mark.skip(reason="Not implemented yet.")
     def test_init(self):
         ...
@@ -182,11 +171,15 @@ class TestScaleLayer(DeepSakiLayerChecks):
             (tf.TensorShape(()), pytest.raises(ValueError)),
         ],
     )
-    def test_call_raises_error_wrong_input_dim(self,scale_layer, input_shape, expected_context):
-        CommonLayerChecks.does_call_raises_error_wrong_input_dim(scale_layer,input_shape,expected_context)
+    def test_call_raises_error_wrong_input_spec(self, scale_layer, input_shape, expected_context):
+        CommonLayerChecks.does_call_raises_error_wrong_input_spec(scale_layer, input_shape, expected_context)
 
 
 class TestScalarGatedSelfAttention(DeepSakiLayerChecks):
+    @pytest.fixture()
+    def scalar_gated_self_attention(self):
+        return ScalarGatedSelfAttention()
+
     @pytest.mark.parametrize("use_spec_norm", [True, False])
     @pytest.mark.parametrize("intermediate_channel", [3, 7, 12, None])
     @pytest.mark.parametrize(
@@ -213,5 +206,7 @@ class TestScalarGatedSelfAttention(DeepSakiLayerChecks):
             (tf.TensorShape((8, 64, 64, 4, 5, 6)), pytest.raises(ValueError)),
         ],
     )
-    def test_call_raises_error_wrong_input_dim(self,scalar_gated_self_attention, input_shape, expected_context):
-        CommonLayerChecks.does_call_raises_error_wrong_input_dim(scalar_gated_self_attention,input_shape,expected_context)
+    def test_call_raises_error_wrong_input_spec(self, scalar_gated_self_attention, input_shape, expected_context):
+        CommonLayerChecks.does_call_raises_error_wrong_input_spec(
+            scalar_gated_self_attention, input_shape, expected_context
+        )

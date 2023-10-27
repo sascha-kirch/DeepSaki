@@ -1,20 +1,22 @@
-import pytest
 import os
-import inspect
+
+import pytest
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # deactivate tensorflow warnings and infos. Keep Errors
+from contextlib import nullcontext as does_not_raise
+
 import tensorflow as tf
-import numpy as np
 
 from DeepSaki.layers.padding import ReflectionPadding2D
-from contextlib import nullcontext as does_not_raise
-from tests.DeepSaki_test.layers_test.layers_test import CommonLayerChecks, DeepSakiLayerChecks
+from tests.DeepSaki_test.layers_test.layers_test import CommonLayerChecks
+from tests.DeepSaki_test.layers_test.layers_test import DeepSakiLayerChecks
 
-@pytest.fixture()
-def reflection_padding_2d():
-    return ReflectionPadding2D()
 
 class TestReflectionPadding2D(DeepSakiLayerChecks):
+    @pytest.fixture()
+    def reflection_padding_2d(self):
+        return ReflectionPadding2D()
+
     @pytest.mark.parametrize(
         ("input", "padding", "expected_shape"),
         [
@@ -71,5 +73,5 @@ class TestReflectionPadding2D(DeepSakiLayerChecks):
             (tf.TensorShape((8, 64, 64, 4, 5, 6)), pytest.raises(ValueError)),
         ],
     )
-    def test_call_raises_error_wrong_input_dim(self,reflection_padding_2d, input_shape, expected_context):
-        CommonLayerChecks.does_call_raises_error_wrong_input_dim(reflection_padding_2d,input_shape, expected_context)
+    def test_call_raises_error_wrong_input_spec(self, reflection_padding_2d, input_shape, expected_context):
+        CommonLayerChecks.does_call_raises_error_wrong_input_spec(reflection_padding_2d, input_shape, expected_context)
