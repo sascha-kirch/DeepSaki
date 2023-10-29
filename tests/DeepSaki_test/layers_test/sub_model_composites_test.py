@@ -7,10 +7,11 @@ from contextlib import nullcontext as does_not_raise
 
 import tensorflow as tf
 
+from DeepSaki.layers.sub_model_composites import Bottleneck
+from DeepSaki.layers.sub_model_composites import Decoder
+from DeepSaki.layers.sub_model_composites import Encoder
 from tests.DeepSaki_test.layers_test.layers_test import CommonLayerChecks
 from tests.DeepSaki_test.layers_test.layers_test import DeepSakiLayerChecks
-from DeepSaki.layers.sub_model_composites import Encoder, Decoder, Bottleneck
-
 
 # TODO: check number of lavels are correct etc. not only shapes.
 class TestEncoder(DeepSakiLayerChecks):
@@ -59,7 +60,7 @@ class TestEncoder(DeepSakiLayerChecks):
         CommonLayerChecks.has_call_correct_output_shape(layer_instance, input_shape, expected_shape)
 
     @pytest.mark.parametrize(
-        "number_of_levels, channel_list, expected_levels",
+        ("number_of_levels", "channel_list", "expected_levels"),
         [
             (1, None, 1),
             (3, None, 3),
@@ -90,7 +91,7 @@ class TestEncoder(DeepSakiLayerChecks):
             assert layer_instance.SA is None
 
     @pytest.mark.parametrize(
-        "number_of_levels, channel_list, filters, limit_filters, expected_channel_list",
+        ("number_of_levels", "channel_list", "filters", "limit_filters", "expected_channel_list"),
         [
             (1, None, 3, 128, [3]),
             (3, None, 8, 128, [8, 16, 32]),
@@ -139,7 +140,9 @@ class TestEncoder(DeepSakiLayerChecks):
         ],
     )
     def test_skips_output_expected_shape(self, input_shape, channel_list, omit_skips, expected_shapes):
-        layer_instance = Encoder(output_skips=True, omit_skips=omit_skips, channel_list=channel_list, number_of_blocks=1)
+        layer_instance = Encoder(
+            output_skips=True, omit_skips=omit_skips, channel_list=channel_list, number_of_blocks=1
+        )
         _, skips = layer_instance(tf.ones(shape=input_shape))
         for skip, expected_shape in zip(skips, expected_shapes):
             if not tf.is_tensor(skip):  # if skip is ommited for current level
@@ -187,7 +190,7 @@ class TestBottleneck(DeepSakiLayerChecks):
         CommonLayerChecks.has_call_correct_output_shape(layer_instance, input_shape, expected_shape)
 
     @pytest.mark.parametrize(
-        "n_bottleneck_blocks, channel_list, expected_levels",
+        ("n_bottleneck_blocks", "channel_list", "expected_levels"),
         [
             (1, None, 1),
             (3, None, 3),
@@ -207,7 +210,7 @@ class TestBottleneck(DeepSakiLayerChecks):
         assert len(layer_instance.layers) == expected_levels
 
     @pytest.mark.parametrize(
-        "input_shape, n_bottleneck_blocks, channel_list, expected_channel_list",
+        ("input_shape", "n_bottleneck_blocks", "channel_list", "expected_channel_list"),
         [
             (tf.TensorShape((1, 16, 16, 4)), 1, None, [4]),
             (tf.TensorShape((1, 16, 16, 4)), 3, None, [4, 4, 4]),
@@ -271,7 +274,7 @@ class TestDecoder(DeepSakiLayerChecks):
         CommonLayerChecks.has_call_correct_output_shape(layer_instance, input_shape, expected_shape)
 
     @pytest.mark.parametrize(
-        "number_of_levels, channel_list, expected_levels",
+        ("number_of_levels", "channel_list", "expected_levels"),
         [
             (1, None, 1),
             (3, None, 3),
@@ -302,7 +305,7 @@ class TestDecoder(DeepSakiLayerChecks):
             assert layer_instance.SA is None
 
     @pytest.mark.parametrize(
-        "number_of_levels, channel_list, filters, limit_filters, expected_channel_list",
+        ("number_of_levels", "channel_list", "filters", "limit_filters", "expected_channel_list"),
         [
             (1, None, 3, 128, [3]),
             (3, None, 8, 128, [32, 16, 8]),

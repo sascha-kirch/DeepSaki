@@ -12,7 +12,6 @@ from DeepSaki.layers.layer_helper import PaddingType
 from DeepSaki.layers.layer_helper import dropout_func
 from DeepSaki.layers.layer_helper import pad_func
 
-
 class Conv2DSplitted(tf.keras.layers.Layer):
     """Convolution layer where a single convolution is splitted into two consecutive convolutions.
 
@@ -108,6 +107,7 @@ class Conv2DSplitted(tf.keras.layers.Layer):
         )
         return config
 
+
 # TODO: Normalization should be setable
 # Todo: how to deal with dropout func?
 class Conv2DBlock(tf.keras.layers.Layer):
@@ -184,7 +184,7 @@ class Conv2DBlock(tf.keras.layers.Layer):
             layers.append(self._get_conv_layer())
 
             if block != (self.number_of_blocks - 1) or self.apply_final_normalization:
-                layers.append(tfa.layers.InstanceNormalization(gamma_initializer=gamma_initializer))#
+                layers.append(tfa.layers.InstanceNormalization(gamma_initializer=gamma_initializer))  #
 
             if block != (self.number_of_blocks - 1) or self.final_activation:
                 layers.append(tf.keras.layers.Activation(self.activation))
@@ -197,18 +197,22 @@ class Conv2DBlock(tf.keras.layers.Layer):
         """Helper to return correct Conv layer based on `Conv2DBlock` class properties."""
         if self.split_kernels:
             return Conv2DSplitted(
-                    filters=self.filters, kernels=self.kernels, use_bias=self.use_bias, strides=self.strides, use_spec_norm=self.use_spec_norm,
-                )
+                filters=self.filters,
+                kernels=self.kernels,
+                use_bias=self.use_bias,
+                strides=self.strides,
+                use_spec_norm=self.use_spec_norm,
+            )
         if self.use_spec_norm:
             return tfa.layers.SpectralNormalization(
-                    tf.keras.layers.Conv2D(
-                        filters=self.filters,
-                        kernel_size=(self.kernels, self.kernels),
-                        kernel_initializer=self.kernel_initializer,
-                        use_bias=self.use_bias,
-                        strides=self.strides,
-                    )
+                tf.keras.layers.Conv2D(
+                    filters=self.filters,
+                    kernel_size=(self.kernels, self.kernels),
+                    kernel_initializer=self.kernel_initializer,
+                    use_bias=self.use_bias,
+                    strides=self.strides,
                 )
+            )
         return tf.keras.layers.Conv2D(
             filters=self.filters,
             kernel_size=(self.kernels, self.kernels),
@@ -331,10 +335,13 @@ class DenseBlock(tf.keras.layers.Layer):
         """Helper to return correct Conv layer based on `DenseBlock` class properties."""
         if self.use_spec_norm:
             return tfa.layers.SpectralNormalization(
-                    tf.keras.layers.Dense(units=self.units, use_bias=self.use_bias, kernel_initializer=self.kernel_initializer)
+                tf.keras.layers.Dense(
+                    units=self.units, use_bias=self.use_bias, kernel_initializer=self.kernel_initializer
                 )
-        return tf.keras.layers.Dense(units=self.units, use_bias=self.use_bias, kernel_initializer=self.kernel_initializer)
-
+            )
+        return tf.keras.layers.Dense(
+            units=self.units, use_bias=self.use_bias, kernel_initializer=self.kernel_initializer
+        )
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         """Calls the `DenseBlock` layer.
@@ -420,7 +427,7 @@ class DownSampleBlock(tf.keras.layers.Layer):
         self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
         self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
-    def _space_to_depth_block_size_2(self, tensor:tf.Tensor)->tf.Tensor:
+    def _space_to_depth_block_size_2(self, tensor: tf.Tensor) -> tf.Tensor:
         return tf.nn.space_to_depth(tensor, block_size=2)
 
     def build(self, input_shape: tf.TensorShape) -> None:
@@ -456,14 +463,16 @@ class DownSampleBlock(tf.keras.layers.Layer):
             self.layers.append(tf.keras.layers.AveragePooling2D(pool_size=(2, 2)))
         elif self.downsampling == "space_to_depth":
             self.layers.append(self._space_to_depth_block_size_2)
-            self.layers.append(tf.keras.layers.Conv2D(
-                filters=input_shape[-1],
-                kernel_size=1,
-                activation=self.activation,
-                use_bias=False,
-                padding="same",
-                kernel_initializer=self.kernel_initializer,
-            ))
+            self.layers.append(
+                tf.keras.layers.Conv2D(
+                    filters=input_shape[-1],
+                    kernel_size=1,
+                    activation=self.activation,
+                    use_bias=False,
+                    padding="same",
+                    kernel_initializer=self.kernel_initializer,
+                )
+            )
         else:
             raise ValueError("Undefined downsampling provided")
 
@@ -545,7 +554,7 @@ class UpSampleBlock(tf.keras.layers.Layer):
         self.padding = padding
         self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
-    def _depth_to_space_block_size_2(self, tensor:tf.Tensor)->tf.Tensor:
+    def _depth_to_space_block_size_2(self, tensor: tf.Tensor) -> tf.Tensor:
         return tf.nn.depth_to_space(tensor, block_size=2)
 
     def build(self, input_shape: tf.TensorShape) -> None:
@@ -589,14 +598,16 @@ class UpSampleBlock(tf.keras.layers.Layer):
             self.layers.append(tfa.layers.InstanceNormalization(gamma_initializer=self.gamma_initializer))
             self.layers.append(tf.keras.layers.Activation(self.activation))
         elif self.upsampling == "depth_to_space":
-            self.layers.append(tf.keras.layers.Conv2D(
-                filters=4*input_shape[-1],
-                kernel_size=1,
-                activation=self.activation,
-                use_bias=False,
-                padding="same",
-                kernel_initializer=self.kernel_initializer,
-            ))
+            self.layers.append(
+                tf.keras.layers.Conv2D(
+                    filters=4 * input_shape[-1],
+                    kernel_size=1,
+                    activation=self.activation,
+                    use_bias=False,
+                    padding="same",
+                    kernel_initializer=self.kernel_initializer,
+                )
+            )
             self.layers.append(self._depth_to_space_block_size_2)
         else:
             raise ValueError("Undefined upsampling provided")

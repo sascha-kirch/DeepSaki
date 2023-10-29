@@ -9,7 +9,6 @@ from DeepSaki.utils.environment import detect_accelerator
 from DeepSaki.utils.environment import enable_mixed_precision
 from DeepSaki.utils.environment import enable_xla_acceleration
 
-
 class TestEnvironment:
     @pytest.fixture()
     def _tf_policy_restorer(self):

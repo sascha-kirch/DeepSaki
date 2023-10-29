@@ -11,7 +11,6 @@ from DeepSaki.layers.pooling import LearnedPooling
 from tests.DeepSaki_test.layers_test.layers_test import CommonLayerChecks
 from tests.DeepSaki_test.layers_test.layers_test import DeepSakiLayerChecks
 
-
 class TestGlobalSumPooling2D(DeepSakiLayerChecks):
     @pytest.fixture()
     def global_sum_pooling(self):

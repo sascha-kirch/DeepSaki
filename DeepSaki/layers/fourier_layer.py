@@ -11,7 +11,6 @@ import tensorflow as tf
 
 from DeepSaki.initializers.initializer_helper import make_initializer_complex
 
-
 class MultiplicationType(Enum):
     """`Enum` used to define how two matrices shall be multiplied.
 

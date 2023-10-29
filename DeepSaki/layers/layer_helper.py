@@ -10,7 +10,6 @@ from DeepSaki.initializers.he_alpha import HeAlphaNormal
 from DeepSaki.initializers.he_alpha import HeAlphaUniform
 from DeepSaki.layers.padding import ReflectionPadding2D
 
-
 class PaddingType(Enum):
     """`Enum` used to define different types of padding opperations.
 

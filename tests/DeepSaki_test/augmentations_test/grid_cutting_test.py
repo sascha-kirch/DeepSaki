@@ -9,7 +9,6 @@ from DeepSaki.augmentations.grid_cutting import _get_mask
 from DeepSaki.augmentations.grid_cutting import _invert_mask
 from DeepSaki.augmentations.grid_cutting import _random_boundingbox
 
-
 class TestRandomBoundingBox:
     @pytest.mark.parametrize("height", [10, 50, 100])
     @pytest.mark.parametrize("width", [10, 50, 100])

@@ -34,7 +34,6 @@ from DeepSaki.layers.sub_model_composites import Bottleneck
 from DeepSaki.layers.sub_model_composites import Decoder
 from DeepSaki.layers.sub_model_composites import Encoder
 
-
 class DeepSakiLayerChecks(ABC):
     @abstractmethod
     def test_call_raises_error_wrong_input_spec(self):
