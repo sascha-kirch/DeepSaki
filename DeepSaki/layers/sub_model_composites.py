@@ -34,11 +34,10 @@ class Encoder(tf.keras.layers.Layer):
         number_of_levels: int = 3,
         filters: int = 64,
         limit_filters: int = 1024,
-        use_residual_Conv2DBlock: bool = False,
         downsampling: str = "conv_stride_2",
         kernels: int = 3,
         split_kernels: bool = False,
-        number_of_convs: int = 2,
+        number_of_blocks: int = 2,
         activation: str = "leaky_relu",
         first_kernel: Optional[int] = None,
         use_ResidualBlock: bool = False,
@@ -61,14 +60,12 @@ class Encoder(tf.keras.layers.Layer):
             filters (int, optional): Number of filters for the initial encoder block. Defaults to 64.
             limit_filters (int, optional): Limits the number of filters, which is doubled with every downsampling block.
                 Defaults to 1024.
-            use_residual_Conv2DBlock (bool, optional): Adds a residual connection in parallel to the `Conv2DBlock`.
-                Defaults to False.
             downsampling (str, optional): Describes the downsampling method. Defaults to "conv_stride_2".
             kernels (int, optional): Size of the convolutions kernels. Defaults to 3.
             split_kernels (bool, optional): To decrease the number of parameters, a convolution with the kernel_size
                 `(kernel,kernel)` can be splitted into two consecutive convolutions with the kernel_size `(kernel,1)` and
                 `(1,kernel)` respectivly. Defaults to False.
-            number_of_convs (int, optional): Number of consecutive convolutional building blocks, i.e. `Conv2DBlock`.
+            number_of_blocks (int, optional): Number of consecutive convolutional building blocks, i.e. `Conv2DBlock`.
                 Defaults to 2.
             activation (str, optional): String literal or tensorflow activation function object to obtain activation
                 function. Defaults to "leaky_relu".
@@ -101,11 +98,10 @@ class Encoder(tf.keras.layers.Layer):
         self.number_of_levels = number_of_levels
         self.filters = filters
         self.limit_filters = limit_filters
-        self.use_residual_Conv2DBlock = use_residual_Conv2DBlock
         self.downsampling = downsampling
         self.kernels = kernels
         self.split_kernels = split_kernels
-        self.number_of_convs = number_of_convs
+        self.number_of_blocks = number_of_blocks
         self.activation = activation
         self.first_kernel = first_kernel
         self.use_ResidualBlock = use_ResidualBlock
@@ -120,6 +116,8 @@ class Encoder(tf.keras.layers.Layer):
         self.use_bias = use_bias
         self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
         self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4, dtype=tf.float32)
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).
@@ -156,7 +154,7 @@ class Encoder(tf.keras.layers.Layer):
                         filters=ch,
                         activation=self.activation,
                         kernels=encoder_kernels,
-                        number_of_blocks=self.number_of_convs,
+                        number_of_blocks=self.number_of_blocks,
                         use_spec_norm=self.use_spec_norm,
                         dropout_rate=self.dropout_rate,
                         use_bias=self.use_bias,
@@ -180,11 +178,10 @@ class Encoder(tf.keras.layers.Layer):
                 self.encoderBlocks.append(
                     Conv2DBlock(
                         filters=ch,
-                        use_residual_Conv2DBlock=self.use_residual_Conv2DBlock,
                         kernels=encoder_kernels,
                         split_kernels=self.split_kernels,
                         activation=self.activation,
-                        number_of_convs=self.number_of_convs,
+                        number_of_blocks=self.number_of_blocks,
                         use_spec_norm=self.use_spec_norm,
                         dropout_rate=self.dropout_rate,
                         padding=self.padding,
@@ -249,11 +246,10 @@ class Encoder(tf.keras.layers.Layer):
                 "number_of_levels": self.number_of_levels,
                 "filters": self.filters,
                 "limit_filters": self.limit_filters,
-                "use_residual_Conv2DBlock": self.use_residual_Conv2DBlock,
                 "downsampling": self.downsampling,
                 "kernels": self.kernels,
                 "split_kernels": self.split_kernels,
-                "number_of_convs": self.number_of_convs,
+                "number_of_blocks": self.number_of_blocks,
                 "activation": self.activation,
                 "first_kernel": self.first_kernel,
                 "use_ResidualBlock": self.use_ResidualBlock,
@@ -290,8 +286,7 @@ class Bottleneck(tf.keras.layers.Layer):
         n_bottleneck_blocks: int = 3,
         kernels: int = 3,
         split_kernels: bool = False,
-        number_of_convs: int = 2,
-        use_residual_Conv2DBlock: bool = True,
+        number_of_blocks: int = 2,
         use_ResidualBlock: bool = False,
         activation: str = "leaky_relu",
         dropout_rate: float = 0.2,
@@ -311,10 +306,8 @@ class Bottleneck(tf.keras.layers.Layer):
             split_kernels (bool, optional): To decrease the number of parameters, a convolution with the kernel_size
                 `(kernel,kernel)` can be splitted into two consecutive convolutions with the kernel_size `(kernel,1)`
                 and `(1,kernel)` respectivly. Defaults to False.
-            number_of_convs (int, optional): : Number of consecutive conv layers within a basic building block.
+            number_of_blocks (int, optional): : Number of consecutive conv layers within a basic building block.
                 Defaults to 2.
-            use_residual_Conv2DBlock (bool, optional): Adds a residual connection in parallel to the `Conv2DBlock`.
-                Defaults to True.
             use_ResidualBlock (bool, optional): Whether or not to use the `ResidualBlock` instead of the
                 `Conv2DBlock`. Defaults to False.
             activation (str, optional): String literal or tensorflow activation function object to obtain activation
@@ -337,10 +330,9 @@ class Bottleneck(tf.keras.layers.Layer):
         super(Bottleneck, self).__init__()
         self.use_ResidualBlock = use_ResidualBlock
         self.n_bottleneck_blocks = n_bottleneck_blocks
-        self.use_residual_Conv2DBlock = use_residual_Conv2DBlock
         self.kernels = kernels
         self.split_kernels = split_kernels
-        self.number_of_convs = number_of_convs
+        self.number_of_blocks = number_of_blocks
         self.activation = activation
         self.dropout_rate = dropout_rate
         self.channel_list = channel_list
@@ -350,6 +342,7 @@ class Bottleneck(tf.keras.layers.Layer):
         self.padding = padding
         self.kernel_initializer = kernel_initializer
         self.gamma_initializer = gamma_initializer
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4, dtype=tf.float32)
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).
@@ -361,7 +354,7 @@ class Bottleneck(tf.keras.layers.Layer):
 
         if self.channel_list is None:
             ch = input_shape[-1]
-            self.channel_list = [ch for i in range(self.n_bottleneck_blocks)]
+            self.channel_list = [ch for _ in range(self.n_bottleneck_blocks)]
 
         self.layers = []
         for ch in self.channel_list:
@@ -371,7 +364,7 @@ class Bottleneck(tf.keras.layers.Layer):
                         activation=self.activation,
                         filters=ch,
                         kernels=self.kernels,
-                        number_of_blocks=self.number_of_convs,
+                        number_of_blocks=self.number_of_blocks,
                         use_spec_norm=self.use_spec_norm,
                         use_bias=self.use_bias,
                         residual_cardinality=self.residual_cardinality,
@@ -384,10 +377,9 @@ class Bottleneck(tf.keras.layers.Layer):
                 self.layers.append(
                     Conv2DBlock(
                         filters=ch,
-                        use_residual_Conv2DBlock=self.use_residual_Conv2DBlock,
                         kernels=self.kernels,
                         split_kernels=self.split_kernels,
-                        number_of_convs=self.number_of_convs,
+                        number_of_blocks=self.number_of_blocks,
                         activation=self.activation,
                         use_spec_norm=self.use_spec_norm,
                         use_bias=self.use_bias,
@@ -429,10 +421,9 @@ class Bottleneck(tf.keras.layers.Layer):
             {
                 "use_ResidualBlock": self.use_ResidualBlock,
                 "n_bottleneck_blocks": self.n_bottleneck_blocks,
-                "use_residual_Conv2DBlock": self.use_residual_Conv2DBlock,
                 "kernels": self.kernels,
                 "split_kernels": self.split_kernels,
-                "number_of_convs": self.number_of_convs,
+                "number_of_blocks": self.number_of_blocks,
                 "activation": self.activation,
                 "dropout_rate": self.dropout_rate,
                 "use_spec_norm": self.use_spec_norm,
@@ -463,10 +454,9 @@ class Decoder(tf.keras.layers.Layer):
         upsampling: str = "2D_upsample_and_conv",
         filters: int = 64,
         limit_filters: int = 1024,
-        use_residual_Conv2DBlock: bool = False,
         kernels: int = 3,
         split_kernels: bool = False,
-        number_of_convs: int = 2,
+        number_of_blocks: int = 2,
         activation: str = "leaky_relu",
         dropout_rate: float = 0.2,
         use_ResidualBlock: bool = False,
@@ -490,13 +480,11 @@ class Decoder(tf.keras.layers.Layer):
                 Defaults to 64.
             limit_filters (int, optional): Limits the number of filters, which is doubled with every downsampling block.
                 Defaults to 512.
-            use_residual_Conv2DBlock (bool, optional):Adds a residual connection in parallel to the `Conv2DBlock`.
-                Defaults to False.
             kernels (int, optional): Size of the convolutions kernels. Defaults to 3.
             split_kernels (bool, optional): To decrease the number of parameters, a convolution with the kernel_size
                 `(kernel,kernel)` can be splitted into two consecutive convolutions with the kernel_size `(kernel,1)` and
                 `(1,kernel)` respectivly. Defaults to False.
-            number_of_convs (int, optional): Number of consecutive convolutional building blocks, i.e. `Conv2DBlock`.
+            number_of_blocks (int, optional): Number of consecutive convolutional building blocks, i.e. `Conv2DBlock`.
                 Defaults to 2.
             activation (str, optional): String literal or tensorflow activation function object to obtain activation
                 function. Defaults to "leaky_relu".
@@ -523,10 +511,9 @@ class Decoder(tf.keras.layers.Layer):
         self.filters = filters
         self.upsampling = upsampling
         self.limit_filters = limit_filters
-        self.use_residual_Conv2DBlock = use_residual_Conv2DBlock
         self.kernels = kernels
         self.split_kernels = split_kernels
-        self.number_of_convs = number_of_convs
+        self.number_of_blocks = number_of_blocks
         self.activation = activation
         self.use_ResidualBlock = use_ResidualBlock
         self.channel_list = channel_list
@@ -540,6 +527,8 @@ class Decoder(tf.keras.layers.Layer):
 
         self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
         self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4, dtype=tf.float32)
 
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).
@@ -578,7 +567,7 @@ class Decoder(tf.keras.layers.Layer):
                         filters=ch,
                         activation=self.activation,
                         kernels=self.kernels,
-                        number_of_blocks=self.number_of_convs,
+                        number_of_blocks=self.number_of_blocks,
                         use_spec_norm=self.use_spec_norm,
                         dropout_rate=dropout_rate,
                         use_bias=self.use_bias,
@@ -602,11 +591,10 @@ class Decoder(tf.keras.layers.Layer):
                 self.decoderBlocks.append(
                     Conv2DBlock(
                         filters=ch,
-                        use_residual_Conv2DBlock=self.use_residual_Conv2DBlock,
                         kernels=self.kernels,
                         split_kernels=self.split_kernels,
                         activation=self.activation,
-                        number_of_convs=self.number_of_convs,
+                        number_of_blocks=self.number_of_blocks,
                         dropout_rate=dropout_rate,
                         use_spec_norm=self.use_spec_norm,
                         use_bias=self.use_bias,
@@ -668,11 +656,10 @@ class Decoder(tf.keras.layers.Layer):
                 "number_of_levels": self.number_of_levels,
                 "filters": self.filters,
                 "limit_filters": self.limit_filters,
-                "use_residual_Conv2DBlock": self.use_residual_Conv2DBlock,
                 "upsampling": self.upsampling,
                 "kernels": self.kernels,
                 "split_kernels": self.split_kernels,
-                "number_of_convs": self.number_of_convs,
+                "number_of_blocks": self.number_of_blocks,
                 "activation": self.activation,
                 "use_ResidualBlock": self.use_ResidualBlock,
                 "residual_cardinality": self.residual_cardinality,

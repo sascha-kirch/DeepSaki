@@ -440,7 +440,7 @@ class FFT2D(FourierLayer):
         | input shape | input dtype                 |   apply_real_fft   |  output dtype           | output shape |
         |-------------|-----------------------------|:------------------:|------------------------:|-------------:|
         | (1,8,8,3)   | real                        |  True              | complex                 |  (1,8,5,3)   |
-        | (1,8,8,3)   | real -> transformed complex |  false             | complex                 |  (1,8,8,3)   |
+        | (1,8,8,3)   | real                        |  false             | n.a.                    |     n.a.     |
         | (1,8,8,3)   | complex                     |  True(Value Error) | n.a.                    |     n.a.     |
         | (1,8,8,3)   | complex                     |  False             | complex                 |  (1,8,8,3)   |
 
@@ -474,28 +474,6 @@ class FFT2D(FourierLayer):
 
         dtype = tf.float32 if self.apply_real_fft else tf.complex64
         self.input_spec = tf.keras.layers.InputSpec(ndim=4, dtype=dtype)
-
-    def build(self, input_shape: tf.TensorShape) -> None:
-        """Build layer depending on the `input_shape` (output shape of the previous layer).
-
-        Args:
-            input_shape (tf.TensorShape): Shape of the input tensor to this layer.
-
-        Raises:
-            ValueError: if height and width of the inputShape are not equal.
-        """
-        if len(input_shape) != self.input_spec.ndim:
-            raise ValueError(
-                f"Rank of input tensor not supported. Got '{len(input_shape)}', but expected '{self.input_spec.ndim}'"
-            )
-
-        if self.is_channel_first:
-            height, width = input_shape[-2], input_shape[-1]
-        else:
-            height, width = input_shape[-3], input_shape[-2]
-
-        if height != width:
-            raise ValueError(f"Height and width is expected to be equal but got: {height=} and {width=}")
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         r"""Calls the `FFT2D` layer.

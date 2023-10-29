@@ -50,10 +50,9 @@ class UNet(tf.keras.Model):
             kernels:int = 3,
             first_kernel:int = 5,
             split_kernels:bool = False,
-            number_of_convs:int = 2,
+            number_of_blocks:int = 2,
             activation:str = "leaky_relu",
             limit_filters:int = 512,
-            use_residual_Conv2DBlock:bool = False,
             use_ResidualBlock:bool = False,
             residual_cardinality:int = 1,
             n_bottleneck_blocks:int = 1,
@@ -83,14 +82,12 @@ class UNet(tf.keras.Model):
         split_kernels (bool, optional): To decrease the number of parameters, a convolution with the kernel_size
             `(kernel,kernel)` can be splitted into two consecutive convolutions with the kernel_size `(kernel,1)` and
             `(1,kernel)` respectivly. Defaults to False.
-        number_of_convs (int, optional): Number of consecutive convolutional building blocks, i.e. `Conv2DBlock`.
+        number_of_blocks (int, optional): Number of consecutive convolutional building blocks, i.e. `Conv2DBlock`.
             Defaults to 2.
         activation (str, optional): String literal or tensorflow activation function object to obtain activation
             function. Defaults to "leaky_relu".
         limit_filters (int, optional): Limits the number of filters, which is doubled with every downsampling block.
             Defaults to 512.
-        use_residual_Conv2DBlock (bool, optional): Adds a residual connection in parallel to the `Conv2DBlock`. Defaults
-            to False.
         use_ResidualBlock (bool, optional): Whether or not to use the `ResidualBlock` instead of the
             `Conv2DBlock`. Defaults to False.
         residual_cardinality (int, optional): Cardinality for the `ResidualBlock`. Defaults to 1.
@@ -115,13 +112,13 @@ class UNet(tf.keras.Model):
     """
     super(UNet, self).__init__()
 
-    self.encoder = Encoder(number_of_levels=number_of_levels, filters=filters, limit_filters=limit_filters, use_residual_Conv2DBlock=use_residual_Conv2DBlock, downsampling=downsampling, kernels=kernels, split_kernels=split_kernels, number_of_convs=number_of_convs,activation=activation, first_kernel=first_kernel,use_ResidualBlock=use_ResidualBlock,use_spec_norm=use_spec_norm, omit_skips=omit_skips, output_skips=True, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
-    self.bottleNeck = Bottleneck(use_ResidualBlock=use_ResidualBlock, n_bottleneck_blocks=n_bottleneck_blocks,use_residual_Conv2DBlock=use_residual_Conv2DBlock, kernels=kernels, split_kernels=split_kernels,number_of_convs=number_of_convs,activation = activation, dropout_rate=dropout_rate, use_spec_norm=use_spec_norm, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
-    self.decoder = Decoder(number_of_levels=number_of_levels, upsampling=upsampling, filters=filters, limit_filters=limit_filters, use_residual_Conv2DBlock=use_residual_Conv2DBlock, kernels=kernels, split_kernels=split_kernels,number_of_convs=number_of_convs,activation=activation,dropout_rate=dropout_rate, use_ResidualBlock=use_ResidualBlock,use_spec_norm=use_spec_norm,use_self_attention=use_self_attention, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer,enable_skip_connections_input=True)
+    self.encoder = Encoder(number_of_levels=number_of_levels, filters=filters, limit_filters=limit_filters,  downsampling=downsampling, kernels=kernels, split_kernels=split_kernels, number_of_blocks=number_of_blocks,activation=activation, first_kernel=first_kernel,use_ResidualBlock=use_ResidualBlock,use_spec_norm=use_spec_norm, omit_skips=omit_skips, output_skips=True, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+    self.bottleNeck = Bottleneck(use_ResidualBlock=use_ResidualBlock, n_bottleneck_blocks=n_bottleneck_blocks, kernels=kernels, split_kernels=split_kernels,number_of_blocks=number_of_blocks,activation = activation, dropout_rate=dropout_rate, use_spec_norm=use_spec_norm, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+    self.decoder = Decoder(number_of_levels=number_of_levels, upsampling=upsampling, filters=filters, limit_filters=limit_filters,  kernels=kernels, split_kernels=split_kernels,number_of_blocks=number_of_blocks,activation=activation,dropout_rate=dropout_rate, use_ResidualBlock=use_ResidualBlock,use_spec_norm=use_spec_norm,use_self_attention=use_self_attention, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer,enable_skip_connections_input=True)
     if fully_connected == "MLP":
-      self.img_reconstruction = DenseBlock(units = input_shape[-1], use_spec_norm = use_spec_norm, number_of_layers = 1, activation = final_activation, apply_final_normalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+      self.img_reconstruction = DenseBlock(units = input_shape[-1], use_spec_norm = use_spec_norm, number_of_blocks = 1, activation = final_activation, apply_final_normalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     elif fully_connected == "1x1_conv":
-      self.img_reconstruction = Conv2DBlock(filters = input_shape[-1],use_residual_Conv2DBlock = False, kernels = 1, split_kernels  = False, number_of_convs = 1, activation = final_activation, use_spec_norm=use_spec_norm, apply_final_normalization = False, use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+      self.img_reconstruction = Conv2DBlock(filters = input_shape[-1], kernels = 1, split_kernels  = False, number_of_blocks = 1, activation = final_activation, use_spec_norm=use_spec_norm, apply_final_normalization = False, use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     #To enable mixed precission support for matplotlib and distributed training and to increase training stability
     self.linear_dtype = tf.keras.layers.Activation("linear", dtype = tf.float32)
 
@@ -178,10 +175,9 @@ class ResNet(tf.keras.Model):
             split_kernels:bool = False,
             kernels:int = 3,
             first_kernel:int = 5,
-            number_of_convs:int = 2,
+            number_of_blocks:int = 2,
             activation:str = "leaky_relu",
             final_activation:str = "hard_sigmoid",
-            use_residual_Conv2DBlock:bool = False,
             use_ResidualBlock:bool = True,
             residual_cardinality:int = 32,
             limit_filters:int = 512,
@@ -209,14 +205,12 @@ class ResNet(tf.keras.Model):
         kernels (int, optional): Size of the convolutions kernels. Defaults to 3.
         first_kernel (int, optional): The first convolution can have a different kernel size, to e.g. increase the
             perceptive field, while the channel depth is still low. Defaults to 5.
-        number_of_convs (int, optional): Number of consecutive convolutional building blocks, i.e. `Conv2DBlock`.
+        number_of_blocks (int, optional): Number of consecutive convolutional building blocks, i.e. `Conv2DBlock`.
             Defaults to 2.
         activation (str, optional): String literal or tensorflow activation function object to obtain activation
             function. Defaults to "leaky_relu".
         final_activation (str, optional): String literal or tensorflow activation function object to obtain activation
             function for the model's output activation. Defaults to "hard_sigmoid".
-        use_residual_Conv2DBlock (bool, optional): Ads a residual connection in parallel to the `Conv2DBlock`. Defaults
-            to False.
         use_ResidualBlock (bool, optional): Whether or not to use the ResidualBlock instead of the
             `Conv2DBlock`. Defaults to False.
         residual_cardinality (int, optional): Cardinality for the ResidualBlock. Defaults to 1.
@@ -242,13 +236,13 @@ class ResNet(tf.keras.Model):
     """
     super(ResNet, self).__init__()
 
-    self.encoder = Encoder(number_of_levels=number_of_levels, filters=filters, limit_filters=limit_filters, use_residual_Conv2DBlock=use_residual_Conv2DBlock, downsampling=downsampling, kernels=kernels, split_kernels=split_kernels, number_of_convs=number_of_convs,activation=activation, first_kernel=first_kernel,use_ResidualBlock=use_ResidualBlock,use_spec_norm=use_spec_norm, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
-    self.bottleNeck = Bottleneck(use_ResidualBlock=use_ResidualBlock, n_bottleneck_blocks=n_bottleneck_blocks,use_residual_Conv2DBlock=use_residual_Conv2DBlock, kernels=kernels, split_kernels=split_kernels,number_of_convs=number_of_convs , activation = activation,dropout_rate=dropout_rate,use_spec_norm=use_spec_norm, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
-    self.decoder = Decoder(number_of_levels=number_of_levels, upsampling=upsampling, filters=filters, limit_filters=limit_filters, use_residual_Conv2DBlock=use_residual_Conv2DBlock, kernels=kernels, split_kernels=split_kernels,number_of_convs=number_of_convs,activation=activation,dropout_rate=dropout_rate, use_ResidualBlock=use_ResidualBlock,use_spec_norm=use_spec_norm,use_self_attention=use_self_attention, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+    self.encoder = Encoder(number_of_levels=number_of_levels, filters=filters, limit_filters=limit_filters, downsampling=downsampling, kernels=kernels, split_kernels=split_kernels, number_of_blocks=number_of_blocks,activation=activation, first_kernel=first_kernel,use_ResidualBlock=use_ResidualBlock,use_spec_norm=use_spec_norm, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+    self.bottleNeck = Bottleneck(use_ResidualBlock=use_ResidualBlock, n_bottleneck_blocks=n_bottleneck_blocks, kernels=kernels, split_kernels=split_kernels,number_of_blocks=number_of_blocks , activation = activation,dropout_rate=dropout_rate,use_spec_norm=use_spec_norm, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+    self.decoder = Decoder(number_of_levels=number_of_levels, upsampling=upsampling, filters=filters, limit_filters=limit_filters, kernels=kernels, split_kernels=split_kernels,number_of_blocks=number_of_blocks,activation=activation,dropout_rate=dropout_rate, use_ResidualBlock=use_ResidualBlock,use_spec_norm=use_spec_norm,use_self_attention=use_self_attention, use_bias = use_bias, residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     if fully_connected == "MLP":
-      self.img_reconstruction = DenseBlock(units = input_shape[-1], use_spec_norm = use_spec_norm, number_of_layers = 1, activation = final_activation, apply_final_normalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+      self.img_reconstruction = DenseBlock(units = input_shape[-1], use_spec_norm = use_spec_norm, number_of_blocks = 1, activation = final_activation, apply_final_normalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     elif fully_connected == "1x1_conv":
-      self.img_reconstruction = Conv2DBlock(filters = input_shape[-1],use_residual_Conv2DBlock = False, kernels = 1, split_kernels  = False, number_of_convs = 1, activation = final_activation, use_spec_norm=use_spec_norm, apply_final_normalization = False,use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
+      self.img_reconstruction = Conv2DBlock(filters = input_shape[-1], kernels = 1, split_kernels  = False, number_of_blocks = 1, activation = final_activation, use_spec_norm=use_spec_norm, apply_final_normalization = False,use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
     #To enable mixed precission support for matplotlib and distributed training and to increase training stability
     self.linear_dtype = tf.keras.layers.Activation("linear", dtype = tf.float32)
 

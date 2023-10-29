@@ -108,7 +108,8 @@ class Conv2DSplitted(tf.keras.layers.Layer):
         )
         return config
 
-
+# TODO: Normalization should be setable
+# Todo: how to deal with dropout func?
 class Conv2DBlock(tf.keras.layers.Layer):
     """Wraps a two-dimensional convolution into a more complex building block."""
 
@@ -116,9 +117,8 @@ class Conv2DBlock(tf.keras.layers.Layer):
         self,
         filters: int = 3,
         kernels: int = 3,
-        use_residual_Conv2DBlock: bool = False,
         split_kernels: bool = False,
-        number_of_convs: int = 1,
+        number_of_blocks: int = 1,
         activation: str = "leaky_relu",
         dropout_rate: float = 0.0,
         final_activation: bool = True,
@@ -135,12 +135,10 @@ class Conv2DBlock(tf.keras.layers.Layer):
         Args:
             filters (int, optional): Number of individual filters. Defaults to 3.
             kernels (int, optional): Size of the convolutions kernels. Defaults to 3.
-            use_residual_Conv2DBlock (bool, optional): Adds a residual connection in parallel to the `Conv2DBlock`.
-                Defaults to False.
             split_kernels (bool, optional): To decrease the number of parameters, a convolution with the kernel_size
                 `(kernel,kernel)` can be splitted into two consecutive convolutions with the kernel_size `(kernel,1)`
                 and `(1,kernel)` respectivly. Defaults to False.
-            number_of_convs (int, optional): Number of consecutive convolutional building blocks, i.e. `Conv2DBlock`.
+            number_of_blocks (int, optional): Number of consecutive convolutional building blocks, i.e. `Conv2DBlock`.
                 Defaults to 1.
             activation (str, optional): String literal or tensorflow activation function object to obtain activation
                 function. Defaults to "leaky_relu".
@@ -161,10 +159,9 @@ class Conv2DBlock(tf.keras.layers.Layer):
         """
         super(Conv2DBlock, self).__init__()
         self.filters = filters
-        self.use_residual_Conv2DBlock = use_residual_Conv2DBlock
         self.kernels = kernels
         self.split_kernels = split_kernels
-        self.number_of_convs = number_of_convs
+        self.number_of_blocks = number_of_blocks
         self.activation = activation
         self.dropout_rate = dropout_rate
         self.final_activation = final_activation
@@ -177,101 +174,63 @@ class Conv2DBlock(tf.keras.layers.Layer):
         self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
         self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
-        self.pad = int((kernels - 1) / 2)  # assumes odd kernel size, which is typical!
+        pad = (kernels - 1) // 2  # assumes odd kernel size, which is typical!
 
-        if split_kernels:
-            self.convs = [
-                Conv2DSplitted(
-                    filters=filters, kernels=kernels, use_bias=use_bias, strides=strides, use_spec_norm=use_spec_norm
-                )
-                for _ in range(number_of_convs)
-            ]
-        elif use_spec_norm:
-            self.convs = [
-                tfa.layers.SpectralNormalization(
-                    tf.keras.layers.Conv2D(
-                        filters=filters,
-                        kernel_size=(kernels, kernels),
-                        kernel_initializer=self.kernel_initializer,
-                        use_bias=use_bias,
-                        strides=strides,
-                    )
-                )
-                for _ in range(number_of_convs)
-            ]
-        else:
-            self.convs = [
-                tf.keras.layers.Conv2D(
-                    filters=filters,
-                    kernel_size=(kernels, kernels),
-                    kernel_initializer=self.kernel_initializer,
-                    use_bias=use_bias,
-                    strides=strides,
-                )
-                for _ in range(number_of_convs)
-            ]
+        self.blocks = []
+        for block in range(number_of_blocks):
+            layers = []
+            if pad != 0 and self.padding != PaddingType.NONE:
+                layers.append(pad_func(pad_values=(pad, pad), padding_type=self.padding))
+            layers.append(self._get_conv_layer())
 
-        num_instancenorm_blocks = number_of_convs if apply_final_normalization else number_of_convs - 1
+            if block != (self.number_of_blocks - 1) or self.apply_final_normalization:
+                layers.append(tfa.layers.InstanceNormalization(gamma_initializer=gamma_initializer))#
 
-        self.IN_blocks = [
-            tfa.layers.InstanceNormalization(gamma_initializer=gamma_initializer)
-            for _ in range(num_instancenorm_blocks)
-        ]
+            if block != (self.number_of_blocks - 1) or self.final_activation:
+                layers.append(tf.keras.layers.Activation(self.activation))
+
+            self.blocks.append(layers)
+
         self.dropout = dropout_func(filters, dropout_rate)
 
-    def build(self, input_shape: tf.TensorShape) -> None:
-        """Build layer depending on the `input_shape` (output shape of the previous layer).
-
-        Args:
-            input_shape (tf.TensorShape): Shape of the input tensor to this layer.
-        """
-        super(Conv2DBlock, self).build(input_shape)
-        self.residual_conv = None
-        if input_shape[-1] != self.filters and self.use_residual_Conv2DBlock:
-            # split kernels for kernel_size = 1 not required
-            self.residual_conv = tf.keras.layers.Conv2D(
-                filters=self.filters,
-                kernel_size=1,
-                kernel_initializer=self.kernel_initializer,
-                use_bias=self.use_bias,
-                strides=self.strides,
-            )
-            if self.use_spec_norm:
-                self.residual_conv = tfa.layers.SpectralNormalization(self.residual_conv)
+    def _get_conv_layer(self) -> tf.keras.layers.Layer:
+        """Helper to return correct Conv layer based on `Conv2DBlock` class properties."""
+        if self.split_kernels:
+            return Conv2DSplitted(
+                    filters=self.filters, kernels=self.kernels, use_bias=self.use_bias, strides=self.strides, use_spec_norm=self.use_spec_norm,
+                )
+        if self.use_spec_norm:
+            return tfa.layers.SpectralNormalization(
+                    tf.keras.layers.Conv2D(
+                        filters=self.filters,
+                        kernel_size=(self.kernels, self.kernels),
+                        kernel_initializer=self.kernel_initializer,
+                        use_bias=self.use_bias,
+                        strides=self.strides,
+                    )
+                )
+        return tf.keras.layers.Conv2D(
+            filters=self.filters,
+            kernel_size=(self.kernels, self.kernels),
+            kernel_initializer=self.kernel_initializer,
+            use_bias=self.use_bias,
+            strides=self.strides,
+        )
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         """Calls the `Conv2DBlock` layer.
 
         Args:
-            inputs (tf.Tensor): Tensor of shape (batch, height, width, channel)
+            inputs (tf.Tensor): Tensor of shape (b, h, w, c)
 
         Returns:
-            Tensor of shape (batch, `H`, `W`, `filters`). The values for `H`, `W`, `C` depend on the stride as well on
-            the padding. If padding is applied in the stride is (1,1), the output shape matches the input shape. If for
-            example the stride is(2,2) the output shape would be (batch, `height/(2*number_of_convs)`,
-            `width/(2*number_of_convs)`, `filters`).
+            Tensor of shape (b, h/(`strides[0]`**`number_of_blocks`), w/(`strides[1]`**`number_of_blocks`), `filters`).
         """
         x = inputs
 
-        for block in range(self.number_of_convs):
-            residual = x
-
-            if self.pad != 0 and self.padding != PaddingType.NONE:
-                x = pad_func(pad_values=(self.pad, self.pad), padding_type=self.padding)(x)
-            x = self.convs[block](x)
-
-            if self.use_residual_Conv2DBlock:
-                if (
-                    block == 0 and self.residual_conv is not None
-                ):  # after the first conf, the channel depth matches between input and output
-                    residual = self.residual_conv(residual)
-                x = tf.keras.layers.Add()([x, residual])
-
-            if block != (self.number_of_convs - 1) or self.apply_final_normalization:
-                x = self.IN_blocks[block](x)
-
-            if block != (self.number_of_convs - 1) or self.final_activation:
-                x = tf.keras.layers.Activation(self.activation)(x)
+        for block in self.blocks:
+            for layer in block:
+                x = layer(x)
 
         if self.dropout_rate > 0:
             x = self.dropout(x)
@@ -288,10 +247,9 @@ class Conv2DBlock(tf.keras.layers.Layer):
         config.update(
             {
                 "filters": self.filters,
-                "use_residual_Conv2DBlock": self.use_residual_Conv2DBlock,
                 "kernels": self.kernels,
                 "split_kernels": self.split_kernels,
-                "number_of_convs": self.number_of_convs,
+                "number_of_blocks": self.number_of_blocks,
                 "activation": self.activation,
                 "dropout_rate": self.dropout_rate,
                 "final_activation": self.final_activation,
@@ -313,7 +271,7 @@ class DenseBlock(tf.keras.layers.Layer):
     def __init__(
         self,
         units: int,
-        number_of_layers: int = 1,
+        number_of_blocks: int = 1,
         activation: str = "leaky_relu",
         dropout_rate: float = 0.0,
         final_activation: bool = True,
@@ -327,7 +285,7 @@ class DenseBlock(tf.keras.layers.Layer):
 
         Args:
             units (int): Number of units of each dense block
-            number_of_layers (int, optional): Number of consecutive subblocks. Defaults to 1.
+            number_of_blocks (int, optional): Number of consecutive subblocks. Defaults to 1.
             activation (str, optional): String literal to obtain activation function. Defaults to "leaky_relu".
             dropout_rate (float, optional): Probability of the dropout layer dropping weights. If the preceeding layer
                 has more than one channel, spatial dropout is applied, otherwise standard dropout. Defaults to 0.0.
@@ -343,7 +301,7 @@ class DenseBlock(tf.keras.layers.Layer):
         """
         super(DenseBlock, self).__init__()
         self.units = units
-        self.number_of_layers = number_of_layers
+        self.number_of_blocks = number_of_blocks
         self.dropout_rate = dropout_rate
         self.activation = activation
         self.final_activation = final_activation
@@ -352,38 +310,46 @@ class DenseBlock(tf.keras.layers.Layer):
         self.use_bias = use_bias
         self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
         self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
-        if use_spec_norm:
-            self.DenseBlocks = [
-                tfa.layers.SpectralNormalization(
-                    tf.keras.layers.Dense(units=units, use_bias=use_bias, kernel_initializer=self.kernel_initializer)
-                )
-                for _ in range(number_of_layers)
-            ]
-        else:
-            self.DenseBlocks = [
-                tf.keras.layers.Dense(units=units, use_bias=use_bias, kernel_initializer=self.kernel_initializer)
-                for _ in range(number_of_layers)
-            ]
+        self.blocks = []
+        for block in range(number_of_blocks):
+            layers = []
+            layers.append(self._get_dense_layer())
 
-        num_instancenorm_blocks = number_of_layers if apply_final_normalization else number_of_layers - 1
-        self.IN_blocks = [
-            tfa.layers.InstanceNormalization(gamma_initializer=self.gamma_initializer)
-            for _ in range(num_instancenorm_blocks)
-        ]
+            if block != (number_of_blocks - 1) or self.apply_final_normalization:
+                layers.append(tfa.layers.InstanceNormalization(gamma_initializer=gamma_initializer))
+
+            if block != (number_of_blocks - 1) or self.final_activation:
+                layers.append(tf.keras.layers.Activation(self.activation))
+
+            self.blocks.append(layers)
+
         self.dropout = tf.keras.layers.Dropout(dropout_rate)
 
+    def _get_dense_layer(self) -> tf.keras.layers.Layer:
+        """Helper to return correct Conv layer based on `DenseBlock` class properties."""
+        if self.use_spec_norm:
+            return tfa.layers.SpectralNormalization(
+                    tf.keras.layers.Dense(units=self.units, use_bias=self.use_bias, kernel_initializer=self.kernel_initializer)
+                )
+        return tf.keras.layers.Dense(units=self.units, use_bias=self.use_bias, kernel_initializer=self.kernel_initializer)
+
+
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """Calls the `DenseBlock` layer.
+
+        Args:
+            inputs (tf.Tensor): Tensor of shape (b, h, w, c)
+
+        Returns:
+            Tensor of shape (b, h, w, `units`).
+        """
         x = inputs
 
-        for block in range(self.number_of_layers):
-            x = self.DenseBlocks[block](x)
-
-            if block != (self.number_of_layers - 1) or self.apply_final_normalization:
-                x = self.IN_blocks[block](x)
-
-            if block != (self.number_of_layers - 1) or self.final_activation:
-                x = tf.keras.layers.Activation(self.activation)(x)
+        for block in self.blocks:
+            for layer in block:
+                x = layer(x)
 
         if self.dropout_rate > 0:
             x = self.dropout(x)
@@ -399,7 +365,7 @@ class DenseBlock(tf.keras.layers.Layer):
         config.update(
             {
                 "units": self.units,
-                "number_of_layers": self.number_of_layers,
+                "number_of_blocks": self.number_of_blocks,
                 "dropout_rate": self.dropout_rate,
                 "activation": self.activation,
                 "final_activation": self.final_activation,
@@ -454,11 +420,17 @@ class DownSampleBlock(tf.keras.layers.Layer):
         self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
         self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
+    def _space_to_depth_block_size_2(self, tensor:tf.Tensor)->tf.Tensor:
+        return tf.nn.space_to_depth(tensor, block_size=2)
+
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).
 
         Args:
             input_shape (tf.TensorShape): Shape of the input tensor to this layer.
+
+        Raises:
+            ValueError: if unsupported downsampling is provided.
         """
         super(DownSampleBlock, self).build(input_shape)
 
@@ -483,17 +455,30 @@ class DownSampleBlock(tf.keras.layers.Layer):
         elif self.downsampling == "average_pooling":
             self.layers.append(tf.keras.layers.AveragePooling2D(pool_size=(2, 2)))
         elif self.downsampling == "space_to_depth":
-            pass
+            self.layers.append(self._space_to_depth_block_size_2)
+            self.layers.append(tf.keras.layers.Conv2D(
+                filters=input_shape[-1],
+                kernel_size=1,
+                activation=self.activation,
+                use_bias=False,
+                padding="same",
+                kernel_initializer=self.kernel_initializer,
+            ))
         else:
-            raise Exception("Undefined downsampling provided")
+            raise ValueError("Undefined downsampling provided")
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """Calls the `DownSampleBlock` layer.
+
+        Args:
+            inputs (tf.Tensor): Tensor of shape (b,h,w,c)
+
+        Returns:
+            Spatially downsampled tensor of shape (b,h/2,w/2,c)
+        """
         x = inputs
-        if self.downsampling == "space_to_depth":
-            x = tf.nn.space_to_depth(x, block_size=2)
-        else:
-            for layer in self.layers:
-                x = layer(x)
+        for layer in self.layers:
+            x = layer(x)
 
         return x
 
@@ -560,11 +545,17 @@ class UpSampleBlock(tf.keras.layers.Layer):
         self.padding = padding
         self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
+    def _depth_to_space_block_size_2(self, tensor:tf.Tensor)->tf.Tensor:
+        return tf.nn.depth_to_space(tensor, block_size=2)
+
     def build(self, input_shape: tf.TensorShape) -> None:
         """Build layer depending on the `input_shape` (output shape of the previous layer).
 
         Args:
             input_shape (tf.TensorShape): Shape of the input tensor to this layer.
+
+        Raises:
+            ValueError: if `upsampling` is not supported.
         """
         super(UpSampleBlock, self).build(input_shape)
         self.layers = []
@@ -574,9 +565,8 @@ class UpSampleBlock(tf.keras.layers.Layer):
             self.layers.append(
                 Conv2DBlock(
                     filters=input_shape[-1],
-                    use_residual_Conv2DBlock=False,
                     kernels=1,
-                    number_of_convs=1,
+                    number_of_blocks=1,
                     activation=self.activation,
                     use_spec_norm=self.use_spec_norm,
                     use_bias=self.use_bias,
@@ -599,30 +589,30 @@ class UpSampleBlock(tf.keras.layers.Layer):
             self.layers.append(tfa.layers.InstanceNormalization(gamma_initializer=self.gamma_initializer))
             self.layers.append(tf.keras.layers.Activation(self.activation))
         elif self.upsampling == "depth_to_space":
-            self.layers.append(
-                Conv2DBlock(
-                    filters=4 * input_shape[-1],
-                    use_residual_Conv2DBlock=False,
-                    kernels=1,
-                    split_kernels=False,
-                    number_of_convs=1,
-                    activation=self.activation,
-                    use_spec_norm=self.use_spec_norm,
-                    use_bias=self.use_bias,
-                    padding=self.padding,
-                    kernel_initializer=self.kernel_initializer,
-                    gamma_initializer=self.gamma_initializer,
-                )
-            )
+            self.layers.append(tf.keras.layers.Conv2D(
+                filters=4*input_shape[-1],
+                kernel_size=1,
+                activation=self.activation,
+                use_bias=False,
+                padding="same",
+                kernel_initializer=self.kernel_initializer,
+            ))
+            self.layers.append(self._depth_to_space_block_size_2)
         else:
-            raise Exception("Undefined upsampling provided")
+            raise ValueError("Undefined upsampling provided")
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """Calls the `UpSampleBlock` layer.
+
+        Args:
+            inputs (tf.Tensor): Tensor of shape (b,h,w,c)
+
+        Returns:
+            Tensor of shape (b,h*2,w*2,c)
+        """
         x = inputs
         for layer in self.layers:
             x = layer(x)
-        if self.upsampling == "depth_to_space":
-            x = tf.nn.depth_to_space(x, block_size=2)
         return x
 
     def get_config(self) -> Dict[str, Any]:
@@ -712,10 +702,9 @@ class ResidualBlock(tf.keras.layers.Layer):
                 [
                     Conv2DBlock(
                         filters=self.intermediateFilters,
-                        use_residual_Conv2DBlock=False,
                         kernels=1,
                         split_kernels=False,
-                        number_of_convs=1,
+                        number_of_blocks=1,
                         activation=activation,
                         use_spec_norm=use_spec_norm,
                         use_bias=use_bias,
@@ -725,10 +714,9 @@ class ResidualBlock(tf.keras.layers.Layer):
                     ),
                     Conv2DBlock(
                         filters=self.intermediateFilters,
-                        use_residual_Conv2DBlock=False,
                         kernels=kernels,
                         split_kernels=False,
-                        number_of_convs=1,
+                        number_of_blocks=1,
                         activation=activation,
                         padding=PaddingType.NONE,
                         use_spec_norm=use_spec_norm,
@@ -738,10 +726,9 @@ class ResidualBlock(tf.keras.layers.Layer):
                     ),
                     Conv2DBlock(
                         filters=filters,
-                        use_residual_Conv2DBlock=False,
                         kernels=1,
                         split_kernels=False,
-                        number_of_convs=1,
+                        number_of_blocks=1,
                         activation=activation,
                         use_spec_norm=use_spec_norm,
                         use_bias=use_bias,
@@ -766,10 +753,9 @@ class ResidualBlock(tf.keras.layers.Layer):
         if input_shape[-1] != self.filters:
             self.conv0 = Conv2DBlock(
                 filters=self.filters,
-                use_residual_Conv2DBlock=False,
                 kernels=1,
                 split_kernels=False,
-                number_of_convs=1,
+                number_of_blocks=1,
                 activation=self.activation,
                 use_spec_norm=self.use_spec_norm,
                 use_bias=self.use_bias,
@@ -905,10 +891,9 @@ class ResBlockDown(tf.keras.layers.Layer):
 
         self.convRes = Conv2DBlock(
             filters=input_shape[-1],
-            use_residual_Conv2DBlock=False,
             kernels=1,
             split_kernels=False,
-            number_of_convs=1,
+            number_of_blocks=1,
             activation=self.activation,
             use_spec_norm=self.use_spec_norm,
             use_bias=self.use_bias,
@@ -918,10 +903,9 @@ class ResBlockDown(tf.keras.layers.Layer):
         )
         self.conv1 = Conv2DBlock(
             filters=input_shape[-1],
-            use_residual_Conv2DBlock=False,
             kernels=3,
             split_kernels=False,
-            number_of_convs=1,
+            number_of_blocks=1,
             activation=self.activation,
             use_spec_norm=self.use_spec_norm,
             use_bias=self.use_bias,
@@ -931,10 +915,9 @@ class ResBlockDown(tf.keras.layers.Layer):
         )
         self.conv2 = Conv2DBlock(
             filters=input_shape[-1],
-            use_residual_Conv2DBlock=False,
             kernels=3,
             split_kernels=False,
-            number_of_convs=1,
+            number_of_blocks=1,
             activation=self.activation,
             use_spec_norm=self.use_spec_norm,
             use_bias=self.use_bias,
@@ -944,6 +927,14 @@ class ResBlockDown(tf.keras.layers.Layer):
         )
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """Calls the `ResBlockDown` layer.
+
+        Args:
+            inputs (tf.Tensor): Tensor of shape (b,h,w,c)
+
+        Returns:
+            Spatially downsampled tensor of shape (b,h/2,w/2,c)
+        """
         path1 = inputs
         path2 = inputs
 
@@ -1037,10 +1028,9 @@ class ResBlockUp(tf.keras.layers.Layer):
         super(ResBlockUp, self).build(input_shape)
         self.convRes = Conv2DBlock(
             filters=input_shape[-1],
-            use_residual_Conv2DBlock=False,
             kernels=1,
             split_kernels=False,
-            number_of_convs=1,
+            number_of_blocks=1,
             activation=self.activation,
             use_spec_norm=self.use_spec_norm,
             use_bias=self.use_bias,
@@ -1050,10 +1040,9 @@ class ResBlockUp(tf.keras.layers.Layer):
         )
         self.conv1 = Conv2DBlock(
             filters=input_shape[-1],
-            use_residual_Conv2DBlock=False,
             kernels=3,
             split_kernels=False,
-            number_of_convs=1,
+            number_of_blocks=1,
             activation=self.activation,
             use_spec_norm=self.use_spec_norm,
             use_bias=self.use_bias,
@@ -1063,10 +1052,9 @@ class ResBlockUp(tf.keras.layers.Layer):
         )
         self.conv2 = Conv2DBlock(
             filters=input_shape[-1],
-            use_residual_Conv2DBlock=False,
             kernels=3,
             split_kernels=False,
-            number_of_convs=1,
+            number_of_blocks=1,
             activation=self.activation,
             use_spec_norm=self.use_spec_norm,
             use_bias=self.use_bias,
@@ -1076,6 +1064,14 @@ class ResBlockUp(tf.keras.layers.Layer):
         )
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """Calls the `ResBlockUp` layer.
+
+        Args:
+            inputs (tf.Tensor): Tensor of shape (b,h,w,c)
+
+        Returns:
+            Tensor of shape (b,h*2,w*2,c)
+        """
         path1 = inputs
         path2 = inputs
 
@@ -1208,7 +1204,7 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
         self.w_f = DenseBlock(
             units=self.intermediate_channel,
             use_spec_norm=self.use_spec_norm,
-            number_of_layers=1,
+            number_of_blocks=1,
             activation=None,
             apply_final_normalization=False,
             use_bias=False,
@@ -1218,7 +1214,7 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
         self.w_g = DenseBlock(
             units=self.intermediate_channel,
             use_spec_norm=self.use_spec_norm,
-            number_of_layers=1,
+            number_of_blocks=1,
             activation=None,
             apply_final_normalization=False,
             use_bias=False,
@@ -1228,7 +1224,7 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
         self.w_h = DenseBlock(
             units=self.intermediate_channel,
             use_spec_norm=self.use_spec_norm,
-            number_of_layers=1,
+            number_of_blocks=1,
             activation=None,
             apply_final_normalization=False,
             use_bias=False,
@@ -1238,7 +1234,7 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
         self.w_fgh = DenseBlock(
             units=num_channel,
             use_spec_norm=self.use_spec_norm,
-            number_of_layers=1,
+            number_of_blocks=1,
             activation=None,
             apply_final_normalization=False,
             use_bias=False,
