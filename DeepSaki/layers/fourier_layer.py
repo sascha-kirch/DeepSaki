@@ -96,6 +96,7 @@ class FourierLayer(tf.keras.layers.Layer):
     def _get_multiplication_function(
         self, multiplication_type: MultiplicationType
     ) -> Callable[[tf.Tensor, tf.Tensor], tf.Tensor]:
+        """Returns the corresponding elementwise multiplication function for a given type."""
         valid_multiplication_types = {
             MultiplicationType.MATRIX_PRODUCT: self._matrix_product,
             MultiplicationType.ELEMENT_WISE: self._elementwise_product,

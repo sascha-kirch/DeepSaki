@@ -314,7 +314,7 @@ class DenseBlock(tf.keras.layers.Layer):
         self.use_bias = use_bias
         self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
         self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
-        self.input_spec = tf.keras.layers.InputSpec(ndim=4)
+        self.input_spec = tf.keras.layers.InputSpec(min_ndim=2)
 
         self.blocks = []
         for block in range(number_of_blocks):

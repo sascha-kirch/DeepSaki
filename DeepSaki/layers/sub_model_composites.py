@@ -211,9 +211,9 @@ class Encoder(tf.keras.layers.Layer):
         Returns:
             If `output_skips=False` only the final output of the Encoder is returned as a tensor of shape
                 (`batch`, `height/2**number_of_levels`, `width/2**number_of_levels`,
-                `min(channel*2**number_of_levels, limit_filters)`. If `output_skips=True` additionally returns a tensor
-                of tensor (one for each level of the encoder) of shape (`batch`, `height/2**level`, `width/2**level`,
-                `min(channel*2**level, limit_filters)`.
+                `min(filters * 2 ** (number_of_levels - 1), limit_filters)`. If `output_skips=True` additionally returns
+                a tensor of tensor (one for each level of the encoder) of shape (`batch`, `height/2**level`,
+                `width/2**level`, `min(filters * 2 ** (number_of_levels - 1), limit_filters)`.
         """
         x = inputs
         skips = []

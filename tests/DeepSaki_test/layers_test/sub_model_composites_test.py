@@ -12,12 +12,22 @@ from DeepSaki.layers.sub_model_composites import Decoder
 from DeepSaki.layers.sub_model_composites import Encoder
 from tests.DeepSaki_test.layers_test.layers_test import CommonLayerChecks
 from tests.DeepSaki_test.layers_test.layers_test import DeepSakiLayerChecks
+from tests.DeepSaki_test.layers_test.mocked_layers import _mock_resblock_up,_mock_upsample_block,_mock_residualblock,_mock_resblock_down,_mock_downsample_block,_mock_scalar_gated_self_attention
 
 # TODO: check number of lavels are correct etc. not only shapes.
 class TestEncoder(DeepSakiLayerChecks):
     @pytest.fixture()
     def encoder(self):
         return Encoder(number_of_levels=2, filters=8, number_of_blocks=2)
+
+    @pytest.fixture(autouse=True)
+    def mock_layers(self,mocker):
+        calling_module = "DeepSaki.layers.sub_model_composites"
+        # _mock_conv2d_block(mocker,calling_module) mock is not yet implemented
+        _mock_residualblock(mocker,calling_module)
+        _mock_resblock_down(mocker,calling_module)
+        _mock_downsample_block(mocker,calling_module)
+        _mock_scalar_gated_self_attention(mocker,calling_module)
 
     @pytest.mark.parametrize(
         ("input_shape", "expected_context"),
@@ -155,6 +165,12 @@ class TestBottleneck(DeepSakiLayerChecks):
     def bottleneck(self):
         return Bottleneck(n_bottleneck_blocks=1, number_of_blocks=1)
 
+    @pytest.fixture(autouse=True)
+    def mock_layers(self,mocker):
+        calling_module = "DeepSaki.layers.sub_model_composites"
+        # _mock_conv2d_block(mocker,calling_module) mock is not yet implemented
+        _mock_residualblock(mocker,calling_module)
+
     @pytest.mark.parametrize(
         ("input_shape", "expected_context"),
         [
@@ -229,6 +245,15 @@ class TestDecoder(DeepSakiLayerChecks):
     @pytest.fixture()
     def decoder(self):
         return Decoder(number_of_levels=2, filters=8, number_of_blocks=2)
+
+    @pytest.fixture(autouse=True)
+    def mock_layers(self,mocker):
+        calling_module = "DeepSaki.layers.sub_model_composites"
+        # _mock_conv2d_block(mocker,calling_module) mock is not yet implemented
+        _mock_residualblock(mocker,calling_module)
+        _mock_resblock_up(mocker,calling_module)
+        _mock_upsample_block(mocker,calling_module)
+        _mock_scalar_gated_self_attention(mocker,calling_module)
 
     @pytest.mark.parametrize(
         ("input_shape", "expected_context"),

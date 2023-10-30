@@ -1,6 +1,6 @@
 import inspect
 import os
-
+from typing import Callable
 import pytest
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # deactivate tensorflow warnings and infos. Keep Errors
@@ -64,6 +64,8 @@ class CommonLayerChecks:
             _ = layer_instance(input)
 
 
+
+
 @pytest.mark.parametrize(
     "layer_object",
     [
@@ -104,6 +106,6 @@ class TestGenericLayer:
     def test_layer_is_subclass_of_tensorflow_layer(self, layer_object):
         assert isinstance(layer_object, tf.keras.layers.Layer)
 
-    @pytest.mark.xfail(reason="Functionality not yet implemented.")
+
     def test_input_spec_is_defined_in_init(self, layer_object):
         assert layer_object.input_spec is not None, "'tf.keras.layers.InputSpec' is not defined."
