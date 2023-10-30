@@ -1,34 +1,31 @@
 import os
-from typing import Callable
 from contextlib import nullcontext as does_not_raise
 
 import pytest
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # deactivate tensorflow warnings and infos. Keep Errors
 import tensorflow as tf
-from tests.DeepSaki_test.models_test.models_test import DeepSakiModelChecks, CommonModelChecks
-from tests.DeepSaki_test.layers_test.mocked_layers import _mock_bottleneck,_mock_decoder,_mock_encoder
-from DeepSaki.models.autoencoders import ResNet, UNet
 
+from DeepSaki.models.autoencoders import ResNet
+from DeepSaki.models.autoencoders import UNet
+from tests.DeepSaki_test.layers_test.mocked_layers import _mock_bottleneck
+from tests.DeepSaki_test.layers_test.mocked_layers import _mock_decoder
+from tests.DeepSaki_test.layers_test.mocked_layers import _mock_encoder
+from tests.DeepSaki_test.models_test.models_test import CommonModelChecks
+from tests.DeepSaki_test.models_test.models_test import DeepSakiModelChecks
 
-
-
-@pytest.mark.parametrize(("autoencoder_model"),[
-    UNet,
-    ResNet
-])
+@pytest.mark.parametrize(("autoencoder_model"), [UNet, ResNet])
 class TestGenericAutoEncoder(DeepSakiModelChecks):
-
     @pytest.fixture(autouse=True)
-    def mock_sub_models(self,mocker):
+    def mock_sub_models(self, mocker):
         calling_module = "DeepSaki.models.autoencoders"
-        _mock_encoder(mocker,calling_module)
-        _mock_bottleneck(mocker,calling_module)
-        _mock_decoder(mocker,calling_module)
+        _mock_encoder(mocker, calling_module)
+        _mock_bottleneck(mocker, calling_module)
+        _mock_decoder(mocker, calling_module)
 
     @pytest.fixture()
-    def model_instance(self,autoencoder_model):
-        return autoencoder_model(number_of_levels = 2, filters = 8, number_of_blocks=1)
+    def model_instance(self, autoencoder_model):
+        return autoencoder_model(number_of_levels=2, filters=8, number_of_blocks=1)
 
     @pytest.mark.parametrize(
         ("input_shape", "expected_context"),
@@ -46,17 +43,22 @@ class TestGenericAutoEncoder(DeepSakiModelChecks):
         CommonModelChecks.does_call_raises_error_wrong_input_spec(model_instance, input_shape, expected_context)
 
     @pytest.mark.parametrize("fully_connected", ["MLP", "1x1_conv"])
-    @pytest.mark.parametrize("number_of_levels", [2,3,4])
+    @pytest.mark.parametrize("number_of_levels", [2, 3, 4])
     @pytest.mark.parametrize("filters", [8, 16])
     @pytest.mark.parametrize(
         ("input_shape"),
         [
-            tf.TensorShape((1,64,64,3)),
-            tf.TensorShape((8,64,64,4)),
-        ])
-    def test_call_correct_output_shape(self,autoencoder_model,input_shape,number_of_levels,filters,fully_connected):
-        model_instance = autoencoder_model(number_of_levels=number_of_levels,filters=filters,fully_connected=fully_connected)
-        CommonModelChecks.has_call_correct_output_shape(model_instance,input_shape, input_shape)
+            tf.TensorShape((1, 64, 64, 3)),
+            tf.TensorShape((8, 64, 64, 4)),
+        ],
+    )
+    def test_call_correct_output_shape(
+        self, autoencoder_model, input_shape, number_of_levels, filters, fully_connected
+    ):
+        model_instance = autoencoder_model(
+            number_of_levels=number_of_levels, filters=filters, fully_connected=fully_connected
+        )
+        CommonModelChecks.has_call_correct_output_shape(model_instance, input_shape, input_shape)
 
     @pytest.mark.parametrize(
         ("fully_connected", "expected_context"),
@@ -64,9 +66,8 @@ class TestGenericAutoEncoder(DeepSakiModelChecks):
             ("MLP", does_not_raise()),
             ("1x1_conv", does_not_raise()),
             ("Any other String", pytest.raises(ValueError)),
-
         ],
     )
-    def test_init_raises_wrong_fully_connected_type(self,autoencoder_model,fully_connected,expected_context):
+    def test_init_raises_wrong_fully_connected_type(self, autoencoder_model, fully_connected, expected_context):
         with expected_context:
-            _ = autoencoder_model(number_of_levels = 2, filters = 8,fully_connected=fully_connected)
+            _ = autoencoder_model(number_of_levels=2, filters=8, fully_connected=fully_connected)

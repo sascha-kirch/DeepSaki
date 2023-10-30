@@ -21,7 +21,6 @@ from tests.DeepSaki_test.layers_test.layers_test import CommonLayerChecks
 from tests.DeepSaki_test.layers_test.layers_test import DeepSakiLayerChecks
 from tests.DeepSaki_test.layers_test.mocked_layers import _mock_scale_layer
 
-
 # TODO: ensure I only test inputs relevant for that particular layer and that are relevant for the test. esp. when testing the output shape.
 
 # TODO: change expected output shape to be an equation. In that way it is easier to understand later and it is always the same shape, which is important for layers using this layer.
@@ -193,7 +192,7 @@ class TestDenseBlock(DeepSakiLayerChecks):
             use_spec_norm=use_spec_norm,
             use_bias=use_bias,
         )
-        expected_shape = [*input_shape[0:-1],units]
+        expected_shape = [*input_shape[0:-1], units]
         CommonLayerChecks.has_call_correct_output_shape(layer_instance, input_shape, expected_shape)
 
     @pytest.mark.parametrize(
@@ -204,7 +203,7 @@ class TestDenseBlock(DeepSakiLayerChecks):
             (tf.TensorShape((8, 64, 64)), does_not_raise()),
             (tf.TensorShape((8, 64)), does_not_raise()),
             (tf.TensorShape((8)), pytest.raises(ValueError)),
-            (tf.TensorShape((8, 64, 64, 4, 5)),does_not_raise()),
+            (tf.TensorShape((8, 64, 64, 4, 5)), does_not_raise()),
             (tf.TensorShape((8, 64, 64, 4, 5, 6)), does_not_raise()),
         ],
     )
@@ -542,10 +541,10 @@ class TestScalarGatedSelfAttention(DeepSakiLayerChecks):
         return ScalarGatedSelfAttention()
 
     @pytest.fixture(autouse=True)
-    def mock_layers(self,mocker):
+    def mock_layers(self, mocker):
         calling_module = "DeepSaki.layers.layer_composites"
         # _mock_conv2d_block(mocker,calling_module) mock is not yet implemented
-        _mock_scale_layer(mocker,calling_module)
+        _mock_scale_layer(mocker, calling_module)
 
     @pytest.mark.parametrize("use_spec_norm", [True, False])
     @pytest.mark.parametrize("intermediate_channel", [3, 7, 12, None])

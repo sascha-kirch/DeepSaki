@@ -1,19 +1,21 @@
-import inspect
 import os
-from typing import Callable
+
 import pytest
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # deactivate tensorflow warnings and infos. Keep Errors
 from abc import ABC
 from abc import abstractmethod
 
-from DeepSaki.models.autoencoders import UNet, ResNet
-from DeepSaki.models.discriminators import UNetDiscriminator, PatchDiscriminator, LayoutContentDiscriminator
-from tests.DeepSaki_test.layers_test.mocked_layers import _mock_bottleneck,_mock_decoder,_mock_encoder
-
 import tensorflow as tf
 
-
+from DeepSaki.models.autoencoders import ResNet
+from DeepSaki.models.autoencoders import UNet
+from DeepSaki.models.discriminators import LayoutContentDiscriminator
+from DeepSaki.models.discriminators import PatchDiscriminator
+from DeepSaki.models.discriminators import UNetDiscriminator
+from tests.DeepSaki_test.layers_test.mocked_layers import _mock_bottleneck
+from tests.DeepSaki_test.layers_test.mocked_layers import _mock_decoder
+from tests.DeepSaki_test.layers_test.mocked_layers import _mock_encoder
 
 class DeepSakiModelChecks(ABC):
     @abstractmethod
@@ -44,23 +46,23 @@ class CommonModelChecks:
                 input = tf.complex(real=input, imag=input)
             _ = model_instance(input)
 
+
 @pytest.mark.parametrize(
-    ("model_class","calling_module"),
+    ("model_class", "calling_module"),
     [
-        (UNet,"DeepSaki.models.autoencoders"),
-        (ResNet,"DeepSaki.models.autoencoders"),
-        (UNetDiscriminator,"DeepSaki.models.discriminators"),
-        (PatchDiscriminator,"DeepSaki.models.discriminators"),
-        (LayoutContentDiscriminator,"DeepSaki.models.discriminators")
+        (UNet, "DeepSaki.models.autoencoders"),
+        (ResNet, "DeepSaki.models.autoencoders"),
+        (UNetDiscriminator, "DeepSaki.models.discriminators"),
+        (PatchDiscriminator, "DeepSaki.models.discriminators"),
+        (LayoutContentDiscriminator, "DeepSaki.models.discriminators"),
     ],
 )
 class TestGenericModel:
-
     @pytest.fixture(autouse=True)
-    def mock_sub_models(self,mocker,calling_module):
-        _mock_encoder(mocker,calling_module)
-        _mock_bottleneck(mocker,calling_module)
-        _mock_decoder(mocker,calling_module)
+    def mock_sub_models(self, mocker, calling_module):
+        _mock_encoder(mocker, calling_module)
+        _mock_bottleneck(mocker, calling_module)
+        _mock_decoder(mocker, calling_module)
 
     def test_layer_is_subclass_of_tensorflow_model(self, model_class, **kwargs):
         assert isinstance(model_class(), tf.keras.Model)
