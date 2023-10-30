@@ -15,7 +15,6 @@ from typing import Union
 import numpy as np
 import tensorflow as tf
 
-
 class HeAlpha(tf.keras.initializers.Initializer, ABC):
     """Abstract base class for HeAlpha initializers. Can not be instanciated, must be inherited from.
 

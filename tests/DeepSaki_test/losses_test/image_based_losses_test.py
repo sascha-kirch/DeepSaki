@@ -9,7 +9,6 @@ from DeepSaki.losses.image_based_losses import ImageBasedLoss
 from DeepSaki.losses.image_based_losses import PixelDistanceLoss
 from DeepSaki.losses.image_based_losses import StructuralSimilarityLoss
 
-
 class TestImageBasedLossAbstractBase:
     @pytest.mark.parametrize(
         "calculation_type",

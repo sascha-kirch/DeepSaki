@@ -21,7 +21,6 @@ from DeepSaki.layers.fourier_layer import rFFT2DFilter
 from tests.DeepSaki_test.layers_test.layers_test import CommonLayerChecks
 from tests.DeepSaki_test.layers_test.layers_test import DeepSakiLayerChecks
 
-
 class TestFourierLayer:
     @pytest.fixture()
     def fourier_layer(self):
@@ -328,14 +327,15 @@ class TestFFT2D(DeepSakiLayerChecks):
     @pytest.mark.parametrize(
         ("input_shape", "is_channel_first", "apply_real_fft", "expected_shape"),
         [
+            (tf.TensorShape((1, 16, 8, 3)), False, False, tf.TensorShape((1, 16, 8, 3))),
             (tf.TensorShape((1, 16, 16, 3)), False, False, tf.TensorShape((1, 16, 16, 3))),
             (tf.TensorShape((1, 34, 34, 16)), False, False, tf.TensorShape((1, 34, 34, 16))),
-            (tf.TensorShape((8, 16, 16, 3)), False, False, tf.TensorShape((8, 16, 16, 3))),
+            (tf.TensorShape((8, 12, 16, 3)), False, False, tf.TensorShape((8, 12, 16, 3))),
             (tf.TensorShape((1, 5, 16, 16)), True, False, tf.TensorShape((1, 5, 16, 16))),
             (tf.TensorShape((1, 16, 34, 34)), True, False, tf.TensorShape((1, 16, 34, 34))),
             (tf.TensorShape((8, 3, 16, 16)), True, False, tf.TensorShape((8, 3, 16, 16))),
             (tf.TensorShape((1, 16, 16, 3)), False, True, tf.TensorShape((1, 16, 9, 3))),
-            (tf.TensorShape((1, 34, 34, 16)), False, True, tf.TensorShape((1, 34, 18, 16))),
+            (tf.TensorShape((1, 34, 18, 16)), False, True, tf.TensorShape((1, 34, 10, 16))),
             (tf.TensorShape((8, 16, 16, 3)), False, True, tf.TensorShape((8, 16, 9, 3))),
             (tf.TensorShape((1, 5, 16, 16)), True, True, tf.TensorShape((1, 5, 16, 9))),
             (tf.TensorShape((1, 16, 34, 34)), True, True, tf.TensorShape((1, 16, 34, 18))),
@@ -347,22 +347,6 @@ class TestFFT2D(DeepSakiLayerChecks):
         CommonLayerChecks.has_call_correct_output_shape(
             layer_instance, input_shape, expected_shape, make_input_complex=(not apply_real_fft)
         )
-
-    @pytest.mark.parametrize(
-        ("input_shape", "is_channel_first", "expected_context"),
-        [
-            (tf.TensorShape((1, 16, 16, 3)), False, does_not_raise()),
-            (tf.TensorShape((1, 34, 30, 16)), False, pytest.raises(ValueError)),
-            (tf.TensorShape((8, 16, 16, 3)), False, does_not_raise()),
-            (tf.TensorShape((1, 5, 16, 16)), True, does_not_raise()),
-            (tf.TensorShape((1, 16, 17, 34)), True, pytest.raises(ValueError)),
-            (tf.TensorShape((8, 3, 16, 16)), True, does_not_raise()),
-        ],
-    )
-    def test_build_raises_error_for_unsuported_shape(self, input_shape, is_channel_first, expected_context):
-        layer_instance = FFT2D(is_channel_first)
-        with expected_context:
-            layer_instance.build(input_shape)
 
 
 class TestFFT3D(DeepSakiLayerChecks):

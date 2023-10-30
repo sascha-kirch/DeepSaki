@@ -6,7 +6,6 @@ from typing import Callable
 import numpy as np
 import tensorflow as tf
 
-
 class ImageBasedLoss(tf.keras.losses.Loss, ABC):
     """Abstract base class for image based losses.
 

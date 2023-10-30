@@ -6,7 +6,6 @@ from typing import Tuple
 
 import tensorflow as tf
 
-
 class ReflectionPadding2D(tf.keras.layers.Layer):
     """Reflection Padding layer with support for TPU."""
 

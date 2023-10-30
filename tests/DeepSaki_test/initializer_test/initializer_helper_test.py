@@ -7,7 +7,6 @@ import tensorflow as tf
 
 from DeepSaki.initializers.initializer_helper import make_initializer_complex
 
-
 @pytest.mark.parametrize(
     "initializer",
     [
