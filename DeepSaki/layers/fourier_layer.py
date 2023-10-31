@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum,auto
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -15,26 +15,26 @@ class MultiplicationType(Enum):
     """`Enum` used to define how two matrices shall be multiplied.
 
     Attributes:
-        ELEMENT_WISE (int): Indicates to apply an element-wise multiplication of 2 tensors.
-        MATRIX_PRODUCT (int): Indicates to apply a matrix-product between 2 tensors.
+        ELEMENT_WISE: Indicates to apply an element-wise multiplication of 2 tensors.
+        MATRIX_PRODUCT: Indicates to apply a matrix-product between 2 tensors.
     """
 
-    ELEMENT_WISE = 1
-    MATRIX_PRODUCT = 2
+    ELEMENT_WISE = auto()
+    MATRIX_PRODUCT = auto()
 
 
 class FrequencyFilter(Enum):
     """`Enum` used to define valid filters for `rFFT2DFilter`.
 
     Attributes:
-        LOW_PASS (int): Indicates that low frequency components shall be kept and high frequency components shall be
+        LOW_PASS: Indicates that low frequency components shall be kept and high frequency components shall be
             filtered.
-        HIGH_PASS (int): Indicates that high frequency components shall be kept and low frequency components shall be
+        HIGH_PASS: Indicates that high frequency components shall be kept and low frequency components shall be
             filtered.
     """
 
-    LOW_PASS = 1
-    HIGH_PASS = 2
+    LOW_PASS = auto()
+    HIGH_PASS = auto()
 
 
 # Base class below has no init. so if subclass calls super().__init__ it takes the one of tf.keras.Layer.
