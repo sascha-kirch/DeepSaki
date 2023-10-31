@@ -1,5 +1,5 @@
 """Collection of functions to simplify the code in various layers."""
-from enum import Enum
+from enum import Enum, auto
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -14,38 +14,38 @@ class PaddingType(Enum):
     """`Enum` used to define different types of padding opperations.
 
     Attributes:
-        ZERO (int): Indicates to apply a zero padding operations.
-        REFLECTION (int): Indicates to apply a reflection padding operation.
+        ZERO: Indicates to apply a zero padding operations.
+        REFLECTION: Indicates to apply a reflection padding operation.
     """
 
-    NONE = 0
-    ZERO = 1
-    REFLECTION = 2
+    NONE = auto()
+    ZERO = auto()
+    REFLECTION = auto()
 
 
 class InitializerFunc(Enum):
     """`Enum` used to define different types of initializer functions.
 
     Attributes:
-        RANDOM_NORMAL (int): Corresponds to a random normal initializer function.
-        RANDOM_UNIFORM (int): Corresponds to a random uniform initializer function.
-        GLOROT_NORMAL (int): Corresponds to a Glorot normal initializer function.
-        GLOROT_UNIFORM (int): Corresponds to a Glorot uniform initializer function.
-        HE_NORMAL (int): Corresponds to a He normal initializer function.
-        HE_UNIFORM (int): Corresponds to a He uniform initializer function.
-        HE_ALPHA_NORMAL (int): Corresponds to a He Alpha normal initializer function.
-        HE_ALPHA_UNIFORM (int): Corresponds to a He Alpha Uniform initializer function.
+        RANDOM_NORMAL: Corresponds to a random normal initializer function.
+        RANDOM_UNIFORM: Corresponds to a random uniform initializer function.
+        GLOROT_NORMAL: Corresponds to a Glorot normal initializer function.
+        GLOROT_UNIFORM: Corresponds to a Glorot uniform initializer function.
+        HE_NORMAL: Corresponds to a He normal initializer function.
+        HE_UNIFORM: Corresponds to a He uniform initializer function.
+        HE_ALPHA_NORMAL: Corresponds to a He Alpha normal initializer function.
+        HE_ALPHA_UNIFORM: Corresponds to a He Alpha Uniform initializer function.
     """
 
-    NONE = 0
-    RANDOM_NORMAL = 1
-    RANDOM_UNIFORM = 2
-    GLOROT_NORMAL = 3
-    GLOROT_UNIFORM = 4
-    HE_NORMAL = 5
-    HE_UNIFORM = 6
-    HE_ALPHA_NORMAL = 7
-    HE_ALPHA_UNIFORM = 8
+    NONE = auto()
+    RANDOM_NORMAL = auto()
+    RANDOM_UNIFORM = auto()
+    GLOROT_NORMAL = auto()
+    GLOROT_UNIFORM = auto()
+    HE_NORMAL = auto()
+    HE_UNIFORM = auto()
+    HE_ALPHA_NORMAL = auto()
+    HE_ALPHA_UNIFORM = auto()
 
 
 def get_initializer(
