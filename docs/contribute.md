@@ -19,4 +19,3 @@ I especially want to encourage students and those of you eager to learn to code 
 - Run unit test with `$> pytest`
 - Run the code formater with `$> black .`
 - check for errors and fix fixable ones with `$> ruff check --fix .`
--

@@ -393,7 +393,7 @@ class FourierFilter2D(FourierLayer):
 
         Args:
             inputs (tf.Tensor): Complex valued tensor of shape (b,h,w,c) if `is_channel_first=False` or Tensor of shape
-            (b,c,h,w) if `is_channel_first=True`.
+                (b,c,h,w) if `is_channel_first=True`.
 
         Returns:
             Complex valued tensor of shape (b,h,w,`filters`) if `is_channel_first=False` or Tensor of shape

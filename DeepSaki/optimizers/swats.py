@@ -314,8 +314,6 @@ class SwatsNadam(optimizer_v2.OptimizerV2):
             beta_1 (float, optional): The exponential decay rate for the 1st moment estimates. Defaults to 0.9.
             beta_2 (float, optional): The exponential decay rate for the 2nd moment estimates. Defaults to 0.999.
             epsilon (float, optional): A small constant for numerical stability. Defaults to 1e-7.
-            amsgrad (bool, optional): Whether to apply AMSGrad variant of this algorithm from the paper "On the
-                Convergence of Adam and beyond". Defaults to False.
             momentum (float, optional):  Hyperparameter >= 0 that accelerates gradient descent in the relevant direction
                 and dampens oscillations. Vanilla gradient descent means no momentum. Defaults to 0.0.
             nesterov (bool, optional): Whether to apply Nesterov momentum. Defaults to False.

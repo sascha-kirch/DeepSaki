@@ -92,8 +92,9 @@ markdown_extensions:
       permalink: true
       toc_depth: 2
 nav:
-  - "Start": index.md
+  - "Start": README.md
   - Code Reference: reference/
+  - "Contribute": contribute.md
 
 extra_javascript:
   - javascripts/katex.js

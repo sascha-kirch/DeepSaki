@@ -34,7 +34,7 @@ pip install DeepSaki
 ```
 
 # Contribute to DeepSaki
-I highly encourage you to contribute to DeepSaki. Checkout our [contribution guide](CONTRIBUTE.md) to get started. 
+I highly encourage you to contribute to DeepSaki. Checkout our [contribution guide](./docs/contribute.md) to get started. 
 
 # Repo Stats
 ![](https://komarev.com/ghpvc/?username=saschakirchdeepsaki&color=yellow) since 16.04.2022
