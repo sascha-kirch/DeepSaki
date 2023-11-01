@@ -1,4 +1,3 @@
-
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -10,9 +9,8 @@ import numpy as np
 import tensorflow as tf
 
 from DeepSaki.initializers.initializer_helper import make_initializer_complex
-
-from DeepSaki.types.layers_enums import MultiplicationType, FrequencyFilter
-
+from DeepSaki.types.layers_enums import FrequencyFilter
+from DeepSaki.types.layers_enums import MultiplicationType
 
 # Base class below has no init. so if subclass calls super().__init__ it takes the one of tf.keras.Layer.
 class FourierLayer(tf.keras.layers.Layer):

@@ -7,11 +7,7 @@ from typing import Union
 import tensorflow as tf
 
 class ComplexActivation(tf.keras.layers.Layer):
-    """Wrapper to apply a given `activation` to a complex input individually for the real and imaginary part.
-
-    Inherits from:
-        tf.keras.layers.Layer
-    """
+    """Wrapper to apply a given `activation` to a complex input individually for the real and imaginary part."""
 
     def __init__(self, activation: tf.keras.layers.Layer, **kwargs: Any) -> None:
         """Initialize ComplexActivation.

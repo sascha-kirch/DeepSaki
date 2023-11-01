@@ -14,9 +14,10 @@ from DeepSaki.layers.layer_composites import ResBlockUp
 from DeepSaki.layers.layer_composites import ResidualBlock
 from DeepSaki.layers.layer_composites import ScalarGatedSelfAttention
 from DeepSaki.layers.layer_composites import UpSampleBlock
-from DeepSaki.types.layers_enums import PaddingType
-from DeepSaki.types.layers_enums import DownSampleType, UpSampleType
 from DeepSaki.layers.layer_helper import dropout_func
+from DeepSaki.types.layers_enums import DownSampleType
+from DeepSaki.types.layers_enums import PaddingType
+from DeepSaki.types.layers_enums import UpSampleType
 
 class Encoder(tf.keras.layers.Layer):
     """Combines conv blocks with down sample blocks.
@@ -33,7 +34,7 @@ class Encoder(tf.keras.layers.Layer):
         number_of_levels: int = 3,
         filters: int = 64,
         limit_filters: int = 1024,
-        downsampling: DownSampleType =DownSampleType.CONV_STRIDE_2,
+        downsampling: DownSampleType = DownSampleType.CONV_STRIDE_2,
         kernels: int = 3,
         split_kernels: bool = False,
         number_of_blocks: int = 2,

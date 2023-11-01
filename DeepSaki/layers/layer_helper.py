@@ -1,6 +1,4 @@
 """Collection of functions to simplify the code in various layers."""
-from enum import Enum
-from enum import auto
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -10,9 +8,8 @@ import tensorflow as tf
 from DeepSaki.initializers.he_alpha import HeAlphaNormal
 from DeepSaki.initializers.he_alpha import HeAlphaUniform
 from DeepSaki.layers.padding import ReflectionPadding2D
-
-from DeepSaki.types.layers_enums import InitializerFunc, PaddingType
-
+from DeepSaki.types.layers_enums import InitializerFunc
+from DeepSaki.types.layers_enums import PaddingType
 
 def get_initializer(
     initializer: InitializerFunc,

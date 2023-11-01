@@ -6,6 +6,7 @@ from DeepSaki.types.layers_enums import FrequencyFilter
 from DeepSaki.types.layers_enums import UpSampleType
 from DeepSaki.types.layers_enums import DownSampleType
 from DeepSaki.types.layers_enums import LinearLayerType
+
 # Losses Enums
 from DeepSaki.types.losses_enums import LossType
 from DeepSaki.types.losses_enums import LossCalcType

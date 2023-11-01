@@ -7,9 +7,11 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 
 from DeepSaki.constraints import NonNegative
-from DeepSaki.types.layers_enums import PaddingType,UpSampleType,DownSampleType
 from DeepSaki.layers.layer_helper import dropout_func
 from DeepSaki.layers.layer_helper import pad_func
+from DeepSaki.types.layers_enums import DownSampleType
+from DeepSaki.types.layers_enums import PaddingType
+from DeepSaki.types.layers_enums import UpSampleType
 
 class Conv2DSplitted(tf.keras.layers.Layer):
     """Convolution layer where a single convolution is splitted into two consecutive convolutions.

@@ -1,15 +1,13 @@
 """Loss functions designed for image-like data of the shape (`batch`, `height`, `width`, `channels`)."""
 from abc import ABC
 from abc import abstractmethod
-from enum import Enum
-from enum import auto
 from typing import Callable
 
 import numpy as np
 import tensorflow as tf
 
-from DeepSaki.types.losses_enums import LossCalcType,LossType
-
+from DeepSaki.types.losses_enums import LossCalcType
+from DeepSaki.types.losses_enums import LossType
 
 class ImageBasedLoss(tf.keras.losses.Loss, ABC):
     """Abstract base class for image based losses.
