@@ -14,6 +14,7 @@ from tests.DeepSaki_test.layers_test.mocked_layers import _mock_encoder
 from tests.DeepSaki_test.models_test.models_test import CommonModelChecks
 from tests.DeepSaki_test.models_test.models_test import DeepSakiModelChecks
 
+
 @pytest.mark.parametrize(("autoencoder_model"), [UNet, ResNet])
 class TestGenericAutoEncoder(DeepSakiModelChecks):
     @pytest.fixture(autouse=True)

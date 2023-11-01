@@ -14,6 +14,7 @@ from DeepSaki.layers.layer_helper import get_initializer
 from DeepSaki.layers.layer_helper import pad_func
 from DeepSaki.layers.padding import ReflectionPadding2D
 
+
 class TestGetInitializerFunc:
     @pytest.mark.parametrize(
         ("initializer_func", "expected"),

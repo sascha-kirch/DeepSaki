@@ -21,6 +21,7 @@ class ReflectionPadding2D(tf.keras.layers.Layer):
         Args:
             padding (Tuple[int, int], optional): One-sided padding added to the `hight` and `width` to an input tensor
                 of shape (batch, height, width, channel)respectively. Defaults to (1, 1).
+            kwargs (Any): Additional key word arguments passed to the base class.
         """
         super(ReflectionPadding2D, self).__init__(**kwargs)
         self.padding = tuple(padding)

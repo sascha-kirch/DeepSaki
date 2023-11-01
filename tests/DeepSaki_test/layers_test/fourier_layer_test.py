@@ -21,6 +21,7 @@ from DeepSaki.layers.fourier_layer import rFFT2DFilter
 from tests.DeepSaki_test.layers_test.layers_test import CommonLayerChecks
 from tests.DeepSaki_test.layers_test.layers_test import DeepSakiLayerChecks
 
+
 class TestFourierLayer:
     @pytest.fixture()
     def fourier_layer(self):

@@ -7,6 +7,7 @@ import tensorflow as tf
 
 from DeepSaki.activations.complex_valued_activations import ComplexActivation
 
+
 class TestComplexActivation:
     @pytest.mark.parametrize(
         ("activation", "input", "expected"),

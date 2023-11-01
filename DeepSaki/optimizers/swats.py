@@ -2,6 +2,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from enum import Enum
+from enum import auto
 from typing import Any
 from typing import Dict
 from typing import List
@@ -17,12 +19,11 @@ from tensorflow.python.ops import state_ops
 from tensorflow.python.ops import variables as tf_variables
 from tensorflow.python.training import gen_training_ops
 
-from enum import Enum,auto
-
 class _CurrentOptimizer(Enum):
-    SGD: auto()
-    ADAM:auto()
-    NADAM:auto()
+    SGD = auto()
+    ADAM = auto()
+    NADAM = auto()
+
 
 class SwatsAdam(optimizer_v2.OptimizerV2):
     """Initializer that can switch from ADAM to SGD and vice versa.
@@ -40,6 +41,7 @@ class SwatsAdam(optimizer_v2.OptimizerV2):
     optimizer.switch_optimizer()
     ```
     """
+
     _HAS_AGGREGATE_GRAD = True
 
     def __init__(
@@ -88,7 +90,7 @@ class SwatsAdam(optimizer_v2.OptimizerV2):
 
         self.nesterov = nesterov
 
-    def switch_optimizer(self)->None:
+    def switch_optimizer(self) -> None:
         """Switches the current optimizer to either ADAM or SGD, depending on what was previously set."""
         if self.currentOptimizer == _CurrentOptimizer.ADAM:
             self.currentOptimizer = _CurrentOptimizer.SGD
@@ -292,6 +294,7 @@ class SwatsNadam(optimizer_v2.OptimizerV2):
     optimizer.switch_optimizer()
     ```
     """
+
     _HAS_AGGREGATE_GRAD = True
 
     def __init__(
@@ -339,8 +342,7 @@ class SwatsNadam(optimizer_v2.OptimizerV2):
         self.nesterov = nesterov
         self._m_cache = None
 
-
-    def switch_optimizer(self)->None:
+    def switch_optimizer(self) -> None:
         """Switches the current optimizer to either ADAM or SGD, depending on what was previously set."""
         if self.currentOptimizer == _CurrentOptimizer.NADAM:
             self.currentOptimizer = _CurrentOptimizer.SGD

@@ -17,6 +17,7 @@ from tests.DeepSaki_test.layers_test.mocked_layers import _mock_bottleneck
 from tests.DeepSaki_test.layers_test.mocked_layers import _mock_decoder
 from tests.DeepSaki_test.layers_test.mocked_layers import _mock_encoder
 
+
 class DeepSakiModelChecks(ABC):
     @abstractmethod
     def test_call_raises_error_wrong_input_spec(self):

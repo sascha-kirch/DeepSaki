@@ -14,11 +14,9 @@ pytest-mock>=3.12.0
 
 # Linting/Tooling
 black>=23.3.0
-isort>=5.12.0
 mypy>=1.3.0
 pre-commit>=3.3.2
 ruff>=0.0.270
-pyright>=1.1.309
 
 # Documentation
 mkdocs>=1.4.3

@@ -5,6 +5,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # deactivate tensorflow warnings and i
 
 import tensorflow as tf
 
+
 def _mock_downsample_block(mocker, calling_module) -> None:
     """Mocks the DeepSaki.layers.DownSampleBlock() layer."""
 

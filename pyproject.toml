@@ -31,54 +31,23 @@ classifiers = [
     "Operating System :: Unix",
     "Operating System :: MacOS",
 ]
-dependencies = [
-    'tensorflow >= 2.8',
-    'numpy',
-    'tensorflow_addons',
-    'pandas',
-]
-dynamic = ["version","readme"]
+dynamic = ["version","readme","dependencies"]
 
 # https://packaging.python.org/en/latest/specifications/declaring-project-metadata/#urls
 [project.urls]
-#Homepage = "https://example.com"
+Homepage = "https://sascha-kirch.github.io/"
 Documentation = "https://sascha-kirch.github.io/DeepSaki"
 Repository = "https://github.com/sascha-kirch/DeepSaki"
 #Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
 
-[project.optional-dependencies]
-test = [
-    "pytest",
-    "pytest-cov",
-    "codecov",
-    "pre-commit",
-]
-doc = [
-    "mkdocs",
-    "mkdocstrings",
-    "mkdocstrings[python]",
-    "mkdocs-material",
-    "Pygments",
-    "mkdocs-gen-files",
-    "mkdocs-literate-nav",
-    "mkdocs-section-index",
-]
-dev = [
-    "black",
-    "isort",
-    "mypy",
-    "pre-commit",
-    "ruff",
-]
-all = ["DeepSaki[test,doc,dev]"]
-
 [tool.setuptools]
 platforms = ["unix", "linux", "osx", "cygwin", "win32"]
-packages = ["DeepSaki"]  # optional
+packages = ["DeepSaki"]
 
 [tool.setuptools.dynamic]
 version = {attr = "DeepSaki.__version__"}
 readme = {file = "README.md"}
+dependencies = {file = ["./environment/requirements.txt"]}
 
 [tool.pytest.ini_options]
 minversion = "7.3"
@@ -224,28 +193,3 @@ mark-parentheses = true
 parametrize-names-type = "tuple"
 parametrize-values-row-type = "tuple"
 parametrize-values-type = "list"
-
-
-# Static type checker
-[tool.pyright]
-pythonVersion = "3.11"
-typeCheckingMode = "basic"
-# enable subset of "strict"
-reportDuplicateImport = true
-reportInvalidStubStatement = true
-reportOverlappingOverload = true
-reportPropertyTypeMismatch = true
-reportUntypedClassDecorator = true
-reportUntypedFunctionDecorator = true
-reportUntypedNamedTuple = true
-reportUnusedImport = true
-# disable subset of "basic"
-reportGeneralTypeIssues = false
-reportMissingModuleSource = false
-reportOptionalCall = false
-reportOptionalIterable = false
-reportOptionalMemberAccess = false
-reportOptionalOperand = false
-reportOptionalSubscript = false
-reportPrivateImportUsage = false
-reportUnboundVariable = true

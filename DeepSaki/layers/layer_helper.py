@@ -1,5 +1,6 @@
 """Collection of functions to simplify the code in various layers."""
-from enum import Enum, auto
+from enum import Enum
+from enum import auto
 from typing import List
 from typing import Optional
 from typing import Tuple

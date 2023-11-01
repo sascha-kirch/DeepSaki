@@ -1,10 +1,36 @@
-"""Loss functions designed for image like data of the shape (`batch`, `height`, `width`, `channels`)."""
+"""Loss functions designed for image-like data of the shape (`batch`, `height`, `width`, `channels`)."""
 from abc import ABC
 from abc import abstractmethod
+from enum import Enum
+from enum import auto
 from typing import Callable
 
 import numpy as np
 import tensorflow as tf
+
+class LossCalcType(Enum):
+    """`Enum` to define the loss calculation type used for image based losses derived from `ImageBasedLoss`.
+
+    Attributes:
+        PER_IMAGE: Loss is calculated over the entire image.
+        PER_CHANNEL: Loss is calculated per channel.
+    """
+
+    PER_IMAGE = auto()
+    PER_CHANNEL = auto()
+
+
+class LossType(Enum):
+    """`Enum` to define the loss type used for image based losses derived from `ImageBasedLoss`.
+
+    Attributes:
+        MAE: Loss is a form of mean absolute error.
+        MSE: Loss is a form of mean squared error.
+    """
+
+    MAE = auto()
+    MSE = auto()
+
 
 class ImageBasedLoss(tf.keras.losses.Loss, ABC):
     """Abstract base class for image based losses.
@@ -16,7 +42,7 @@ class ImageBasedLoss(tf.keras.losses.Loss, ABC):
     def __init__(
         self,
         global_batch_size: int,
-        calculation_type: str = "per_image",
+        calculation_type: LossCalcType = LossCalcType.PER_IMAGE,
         normalize_depth_channel: bool = False,
         loss_reduction: tf.keras.losses.Reduction = tf.keras.losses.Reduction.AUTO,
     ) -> None:
@@ -24,8 +50,8 @@ class ImageBasedLoss(tf.keras.losses.Loss, ABC):
 
         Args:
             global_batch_size (int): Batch size considering all workers running in parallel in a data parallel setup
-            calculation_type (str, optional): Determines how the loss is calculated: ["per_image" | "per_channel"].
-                Defaults to "per_image".
+            calculation_type (LossCalcType, optional): Determines how the loss is calculated.
+                Defaults to LossCalcType.PER_IMAGE.
             normalize_depth_channel (bool, optional): For RGBD images, the weight of depth is increased by multiplying
                 the depth by the number of color channels. Defaults to False.
             loss_reduction (tf.keras.losses.Reduction, optional): Determines how the loss is reduced. Defaults to
@@ -37,12 +63,12 @@ class ImageBasedLoss(tf.keras.losses.Loss, ABC):
         super(ImageBasedLoss, self).__init__(reduction=loss_reduction)
 
         match calculation_type:
-            case "per_channel":
+            case LossCalcType.PER_CHANNEL:
                 self.loss_calc_func = self._calc_loss_per_channel
-            case "per_image":
+            case LossCalcType.PER_IMAGE:
                 self.loss_calc_func = self._calc_loss_per_image
             case _:
-                raise ValueError(f"Pixel distance type '{calculation_type}' is not defined.")
+                raise ValueError(f"Pixel distance type '{calculation_type}' is not supported.")
 
         self.global_batch_size = global_batch_size
         self.normalize_depth_channel = normalize_depth_channel
@@ -104,20 +130,20 @@ class PixelDistanceLoss(ImageBasedLoss):
     def __init__(
         self,
         global_batch_size: int,
-        calculation_type: str = "per_image",
+        calculation_type: LossCalcType = LossCalcType.PER_IMAGE,
         normalize_depth_channel: bool = False,
-        loss_type: str = "mae",
+        loss_type: LossType = LossType.MAE,
         loss_reduction: tf.keras.losses.Reduction = tf.keras.losses.Reduction.AUTO,
     ) -> None:
         """Initializes the `PixelDistanceLoss`.
 
         Args:
             global_batch_size (int): Batch size considering all workers running in parallel in a data parallel setup
-            calculation_type (str, optional): Determines how the loss is calculated: ["per_image" | "per_channel"].
-                Defaults to "per_image".
+            calculation_type (LossCalcType, optional): Determines how the loss is calculated.
+                Defaults to LossCalcType.PER_IMAGE.
             normalize_depth_channel (bool, optional): For RGBD images, the weight of depth is increased by multiplying
                 the depth by the number of color channels. Defaults to False.
-            loss_type (str, optional): Loss to apply: ["mae" | "mse"]. Defaults to "mae".
+            loss_type (LossType, optional): Loss to apply. Defaults to LossType.MAE.
             loss_reduction (tf.keras.losses.Reduction, optional): Determines how the loss is reduced. Defaults to
                 tf.keras.losses.Reduction.AUTO.
 
@@ -125,12 +151,12 @@ class PixelDistanceLoss(ImageBasedLoss):
             ValueError: if `loss_type` is not a valid option.
         """
         match loss_type:
-            case "mae":
+            case LossType.MAE:
                 self.error_func_type = tf.abs
-            case "mse":
+            case LossType.MSE:
                 self.error_func_type = tf.square
             case _:
-                raise ValueError(f"Parameter loss_type={loss_type} is not defined. Use 'mae' or 'mse' instead.")
+                raise ValueError(f"Parameter loss_type={loss_type} is not supported.")
 
         super(PixelDistanceLoss, self).__init__(
             global_batch_size=global_batch_size,
@@ -167,7 +193,7 @@ class StructuralSimilarityLoss(ImageBasedLoss):
     def __init__(
         self,
         global_batch_size: int,
-        calculation_type: str = "per_image",
+        calculation_type: LossCalcType = LossCalcType.PER_IMAGE,
         normalize_depth_channel: bool = False,
         alpha: float = 1.0,
         beta: float = 1.0,
@@ -180,8 +206,8 @@ class StructuralSimilarityLoss(ImageBasedLoss):
 
         Args:
             global_batch_size (int): Batch size considering all workers running in parallel in a data parallel setup.
-            calculation_type (str, optional): Determines how the loss is calculated: ["per_image" | "per_channel"].
-                Defaults to "per_image".
+            calculation_type (LossCalcType, optional): Determines how the loss is calculated.
+                Defaults to LossCalcType.PER_IMAGE.
             normalize_depth_channel (bool, optional): For RGBD images, the weight of depth is increased by multiplying
                 the depth by the number of color channels. Defaults to False.
             alpha (float, optional): Weighting factor for contrast. Defaults to 1.0.

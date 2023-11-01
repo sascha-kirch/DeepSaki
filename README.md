@@ -22,7 +22,7 @@ Develop:<br>
 ```bash
 git clone https://github.com/sascha-kirch/DeepSaki.git
 cd DeepSaki
-pip install -e .
+pip install .
 ```
 
 ## Pip
@@ -32,6 +32,9 @@ pip install -e .
 ```
 pip install DeepSaki
 ```
+
+# Contribute to DeepSaki
+I highly encourage you to contribute to DeepSaki. Checkout our [contribution guide](CONTRIBUTE.md) to get started. 
 
 # Repo Stats
 ![](https://komarev.com/ghpvc/?username=saschakirchdeepsaki&color=yellow) since 16.04.2022
