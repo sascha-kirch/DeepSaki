@@ -36,12 +36,12 @@ class LayoutContentDiscriminator(tf.keras.Model):
         c4-->co([content])
         ```
 
-    Example:
+    **Example:**
     ```python
-    import DeepSaki as dsk
+    import DeepSaki as ds
     import tensorflow as tf
     inputs = tf.keras.layers.Input(shape = (256,256,4))
-    model = tf.keras.Model(inputs=inputs, outputs=dsk.models.LayoutContentDiscriminator().call(inputs))
+    model = tf.keras.Model(inputs=inputs, outputs=ds.models.LayoutContentDiscriminator().call(inputs))
     model.summary()
     tf.keras.utils.plot_model(model, show_shapes=True, expand_nested=True, show_dtype=True, to_file='Unet_discriminator_model.png')
     ```
@@ -177,12 +177,12 @@ class PatchDiscriminator(tf.keras.Model):
 
         ```
 
-    Example:
+    **Example:**
     ```python
-    import DeepSaki as dsk
+    import DeepSaki as ds
     import tensorflow as tf
     inputs = tf.keras.layers.Input(shape = (256,256,4))
-    model = tf.keras.Model(inputs=inputs, outputs=dsk.models.PatchDiscriminator().call(inputs))
+    model = tf.keras.Model(inputs=inputs, outputs=ds.models.PatchDiscriminator().call(inputs))
     model.summary()
     tf.keras.utils.plot_model(model, show_shapes=True, expand_nested=True, show_dtype=True, to_file='PatchDiscriminator_model.png')
     ```
@@ -289,12 +289,12 @@ class UNetDiscriminator(tf.keras.Model):
         ex-->dx
         ```
 
-    Example:
+    **Example:**
     ```python
-    import DeepSaki as dsk
+    import DeepSaki as ds
     import tensorflow as tf
     inputs = tf.keras.layers.Input(shape = (256,256,4))
-    model = tf.keras.Model(inputs=inputs, outputs=dsk.models.UNetDiscriminator(5).call(inputs))
+    model = tf.keras.Model(inputs=inputs, outputs=ds.models.UNetDiscriminator(5).call(inputs))
     model.summary()
     tf.keras.utils.plot_model(model, show_shapes=True, expand_nested=True, show_dtype=True, to_file='model.png')
     ```

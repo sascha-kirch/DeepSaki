@@ -7,7 +7,13 @@ from typing import Tuple
 import tensorflow as tf
 
 class ReflectionPadding2D(tf.keras.layers.Layer):
-    """Reflection Padding layer with support for TPU."""
+    """Reflection Padding layer with support for TPU.
+
+    Info:
+        At the time of implementation, Google's TPUs did not support gradient calculation of mirrored paddings like
+        "SYMMETRIC" and "REFLECTION". Therefore, a custom gradient needed to be calculated, by cropping the padding and
+        passing the gradients from the previous layer.
+    """
 
     def __init__(self, padding: Tuple[int, int] = (1, 1), **kwargs: Any) -> None:
         """Initialize the `ReflectionPadding2D` layer.

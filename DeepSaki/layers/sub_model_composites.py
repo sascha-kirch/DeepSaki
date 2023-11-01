@@ -22,10 +22,10 @@ class Encoder(tf.keras.layers.Layer):
     """Combines conv blocks with down sample blocks.
 
     The spatial width is halved with every level while the channel depth is doubled.
-    Can be combined with `dsk.layers.Decoder` and `dsk.layers.Bottleneck` to form an auto encoder model.
+    Can be combined with `ds.layers.Decoder` and `ds.layers.Bottleneck` to form an auto encoder model.
 
     Tipp:
-        Checkout the dsk.models api to find models using this layer.
+        Checkout the ds.models api to find models using this layer.
     """
 
     def __init__(
@@ -273,10 +273,10 @@ class Bottleneck(tf.keras.layers.Layer):
 
     It is composed of multiple convolution blocks which might have residuals.
 
-    Can be combined with `dsk.layers.Encoder` and `dsk.layers.Decoder` to form an auto encoder model.
+    Can be combined with `ds.layers.Encoder` and `ds.layers.Decoder` to form an auto encoder model.
 
     Tipp:
-        Checkout the dsk.models api to find models using this layer.
+        Checkout the ds.models api to find models using this layer.
 
     """
 
@@ -441,10 +441,10 @@ class Decoder(tf.keras.layers.Layer):
     """Combines conv blocks with up sample blocks.
 
     The spatial width is doubled with every level while the channel depth is halfed.
-    Can be combined with `dsk.layers.Encoder` and `dsk.layers.Bottleneck` to form an auto encoder model.
+    Can be combined with `ds.layers.Encoder` and `ds.layers.Bottleneck` to form an auto encoder model.
 
     Tipp:
-        Checkout the dsk.models api to find models using this layer.
+        Checkout the ds.models api to find models using this layer.
     """
 
     def __init__(

@@ -303,14 +303,14 @@ class FourierFilter2D(FourierLayer):
 
     **Example:**
     ```python hl_lines="5"
-    import DeepSaki as dsk
+    import DeepSaki as ds
     # pseudo code to load data
     image_dataset = load_data(data_path)
-    x = dsk.layers.FFT2D()(image_dataset)
-    x = dsk.layers.FourierFilter2D(filters=32)(x)
-    x = dsk.layers.FourierFilter2D(filters=64)(x)
-    x = dsk.layers.FourierFilter2D(filters=128)(x)
-    x = dsk.layers.iFFT2D()(x)
+    x = ds.layers.FFT2D()(image_dataset)
+    x = ds.layers.FourierFilter2D(filters=32)(x)
+    x = ds.layers.FourierFilter2D(filters=64)(x)
+    x = ds.layers.FourierFilter2D(filters=128)(x)
+    x = ds.layers.iFFT2D()(x)
 
     ```
     """
@@ -616,27 +616,27 @@ class iFFT2D(FourierLayer):
         |  True              | FFT2D(apply_real_fft=True) | (1,8,8,3)   | complex      | real            |  (1,8,5,3)   |
         |  false             | FFT2D(apply_real_fft=False)| (1,8,8,3)   | complex      | complex         |  (1,8,8,3)   |
 
-    **Examples:**
-        ```python hl_lines="5"
-        import DeepSaki as dsk
-        import tensorflow as tf
+    **Example:**
+    ```python hl_lines="5"
+    import DeepSaki as ds
+    import tensorflow as tf
 
-        real_data = tf.random.normal(shape=(8,64,64,3))
-        complex_data = tf.complex(real_data,real_data)
+    real_data = tf.random.normal(shape=(8,64,64,3))
+    complex_data = tf.complex(real_data,real_data)
 
-        # Real FFT with real valued data
-        x = dsk.layers.FFT2D(apply_real_fft = True)(real_data) #<tf.Tensor: shape=(8, 64, 33, 3), dtype=complex64>
-        x = dsk.layers.iFFT2D(apply_real_fft = True)(x) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=float32>
+    # Real FFT with real valued data
+    x = ds.layers.FFT2D(apply_real_fft = True)(real_data) #<tf.Tensor: shape=(8, 64, 33, 3), dtype=complex64>
+    x = ds.layers.iFFT2D(apply_real_fft = True)(x) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=float32>
 
-        # Standard FFT with complex valued data
-        x = dsk.layers.FFT2D(apply_real_fft = False)(complex_data) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
-        x = dsk.layers.iFFT2D(apply_real_fft = False)(x) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
+    # Standard FFT with complex valued data
+    x = ds.layers.FFT2D(apply_real_fft = False)(complex_data) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
+    x = ds.layers.iFFT2D(apply_real_fft = False)(x) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
 
-        # Standard FFT with real valued data - FFT2D will create a pseude complex tensor tf.complex(real, tf.zeros_like(real))
-        x = dsk.layers.FFT2D(apply_real_fft = False)(real_data) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
-        x = dsk.layers.iFFT2D(apply_real_fft = False)(x) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
-        x = tf.math.real(x) # can be casted to real without issues, since imag values are all zero
-        ```
+    # Standard FFT with real valued data - FFT2D will create a pseude complex tensor tf.complex(real, tf.zeros_like(real))
+    x = ds.layers.FFT2D(apply_real_fft = False)(real_data) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
+    x = ds.layers.iFFT2D(apply_real_fft = False)(x) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
+    x = tf.math.real(x) # can be casted to real without issues, since imag values are all zero
+    ```
 
     """
 

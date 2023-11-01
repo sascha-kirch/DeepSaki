@@ -849,10 +849,10 @@ class ResBlockDown(tf.keras.layers.Layer):
             i([input_tensor])--> c1 & c2
             subgraph ResBlockDown
                 subgraph Block[2x]
-                c1[dsk.layers.Conv2DBlock]
+                c1[ds.layers.Conv2DBlock]
                 end
                 c1-->ap1[AveragePooling2D]
-                c2[dsk.layers.Conv2DBlock]-->ap2[AveragePooling2D]
+                c2[ds.layers.Conv2DBlock]-->ap2[AveragePooling2D]
                 ap1 & ap2-->add((+))
             end
             add-->o([output_tensor])
@@ -988,9 +988,9 @@ class ResBlockUp(tf.keras.layers.Layer):
             subgraph ResBlockUp
                 up1[UpSample2D]-->c1
                 subgraph Block[2x]
-                c1[dsk.layers.Conv2DBlock]
+                c1[ds.layers.Conv2DBlock]
                 end
-                up2[UpSample2D]-->c2[dsk.layers.Conv2DBlock]
+                up2[UpSample2D]-->c2[ds.layers.Conv2DBlock]
                 c1 & c2-->add((+))
             end
             add-->o([output_tensor])
@@ -1167,9 +1167,9 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
         flowchart LR
             i([input_tensor])-->f & g & h
             subgraph ScalarGatedSelfAttention
-                f[dsk.layers.DenseBlock] --> t[Transpose]
-                g[dsk.layers.DenseBlock] & t --> m1[Multiply] --> s[SoftMax]
-                h[dsk.layers.DenseBlock] & s --> m2[Multiply] --> v[DenseBlock] --> sc[dsk.layers.ScaleLayer]
+                f[ds.layers.DenseBlock] --> t[Transpose]
+                g[ds.layers.DenseBlock] & t --> m1[Multiply] --> s[SoftMax]
+                h[ds.layers.DenseBlock] & s --> m2[Multiply] --> v[DenseBlock] --> sc[ds.layers.ScaleLayer]
             end
             sc -->o([output_tensor])
         ```

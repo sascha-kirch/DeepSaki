@@ -12,17 +12,17 @@ def make_initializer_complex(
     constructs a complex-valued tensor of the provided `shape`.
 
 
-    **Examples:**
+    **Example:**
     ```python
-    # Standalone usage:
-    import DeepSaki as dsk
-    initializer = dsk.initializers.make_initializer_complex(tf.keras.initializers.GlorotUniform())
+    # Standalone usage
+    import DeepSaki as ds
+    initializer = ds.initializers.make_initializer_complex(tf.keras.initializers.GlorotUniform())
     values = initializer(shape=(2, 2))
     ```
     ```python
-    # Usage in a Keras layer:
-    import DeepSaki as dsk
-    initializer = dsk.initializers.make_initializer_complex(tf.keras.initializers.GlorotUniform())
+    # Usage in a Keras layer
+    import DeepSaki as ds
+    initializer = ds.initializers.make_initializer_complex(tf.keras.initializers.GlorotUniform())
     layer = tf.keras.layers.Dense(3, kernel_initializer=initializer)
     ```
 
