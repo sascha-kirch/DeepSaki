@@ -7,8 +7,7 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 
 from DeepSaki.constraints import NonNegative
-from DeepSaki.initializers.he_alpha import HeAlphaUniform
-from DeepSaki.layers.layer_helper import PaddingType
+from DeepSaki.types.layers_enums import PaddingType,UpSampleType,DownSampleType
 from DeepSaki.layers.layer_helper import dropout_func
 from DeepSaki.layers.layer_helper import pad_func
 
@@ -50,7 +49,7 @@ class Conv2DSplitted(tf.keras.layers.Layer):
         self.strides = strides
         self.use_bias = use_bias
         self.padding = padding
-        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
+        self.kernel_initializer = kernel_initializer
         self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
         self.conv1 = tf.keras.layers.Conv2D(
@@ -170,8 +169,8 @@ class Conv2DBlock(tf.keras.layers.Layer):
         self.padding = padding
         self.apply_final_normalization = apply_final_normalization
         self.use_bias = use_bias
-        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
-        self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+        self.kernel_initializer = kernel_initializer
+        self.gamma_initializer = gamma_initializer
         self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
         pad = (kernels - 1) // 2  # assumes odd kernel size, which is typical!
@@ -312,8 +311,8 @@ class DenseBlock(tf.keras.layers.Layer):
         self.use_spec_norm = use_spec_norm
         self.apply_final_normalization = apply_final_normalization
         self.use_bias = use_bias
-        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
-        self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+        self.kernel_initializer = kernel_initializer
+        self.gamma_initializer = gamma_initializer
         self.input_spec = tf.keras.layers.InputSpec(min_ndim=2)
 
         self.blocks = []
@@ -391,7 +390,7 @@ class DownSampleBlock(tf.keras.layers.Layer):
 
     def __init__(
         self,
-        downsampling: str = "average_pooling",
+        downsampling: DownSampleType = DownSampleType.AVG_POOLING,
         activation: str = "leaky_relu",
         kernels: int = 3,
         use_spec_norm: bool = False,
@@ -403,7 +402,7 @@ class DownSampleBlock(tf.keras.layers.Layer):
         """Initializes the `DownSampleBlock` layer.
 
         Args:
-            downsampling (str, optional): Downsampling method used. Defaults to "average_pooling".
+            downsampling (DownSampleType, optional): Downsampling method used. Defaults to DownSampleType.AVG_POOLING.
             activation (str, optional): String literal or tensorflow activation function object to obtain activation
                 function. Defaults to "leaky_relu".
             kernels (int, optional): Size of the convolutions kernels. Defaults to 3.
@@ -423,8 +422,8 @@ class DownSampleBlock(tf.keras.layers.Layer):
         self.use_spec_norm = use_spec_norm
         self.padding = padding
         self.use_bias = use_bias
-        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
-        self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+        self.kernel_initializer = kernel_initializer
+        self.gamma_initializer = gamma_initializer
         self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
     def _space_to_depth_block_size_2(self, tensor: tf.Tensor) -> tf.Tensor:
@@ -442,7 +441,7 @@ class DownSampleBlock(tf.keras.layers.Layer):
         super(DownSampleBlock, self).build(input_shape)
 
         self.layers = []
-        if self.downsampling == "conv_stride_2":
+        if self.downsampling == DownSampleType.CONV_STRIDE_2:
             self.layers.append(
                 Conv2DBlock(
                     input_shape[-1],
@@ -456,12 +455,12 @@ class DownSampleBlock(tf.keras.layers.Layer):
                     gamma_initializer=self.gamma_initializer,
                 )
             )
-        elif self.downsampling == "max_pooling":
+        elif self.downsampling == DownSampleType.MAX_POOLING:
             # Only spatial downsampling, increase in features is done by the conv2D_block specified later!
             self.layers.append(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
-        elif self.downsampling == "average_pooling":
+        elif self.downsampling == DownSampleType.AVG_POOLING:
             self.layers.append(tf.keras.layers.AveragePooling2D(pool_size=(2, 2)))
-        elif self.downsampling == "space_to_depth":
+        elif self.downsampling == DownSampleType.SPACE_TO_DEPTH:
             self.layers.append(self._space_to_depth_block_size_2)
             self.layers.append(
                 tf.keras.layers.Conv2D(
@@ -518,7 +517,7 @@ class UpSampleBlock(tf.keras.layers.Layer):
 
     def __init__(
         self,
-        upsampling: str = "2D_upsample_and_conv",
+        upsampling: UpSampleType = UpSampleType.RESAMPLE_AND_CONV,
         activation: str = "leaky_relu",
         kernels: int = 3,
         use_spec_norm: bool = False,
@@ -530,7 +529,7 @@ class UpSampleBlock(tf.keras.layers.Layer):
         """Initializes the `UpSampleBlock` layer.
 
         Args:
-            upsampling (str, optional): _description_. Defaults to "2D_upsample_and_conv".
+            upsampling (UpSampleType, optional): _description_. Defaults to UpSampleType.RESAMPLE_AND_CONV.
             activation (str, optional): String literal or tensorflow activation function object to obtain activation
                 function. Defaults to "leaky_relu".
             kernels (int, optional): Size of the convolutions kernels. Defaults to 3.
@@ -549,8 +548,8 @@ class UpSampleBlock(tf.keras.layers.Layer):
         self.use_spec_norm = use_spec_norm
         self.upsampling = upsampling
         self.use_bias = use_bias
-        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
-        self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+        self.kernel_initializer = kernel_initializer
+        self.gamma_initializer = gamma_initializer
         self.padding = padding
         self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
@@ -569,7 +568,7 @@ class UpSampleBlock(tf.keras.layers.Layer):
         super(UpSampleBlock, self).build(input_shape)
         self.layers = []
 
-        if self.upsampling == "2D_upsample_and_conv":
+        if self.upsampling == UpSampleType.RESAMPLE_AND_CONV:
             self.layers.append(tf.keras.layers.UpSampling2D(interpolation="bilinear"))
             self.layers.append(
                 Conv2DBlock(
@@ -584,7 +583,7 @@ class UpSampleBlock(tf.keras.layers.Layer):
                     gamma_initializer=self.gamma_initializer,
                 )
             )
-        elif self.upsampling == "transpose_conv":
+        elif self.upsampling == UpSampleType.TRANSPOSE_CONV:
             self.layers.append(
                 tf.keras.layers.Conv2DTranspose(
                     input_shape[-1],
@@ -597,7 +596,7 @@ class UpSampleBlock(tf.keras.layers.Layer):
             )
             self.layers.append(tfa.layers.InstanceNormalization(gamma_initializer=self.gamma_initializer))
             self.layers.append(tf.keras.layers.Activation(self.activation))
-        elif self.upsampling == "depth_to_space":
+        elif self.upsampling == UpSampleType.DEPTH_TO_SPACE:
             self.layers.append(
                 tf.keras.layers.Conv2D(
                     filters=4 * input_shape[-1],
@@ -695,8 +694,8 @@ class ResidualBlock(tf.keras.layers.Layer):
         self.dropout_rate = dropout_rate
         self.use_bias = use_bias
         self.padding = padding
-        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
-        self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+        self.kernel_initializer = kernel_initializer
+        self.gamma_initializer = gamma_initializer
         self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
         self.pad = int((kernels - 1) / 2)  # assumes odd kernel size, which is typical!
@@ -888,8 +887,8 @@ class ResBlockDown(tf.keras.layers.Layer):
         self.use_spec_norm = use_spec_norm
         self.use_bias = use_bias
         self.padding = padding
-        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
-        self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+        self.kernel_initializer = kernel_initializer
+        self.gamma_initializer = gamma_initializer
         self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
     def build(self, input_shape: tf.TensorShape) -> None:
@@ -1026,8 +1025,8 @@ class ResBlockUp(tf.keras.layers.Layer):
         self.use_spec_norm = use_spec_norm
         self.use_bias = use_bias
         self.padding = padding
-        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
-        self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+        self.kernel_initializer = kernel_initializer
+        self.gamma_initializer = gamma_initializer
         self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
     def build(self, input_shape: tf.TensorShape) -> None:
@@ -1197,8 +1196,8 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
         super(ScalarGatedSelfAttention, self).__init__()
         self.use_spec_norm = use_spec_norm
         self.intermediate_channel = intermediate_channel
-        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
-        self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+        self.kernel_initializer = kernel_initializer
+        self.gamma_initializer = gamma_initializer
         self.input_spec = tf.keras.layers.InputSpec(ndim=4)
 
     def build(self, input_shape: tf.TensorShape) -> None:
@@ -1208,7 +1207,7 @@ class ScalarGatedSelfAttention(tf.keras.layers.Layer):
             input_shape (tf.TensorShape): Shape of the input tensor to this layer.
         """
         super(ScalarGatedSelfAttention, self).build(input_shape)
-        batch_size, height, width, num_channel = input_shape
+        num_channel = input_shape[-1]
         if self.intermediate_channel is None:
             self.intermediate_channel = num_channel
 

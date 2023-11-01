@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from DeepSaki.layers.layer_helper import PaddingType
+from DeepSaki.types.layers_enums import PaddingType,DownSampleType,UpSampleType,LinearLayerType
 from DeepSaki.layers.sub_model_composites import Encoder, Decoder,Bottleneck
 from DeepSaki.layers.layer_composites import Conv2DBlock, DenseBlock, ScalarGatedSelfAttention
 from DeepSaki.layers.pooling import GlobalSumPooling2D
@@ -48,7 +48,7 @@ class LayoutContentDiscriminator(tf.keras.Model):
     """
     def __init__(self,
                 filters:int = 64,
-                downsampling:str = "conv_stride_2",
+                downsampling:DownSampleType = DownSampleType.CONV_STRIDE_2,
                 kernels:int = 3,
                 first_kernel:int = 5,
                 split_kernels:bool = False,
@@ -58,7 +58,7 @@ class LayoutContentDiscriminator(tf.keras.Model):
                 use_spec_norm:bool=False,
                 use_bias:bool = True,
                 padding:PaddingType=PaddingType.ZERO,
-                fully_connected:str = "MLP",
+                linear_layer_type:LinearLayerType = LinearLayerType.MLP,
                 use_self_attention:bool = False,
                 kernel_initializer:Optional[tf.keras.initializers.Initializer] = None,
                 gamma_initializer:Optional[tf.keras.initializers.Initializer] = None
@@ -67,7 +67,7 @@ class LayoutContentDiscriminator(tf.keras.Model):
 
         Args:
             filters (int, optional): Number of filters for the initial encoder block. Defaults to 64.
-            downsampling (str, optional): Describes the downsampling method. Defaults to "conv_stride_2".
+            downsampling (DownSampleType, optional): Describes the downsampling method. Defaults to DownSampleType.CONV_STRIDE_2.
             kernels (int, optional): Size of the convolutions kernels. Defaults to 3.
             first_kernel (int, optional): The first convolution can have a different kernel size, to e.g. increase the
                 perceptive field, while the channel depth is still low. Defaults to 5.
@@ -84,8 +84,9 @@ class LayoutContentDiscriminator(tf.keras.Model):
                 False.
             use_bias (bool, optional): Whether convolutions and dense layers include a bias or not. Defaults to True.
             padding (PaddingType, optional): Padding type. Defaults to PaddingType.NONE.
-            fully_connected (str, optional): Determines whether 1x1 convolutions are replaced by linear layers, which gives
-                the same result, but linear layers are faster. Option: "MLP" or "1x1_conv". Defaults to "MLP".
+            linear_layer_type (LinearLayerType, optional): Determines whether 1x1 convolutions are replaced by linear
+                layers, which gives the same result, but linear layers are faster. Option: LinearLayerType.MLP or
+                LinearLayerType.CONV_1x1. Defaults to LinearLayerType.MLP.
             use_self_attention (bool, optional): Determines whether to apply self-attention in the decoder. Defaults to
                 False.
             kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
@@ -94,7 +95,7 @@ class LayoutContentDiscriminator(tf.keras.Model):
                 Defaults to None.
 
         Raises:
-            ValueError: If provided parameter for `fully_connected` is not supported.
+            ValueError: If provided parameter for `linear_layer_type` is not supported.
         """
         super(LayoutContentDiscriminator, self).__init__()
 
@@ -106,16 +107,16 @@ class LayoutContentDiscriminator(tf.keras.Model):
         else:
             self.SA = None
 
-        if fully_connected == "MLP":
+        if linear_layer_type == LinearLayerType.MLP:
             self.cont1 = DenseBlock(units = filters * 8, use_spec_norm = use_spec_norm, number_of_blocks = number_of_blocks, activation = activation, dropout_rate =dropout_rate, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
             self.cont2 = DenseBlock(units = filters * 8, use_spec_norm = use_spec_norm, number_of_blocks = number_of_blocks, activation = activation, dropout_rate =dropout_rate, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
             self.cont3 = DenseBlock(units = filters * 8, use_spec_norm = use_spec_norm, number_of_blocks = number_of_blocks, activation = activation, dropout_rate =0, final_activation=False, apply_final_normalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
-        elif fully_connected == "1x1_conv":
+        elif linear_layer_type == LinearLayerType.CONV_1x1:
             self.cont1 = Conv2DBlock(filters=filters * 8, kernels = 1, activation = activation, split_kernels = split_kernels,number_of_blocks=number_of_blocks, dropout_rate=dropout_rate,use_spec_norm=use_spec_norm, padding=padding,use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
             self.cont2 = Conv2DBlock(filters=filters * 8, kernels = 1, activation = activation, split_kernels = split_kernels,number_of_blocks=number_of_blocks, dropout_rate=dropout_rate,use_spec_norm=use_spec_norm, padding=padding,use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
             self.cont3 = Conv2DBlock(filters=filters * 8, kernels = 1, activation = activation, split_kernels = split_kernels,number_of_blocks=number_of_blocks, dropout_rate=0,use_spec_norm=use_spec_norm, final_activation=False, apply_final_normalization = False, padding=padding,use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
         else:
-            raise ValueError(f"{fully_connected=} is not defined.")
+            raise ValueError(f"{linear_layer_type=} is not defined.")
 
         self.lay1 = Conv2DBlock(filters=1, kernels = kernels, activation = activation, split_kernels = split_kernels,number_of_blocks=number_of_blocks, dropout_rate=0,use_spec_norm=use_spec_norm, padding=padding, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
         self.lay2 = Conv2DBlock(filters=1, kernels = kernels, activation = activation, split_kernels = split_kernels,number_of_blocks=number_of_blocks, dropout_rate=dropout_rate,use_spec_norm=use_spec_norm, padding=padding,use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
@@ -190,7 +191,7 @@ class PatchDiscriminator(tf.keras.Model):
     """
     def __init__(self,
                 filters:int = 64,
-                downsampling:str = "average_pooling",
+                downsampling:DownSampleType = DownSampleType.AVG_POOLING,
                 kernels:int = 3,
                 first_kernel:int = 5,
                 split_kernels:bool = False,
@@ -209,7 +210,7 @@ class PatchDiscriminator(tf.keras.Model):
 
         Args:
             filters (int, optional): Number of filters for the initial encoder block. Defaults to 64.
-            downsampling (str, optional): Describes the downsampling method. Defaults to "average_pooling".
+            downsampling (DownSampleType, optional): Describes the downsampling method. Defaults to DownSampleType.AVG_POOLING.
             kernels (int, optional): Size of the convolutions kernels. Defaults to 3.
             first_kernel (int, optional): The first convolution can have a different kernel size, to e.g. increase the
                 perceptive field, while the channel depth is still low. Defaults to 5.
@@ -301,8 +302,8 @@ class UNetDiscriminator(tf.keras.Model):
     """
     def __init__(self,
                 number_of_levels:int= 4,
-                upsampling:str = "transpose_conv",
-                downsampling:str = "average_pooling",
+                upsampling:UpSampleType = UpSampleType.TRANSPOSE_CONV,
+                downsampling:DownSampleType = DownSampleType.AVG_POOLING,
                 kernels:int = 3,
                 first_kernel:int = 5,
                 split_kernels:bool = False,
@@ -317,7 +318,7 @@ class UNetDiscriminator(tf.keras.Model):
                 use_self_attention:bool=False,
                 use_spec_norm:bool=False,
                 use_bias:bool= True,
-                fully_connected:str = "MLP",
+                linear_layer_type:LinearLayerType = LinearLayerType.MLP,
                 padding:PaddingType=PaddingType.ZERO,
                 kernel_initializer:Optional[tf.keras.initializers.Initializer] = None,
                 gamma_initializer:Optional[tf.keras.initializers.Initializer] =  None
@@ -326,8 +327,8 @@ class UNetDiscriminator(tf.keras.Model):
 
         Args:
             number_of_levels (int, optional): Number of down and upsampling levels of the model. Defaults to 4.
-            upsampling (str, optional): Describes the upsampling method used. Defaults to "transpose_conv".
-            downsampling (str, optional): Describes the downsampling method. Defaults to "average_pooling".
+            upsampling (UpSampleType, optional): Describes the upsampling method used. Defaults to UpSampleType.TRANSPOSE_CONV.
+            downsampling (DownSampleType, optional): Describes the downsampling method. Defaults to DownSampleType.AVG_POOLING.
             kernels (int, optional): Size of the convolutions kernels. Defaults to 3.
             first_kernel (int, optional): The first convolution can have a different kernel size, to e.g. increase the
                 perceptive field, while the channel depth is still low. Defaults to 5.
@@ -352,8 +353,9 @@ class UNetDiscriminator(tf.keras.Model):
             use_spec_norm (bool, optional): Applies spectral normalization to convolutional and dense layers. Defaults to
                 False.
             use_bias (bool, optional): Whether convolutions and dense layers include a bias or not. Defaults to True.
-            fully_connected (str, optional): Determines whether 1x1 convolutions are replaced by linear layers, which gives
-                the same result, but linear layers are faster. Option: "MLP" or "1x1_conv". Defaults to "MLP".
+            linear_layer_type (LinearLayerType, optional): Determines whether 1x1 convolutions are replaced by linear
+                layers, which gives the same result, but linear layers are faster. Option: LinearLayerType.MLP or
+                LinearLayerType.CONV_1x1. Defaults to LinearLayerType.MLP.
             padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
             kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
                 Defaults to None.
@@ -368,9 +370,9 @@ class UNetDiscriminator(tf.keras.Model):
         self.encoder = Encoder(number_of_levels=number_of_levels, filters=filters, limit_filters=limit_filters,  downsampling=downsampling, kernels=kernels, split_kernels=split_kernels, number_of_blocks=number_of_blocks,activation=activation, first_kernel=first_kernel, use_ResidualBlock=use_ResidualBlock, channel_list=[ch,2*ch,4*ch,8*ch,8*ch], use_spec_norm=use_spec_norm,use_self_attention=use_self_attention,output_skips=True, use_bias = use_bias,residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
         self.bottleNeck = Bottleneck(use_ResidualBlock=use_ResidualBlock, n_bottleneck_blocks=n_bottleneck_blocks, kernels=kernels, split_kernels=split_kernels,number_of_blocks=number_of_blocks, activation = activation,dropout_rate=dropout_rate, channel_list=[16*ch], use_spec_norm=use_spec_norm, use_bias = use_bias,residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
         self.decoder = Decoder(number_of_levels=number_of_levels, upsampling=upsampling, filters=filters, limit_filters=limit_filters, kernels=kernels, split_kernels=split_kernels,number_of_blocks=number_of_blocks,activation=activation,dropout_rate=dropout_rate, use_ResidualBlock=use_ResidualBlock, channel_list=[8*ch,8*ch,4*ch,2*ch,ch], use_spec_norm=use_spec_norm, use_bias = use_bias,residual_cardinality=residual_cardinality,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer,enable_skip_connections_input=True)
-        if fully_connected == "MLP":
+        if linear_layer_type == LinearLayerType.MLP:
             self.img_reconstruction = DenseBlock(units = 1, use_spec_norm = use_spec_norm, number_of_blocks = 1, activation = None, apply_final_normalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
-        elif fully_connected == "1x1_conv":
+        elif linear_layer_type == LinearLayerType.CONV_1x1:
             self.img_reconstruction = Conv2DBlock(filters = 1,  kernels = 1, split_kernels  = False, number_of_blocks = 1, activation = None,use_spec_norm=use_spec_norm, apply_final_normalization = False, use_bias = use_bias,padding = padding, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
         self.linear = DenseBlock(units = 1, use_spec_norm = use_spec_norm, number_of_blocks = 1, activation = None, apply_final_normalization = False, use_bias = use_bias, kernel_initializer = kernel_initializer, gamma_initializer = gamma_initializer)
         #To enable mixed precission support for matplotlib and distributed training and to increase training stability

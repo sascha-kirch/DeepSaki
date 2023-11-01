@@ -8,7 +8,7 @@ import tensorflow as tf
 from DeepSaki.initializers.he_alpha import HeAlphaNormal
 from DeepSaki.initializers.he_alpha import HeAlphaUniform
 from DeepSaki.layers.layer_helper import InitializerFunc
-from DeepSaki.layers.layer_helper import PaddingType
+from DeepSaki.types.layers_enums import PaddingType
 from DeepSaki.layers.layer_helper import dropout_func
 from DeepSaki.layers.layer_helper import get_initializer
 from DeepSaki.layers.layer_helper import pad_func

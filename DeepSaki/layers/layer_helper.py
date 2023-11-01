@@ -11,42 +11,7 @@ from DeepSaki.initializers.he_alpha import HeAlphaNormal
 from DeepSaki.initializers.he_alpha import HeAlphaUniform
 from DeepSaki.layers.padding import ReflectionPadding2D
 
-class PaddingType(Enum):
-    """`Enum` used to define different types of padding opperations.
-
-    Attributes:
-        ZERO: Indicates to apply a zero padding operations.
-        REFLECTION: Indicates to apply a reflection padding operation.
-    """
-
-    NONE = auto()
-    ZERO = auto()
-    REFLECTION = auto()
-
-
-class InitializerFunc(Enum):
-    """`Enum` used to define different types of initializer functions.
-
-    Attributes:
-        RANDOM_NORMAL: Corresponds to a random normal initializer function.
-        RANDOM_UNIFORM: Corresponds to a random uniform initializer function.
-        GLOROT_NORMAL: Corresponds to a Glorot normal initializer function.
-        GLOROT_UNIFORM: Corresponds to a Glorot uniform initializer function.
-        HE_NORMAL: Corresponds to a He normal initializer function.
-        HE_UNIFORM: Corresponds to a He uniform initializer function.
-        HE_ALPHA_NORMAL: Corresponds to a He Alpha normal initializer function.
-        HE_ALPHA_UNIFORM: Corresponds to a He Alpha Uniform initializer function.
-    """
-
-    NONE = auto()
-    RANDOM_NORMAL = auto()
-    RANDOM_UNIFORM = auto()
-    GLOROT_NORMAL = auto()
-    GLOROT_UNIFORM = auto()
-    HE_NORMAL = auto()
-    HE_UNIFORM = auto()
-    HE_ALPHA_NORMAL = auto()
-    HE_ALPHA_UNIFORM = auto()
+from DeepSaki.types.layers_enums import InitializerFunc, PaddingType
 
 
 def get_initializer(

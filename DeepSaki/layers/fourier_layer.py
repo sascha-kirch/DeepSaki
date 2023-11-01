@@ -1,5 +1,4 @@
-from enum import Enum
-from enum import auto
+
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -12,30 +11,7 @@ import tensorflow as tf
 
 from DeepSaki.initializers.initializer_helper import make_initializer_complex
 
-class MultiplicationType(Enum):
-    """`Enum` used to define how two matrices shall be multiplied.
-
-    Attributes:
-        ELEMENT_WISE: Indicates to apply an element-wise multiplication of 2 tensors.
-        MATRIX_PRODUCT: Indicates to apply a matrix-product between 2 tensors.
-    """
-
-    ELEMENT_WISE = auto()
-    MATRIX_PRODUCT = auto()
-
-
-class FrequencyFilter(Enum):
-    """`Enum` used to define valid filters for `rFFT2DFilter`.
-
-    Attributes:
-        LOW_PASS: Indicates that low frequency components shall be kept and high frequency components shall be
-            filtered.
-        HIGH_PASS: Indicates that high frequency components shall be kept and low frequency components shall be
-            filtered.
-    """
-
-    LOW_PASS = auto()
-    HIGH_PASS = auto()
+from DeepSaki.types.layers_enums import MultiplicationType, FrequencyFilter
 
 
 # Base class below has no init. so if subclass calls super().__init__ it takes the one of tf.keras.Layer.
