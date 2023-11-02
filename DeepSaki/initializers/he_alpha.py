@@ -1,8 +1,4 @@
-"""Set of initializers based on the [He initializer](https://arxiv.org/abs/1502.01852).
 
-In contrast to the tensorflow implementation, an alpha value can be set to consider the non-zero slope of a
-LeakyReLU activation.
-"""
 from abc import ABC
 from abc import abstractmethod
 from typing import Any
