@@ -8,6 +8,9 @@ import tensorflow as tf
 from DeepSaki.losses.image_based_losses import ImageBasedLoss
 from DeepSaki.losses.image_based_losses import PixelDistanceLoss
 from DeepSaki.losses.image_based_losses import StructuralSimilarityLoss
+from DeepSaki.losses.image_based_losses import LossCalcType
+from DeepSaki.losses.image_based_losses import LossType
+
 
 class TestImageBasedLossAbstractBase:
     @pytest.mark.parametrize(
@@ -27,8 +30,8 @@ class TestImageBasedLossAbstractBase:
     @pytest.mark.parametrize(
         ("calculation_type", "expected"),
         [
-            ("per_channel", "_calc_loss_per_channel"),
-            ("per_image", "_calc_loss_per_image"),
+            (LossCalcType.PER_CHANNEL, "_calc_loss_per_channel"),
+            (LossCalcType.PER_IMAGE, "_calc_loss_per_image"),
         ],
     )
     def test_correct_loss_calc_func_selected(self, mocker, calculation_type, expected):
@@ -128,8 +131,8 @@ class TestPixelDistanceLoss:
     @pytest.mark.parametrize(
         ("loss_type", "expected"),
         [
-            ("mae", tf.abs),
-            ("mse", tf.square),
+            (LossType.MAE, tf.abs),
+            (LossType.MSE, tf.square),
         ],
     )
     def test_init_correct_error_func_selected(self, loss_type, expected):
@@ -139,14 +142,14 @@ class TestPixelDistanceLoss:
     @pytest.mark.parametrize(
         ("tensor1", "tensor2", "loss_type", "expected"),
         [
-            (3 * tf.ones(shape=[1, 1, 1, 1]), tf.ones(shape=[1, 1, 1, 1]), "mae", tf.constant(2.0)),
-            (3 * tf.ones(shape=[8, 64, 64, 4]), tf.ones(shape=[8, 64, 64, 4]), "mae", tf.constant(2.0)),
-            (5 * tf.ones(shape=[1, 1, 1, 1]), tf.ones(shape=[1, 1, 1, 1]), "mae", tf.constant(4.0)),
-            (5 * tf.ones(shape=[8, 64, 64, 4]), tf.ones(shape=[8, 64, 64, 4]), "mae", tf.constant(4.0)),
-            (3 * tf.ones(shape=[1, 1, 1, 1]), tf.ones(shape=[1, 1, 1, 1]), "mse", tf.constant(4.0)),
-            (3 * tf.ones(shape=[8, 64, 64, 4]), tf.ones(shape=[8, 64, 64, 4]), "mse", tf.constant(4.0)),
-            (5 * tf.ones(shape=[1, 1, 1, 1]), tf.ones(shape=[1, 1, 1, 1]), "mse", tf.constant(16.0)),
-            (5 * tf.ones(shape=[8, 64, 64, 4]), tf.ones(shape=[8, 64, 64, 4]), "mse", tf.constant(16.0)),
+            (3 * tf.ones(shape=[1, 1, 1, 1]), tf.ones(shape=[1, 1, 1, 1]), LossType.MAE, tf.constant(2.0)),
+            (3 * tf.ones(shape=[8, 64, 64, 4]), tf.ones(shape=[8, 64, 64, 4]), LossType.MAE, tf.constant(2.0)),
+            (5 * tf.ones(shape=[1, 1, 1, 1]), tf.ones(shape=[1, 1, 1, 1]), LossType.MAE, tf.constant(4.0)),
+            (5 * tf.ones(shape=[8, 64, 64, 4]), tf.ones(shape=[8, 64, 64, 4]), LossType.MAE, tf.constant(4.0)),
+            (3 * tf.ones(shape=[1, 1, 1, 1]), tf.ones(shape=[1, 1, 1, 1]), LossType.MSE, tf.constant(4.0)),
+            (3 * tf.ones(shape=[8, 64, 64, 4]), tf.ones(shape=[8, 64, 64, 4]), LossType.MSE, tf.constant(4.0)),
+            (5 * tf.ones(shape=[1, 1, 1, 1]), tf.ones(shape=[1, 1, 1, 1]), LossType.MSE, tf.constant(16.0)),
+            (5 * tf.ones(shape=[8, 64, 64, 4]), tf.ones(shape=[8, 64, 64, 4]), LossType.MSE, tf.constant(16.0)),
         ],
     )
     def test_error_func(self, tensor1, tensor2, loss_type, expected):

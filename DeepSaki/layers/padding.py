@@ -1,4 +1,3 @@
-"""Collection of padding layer operations."""
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -7,7 +6,13 @@ from typing import Tuple
 import tensorflow as tf
 
 class ReflectionPadding2D(tf.keras.layers.Layer):
-    """Reflection Padding layer with support for TPU."""
+    """Reflection Padding layer with support for TPU.
+
+    Info:
+        At the time of implementation, Google's TPUs did not support gradient calculation of mirrored paddings like
+        "SYMMETRIC" and "REFLECTION". Therefore, a custom gradient needed to be calculated, by cropping the padding and
+        passing the gradients from the previous layer.
+    """
 
     def __init__(self, padding: Tuple[int, int] = (1, 1), **kwargs: Any) -> None:
         """Initialize the `ReflectionPadding2D` layer.
@@ -15,6 +20,7 @@ class ReflectionPadding2D(tf.keras.layers.Layer):
         Args:
             padding (Tuple[int, int], optional): One-sided padding added to the `hight` and `width` to an input tensor
                 of shape (batch, height, width, channel)respectively. Defaults to (1, 1).
+            kwargs (Any): Additional key word arguments passed to the base class.
         """
         super(ReflectionPadding2D, self).__init__(**kwargs)
         self.padding = tuple(padding)

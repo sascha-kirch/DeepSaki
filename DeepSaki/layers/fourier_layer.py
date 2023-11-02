@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -9,33 +8,9 @@ from typing import Tuple
 import numpy as np
 import tensorflow as tf
 
-from DeepSaki.initializers.initializer_helper import make_initializer_complex
-
-class MultiplicationType(Enum):
-    """`Enum` used to define how two matrices shall be multiplied.
-
-    Attributes:
-        ELEMENT_WISE (int): Indicates to apply an element-wise multiplication of 2 tensors.
-        MATRIX_PRODUCT (int): Indicates to apply a matrix-product between 2 tensors.
-    """
-
-    ELEMENT_WISE = 1
-    MATRIX_PRODUCT = 2
-
-
-class FrequencyFilter(Enum):
-    """`Enum` used to define valid filters for `rFFT2DFilter`.
-
-    Attributes:
-        LOW_PASS (int): Indicates that low frequency components shall be kept and high frequency components shall be
-            filtered.
-        HIGH_PASS (int): Indicates that high frequency components shall be kept and low frequency components shall be
-            filtered.
-    """
-
-    LOW_PASS = 1
-    HIGH_PASS = 2
-
+from DeepSaki.initializers.complex_initializer import ComplexInitializer
+from DeepSaki.types.layers_enums import FrequencyFilter
+from DeepSaki.types.layers_enums import MultiplicationType
 
 # Base class below has no init. so if subclass calls super().__init__ it takes the one of tf.keras.Layer.
 class FourierLayer(tf.keras.layers.Layer):
@@ -303,14 +278,14 @@ class FourierFilter2D(FourierLayer):
 
     **Example:**
     ```python hl_lines="5"
-    import DeepSaki as dsk
+    import DeepSaki as ds
     # pseudo code to load data
     image_dataset = load_data(data_path)
-    x = dsk.layers.FFT2D()(image_dataset)
-    x = dsk.layers.FourierFilter2D(filters=32)(x)
-    x = dsk.layers.FourierFilter2D(filters=64)(x)
-    x = dsk.layers.FourierFilter2D(filters=128)(x)
-    x = dsk.layers.iFFT2D()(x)
+    x = ds.layers.FFT2D()(image_dataset)
+    x = ds.layers.FourierFilter2D(filters=32)(x)
+    x = ds.layers.FourierFilter2D(filters=64)(x)
+    x = ds.layers.FourierFilter2D(filters=128)(x)
+    x = ds.layers.iFFT2D()(x)
 
     ```
     """
@@ -352,8 +327,8 @@ class FourierFilter2D(FourierLayer):
             tf.keras.initializers.RandomUniform(-0.05, 0.05) if filter_initializer is None else filter_initializer
         )
         bias_initializer = tf.keras.initializers.Zeros() if bias_initializer is None else bias_initializer
-        self.filter_initializer = make_initializer_complex(filter_initializer)
-        self.bias_initializer = make_initializer_complex(bias_initializer)
+        self.filter_initializer = ComplexInitializer(filter_initializer)
+        self.bias_initializer = ComplexInitializer(bias_initializer)
         self.multiply = self._get_multiplication_function(multiplication_type)
 
         self.input_spec = tf.keras.layers.InputSpec(ndim=4, dtype=tf.complex64)
@@ -392,7 +367,7 @@ class FourierFilter2D(FourierLayer):
 
         Args:
             inputs (tf.Tensor): Complex valued tensor of shape (b,h,w,c) if `is_channel_first=False` or Tensor of shape
-            (b,c,h,w) if `is_channel_first=True`.
+                (b,c,h,w) if `is_channel_first=True`.
 
         Returns:
             Complex valued tensor of shape (b,h,w,`filters`) if `is_channel_first=False` or Tensor of shape
@@ -616,27 +591,27 @@ class iFFT2D(FourierLayer):
         |  True              | FFT2D(apply_real_fft=True) | (1,8,8,3)   | complex      | real            |  (1,8,5,3)   |
         |  false             | FFT2D(apply_real_fft=False)| (1,8,8,3)   | complex      | complex         |  (1,8,8,3)   |
 
-    **Examples:**
-        ```python hl_lines="5"
-        import DeepSaki as dsk
-        import tensorflow as tf
+    **Example:**
+    ```python hl_lines="5"
+    import DeepSaki as ds
+    import tensorflow as tf
 
-        real_data = tf.random.normal(shape=(8,64,64,3))
-        complex_data = tf.complex(real_data,real_data)
+    real_data = tf.random.normal(shape=(8,64,64,3))
+    complex_data = tf.complex(real_data,real_data)
 
-        # Real FFT with real valued data
-        x = dsk.layers.FFT2D(apply_real_fft = True)(real_data) #<tf.Tensor: shape=(8, 64, 33, 3), dtype=complex64>
-        x = dsk.layers.iFFT2D(apply_real_fft = True)(x) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=float32>
+    # Real FFT with real valued data
+    x = ds.layers.FFT2D(apply_real_fft = True)(real_data) #<tf.Tensor: shape=(8, 64, 33, 3), dtype=complex64>
+    x = ds.layers.iFFT2D(apply_real_fft = True)(x) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=float32>
 
-        # Standard FFT with complex valued data
-        x = dsk.layers.FFT2D(apply_real_fft = False)(complex_data) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
-        x = dsk.layers.iFFT2D(apply_real_fft = False)(x) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
+    # Standard FFT with complex valued data
+    x = ds.layers.FFT2D(apply_real_fft = False)(complex_data) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
+    x = ds.layers.iFFT2D(apply_real_fft = False)(x) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
 
-        # Standard FFT with real valued data - FFT2D will create a pseude complex tensor tf.complex(real, tf.zeros_like(real))
-        x = dsk.layers.FFT2D(apply_real_fft = False)(real_data) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
-        x = dsk.layers.iFFT2D(apply_real_fft = False)(x) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
-        x = tf.math.real(x) # can be casted to real without issues, since imag values are all zero
-        ```
+    # Standard FFT with real valued data - FFT2D will create a pseude complex tensor tf.complex(real, tf.zeros_like(real))
+    x = ds.layers.FFT2D(apply_real_fft = False)(real_data) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
+    x = ds.layers.iFFT2D(apply_real_fft = False)(x) #<tf.Tensor: shape=(8, 64, 64, 3), dtype=complex64>
+    x = tf.math.real(x) # can be casted to real without issues, since imag values are all zero
+    ```
 
     """
 

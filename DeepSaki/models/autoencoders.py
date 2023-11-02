@@ -1,6 +1,6 @@
 import tensorflow as tf
-from DeepSaki.initializers.he_alpha import HeAlphaUniform
-from DeepSaki.layers.layer_helper import PaddingType
+from DeepSaki.types.layers_enums import PaddingType
+from DeepSaki.types.layers_enums import UpSampleType,DownSampleType,LinearLayerType
 from DeepSaki.layers.sub_model_composites import Encoder, Decoder,Bottleneck
 from DeepSaki.layers.layer_composites import Conv2DBlock, DenseBlock
 
@@ -29,12 +29,12 @@ class UNet(tf.keras.Model):
         ex-->dx
         ```
 
-    Example:
+    **Example:**
     ```python
-    import DeepSaki as dsk
+    import DeepSaki as ds
     import tensorflow as tf
     inputs = tf.keras.layers.Input(shape = (256,256,4))
-    model = tf.keras.Model(inputs=inputs, outputs=dsk.model.UNet((256,256,4),5).call(inputs))
+    model = tf.keras.Model(inputs=inputs, outputs=ds.model.UNet((256,256,4),5).call(inputs))
     model.summary()
     tf.keras.utils.plot_model(model, show_shapes=True, expand_nested=True, show_dtype=True, to_file='Unet_model.png')
     ```
@@ -42,8 +42,8 @@ class UNet(tf.keras.Model):
 
     def __init__(self,
                 number_of_levels:int = 3,
-                upsampling:str = "transpose_conv",
-                downsampling:str = "conv_stride_2",
+                upsampling:UpSampleType = UpSampleType.TRANSPOSE_CONV,
+                downsampling:DownSampleType = DownSampleType.CONV_STRIDE_2,
                 final_activation:str = "hard_sigmoid",
                 filters:int = 64,
                 kernels:int = 3,
@@ -60,7 +60,7 @@ class UNet(tf.keras.Model):
                 use_bias:bool = True,
                 use_self_attention:bool=False,
                 omit_skips:int = 0,
-                fully_connected:str = "MLP",
+                linear_layer_type:LinearLayerType = LinearLayerType.MLP,
                 padding:PaddingType=PaddingType.ZERO,
                 kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
                 gamma_initializer: Optional[tf.keras.initializers.Initializer] =  None
@@ -69,8 +69,8 @@ class UNet(tf.keras.Model):
 
         Args:
             number_of_levels (int, optional): Number of down and upsampling levels of the model. Defaults to 3.
-            upsampling (str, optional): Describes the upsampling method used. Defaults to "transpose_conv".
-            downsampling (str, optional): Describes the downsampling method. Defaults to "conv_stride_2".
+            upsampling (UpSampleType, optional): Describes the upsampling method used. Defaults to UpSampleType.TRANSPOSE_CONV.
+            downsampling (DownSampleType, optional): Describes the downsampling method. Defaults to DownSampleType.CONV_STRIDE_2.
             final_activation (str, optional): String literal or tensorflow activation function object to obtain activation
                 function for the model's output activation. Defaults to "hard_sigmoid".
             filters (int, optional): Number of filters for the initial encoder block. Defaults to 64.
@@ -100,8 +100,8 @@ class UNet(tf.keras.Model):
             omit_skips (int, optional): Defines how many layers should not output a skip connection output. Requires
                 `output_skips` to be True. E.g. if `omit_skips = 2`, the first two levels do not output a skip connection,
                 it starts at level 3. Defaults to 0.
-            fully_connected (str, optional): Determines whether 1x1 convolutions are replaced by linear layers, which gives
-                the same result, but linear layers are faster. Option: "MLP" or "1x1_conv". Defaults to "MLP".
+            linear_layer_type (LinearLayerType, optional): Determines whether 1x1 convolutions are replaced by linear layers, which gives
+                the same result, but linear layers are faster. Defaults to LinearLayerType.MLP.
             padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
             kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
                 Defaults to None.
@@ -110,8 +110,8 @@ class UNet(tf.keras.Model):
         """
         super(UNet, self).__init__()
 
-        if fully_connected not in ("MLP", "1x1_conv"):
-            raise ValueError(f"{fully_connected= } is not a supported option.")
+        if linear_layer_type not in (LinearLayerType.MLP, LinearLayerType.CONV_1x1):
+            raise ValueError(f"{linear_layer_type= } is not a supported option.")
 
         self.number_of_levels=number_of_levels
         self.filters=filters
@@ -132,7 +132,7 @@ class UNet(tf.keras.Model):
         self.use_bias=use_bias
         self.use_self_attention=use_self_attention
         self.omit_skips=omit_skips
-        self.fully_connected=fully_connected
+        self.linear_layer_type=linear_layer_type
         self.padding=padding
         self.kernel_initializer=kernel_initializer
         self.gamma_initializer=gamma_initializer
@@ -145,10 +145,10 @@ class UNet(tf.keras.Model):
     #To enable mixed precission support for matplotlib and distributed training and to increase training stability
         self.linear_dtype = tf.keras.layers.Activation("linear", dtype = tf.float32)
 
-    def build(self, input_shape):
-        if self.fully_connected == "MLP":
+    def build(self, input_shape:tf.TensorShape)->None:
+        if self.linear_layer_type == LinearLayerType.MLP:
             self.img_reconstruction = DenseBlock(units = input_shape[-1], use_spec_norm = self.use_spec_norm, number_of_blocks = 1, activation = self.final_activation, apply_final_normalization = False, use_bias = self.use_bias, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer)
-        elif self.fully_connected == "1x1_conv":
+        elif self.linear_layer_type == LinearLayerType.CONV_1x1:
             self.img_reconstruction = Conv2DBlock(filters = input_shape[-1], kernels = 1, split_kernels  = False, number_of_blocks = 1, activation = self.final_activation, use_spec_norm=self.use_spec_norm, apply_final_normalization = False, use_bias = self.use_bias,padding = self.padding, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer)
 
 
@@ -187,12 +187,12 @@ class ResNet(tf.keras.Model):
         d1-->o([Output])
         ```
 
-    Example:
+    **Example:**
     ```python
-    import DeepSaki as dsk
+    import DeepSaki as ds
     import tensorflow as tf
     inputs = tf.keras.layers.Input(shape = (256,256,4))
-    model = tf.keras.Model(inputs=inputs, outputs=dsk.model.ResNet((256,256,4), 5,residual_cardinality=1).call(inputs))
+    model = tf.keras.Model(inputs=inputs, outputs=ds.model.ResNet((256,256,4), 5,residual_cardinality=1).call(inputs))
     model.summary()
     tf.keras.utils.plot_model(model, show_shapes=True, expand_nested=True, show_dtype=True, to_file='ResNet_model.png')
     ```
@@ -211,16 +211,16 @@ class ResNet(tf.keras.Model):
                 residual_cardinality:int = 32,
                 limit_filters:int = 512,
                 n_bottleneck_blocks:int = 5,
-                upsampling:str = "transpose_conv",
-                downsampling:str = "average_pooling",
+                upsampling:UpSampleType = UpSampleType.TRANSPOSE_CONV,
+                downsampling:DownSampleType = DownSampleType.AVG_POOLING,
                 dropout_rate:float = 0.2,
                 use_spec_norm:bool=False,
                 use_bias:bool = True,
                 use_self_attention:bool= False,
-                fully_connected:str = "MLP",
+                linear_layer_type:LinearLayerType = LinearLayerType.MLP,
                 padding:PaddingType=PaddingType.ZERO,
                 kernel_initializer:Optional[tf.keras.initializers.Initializer] = None,
-                gamma_initializer:tf.keras.initializers.Initializer =  HeAlphaUniform()
+                gamma_initializer:Optional[tf.keras.initializers.Initializer] =  None
                 ):
         """Initialize the `ResNet` object.
 
@@ -245,8 +245,8 @@ class ResNet(tf.keras.Model):
             limit_filters (int, optional): Limits the number of filters, which is doubled with every downsampling block.
                 Defaults to 512.
             n_bottleneck_blocks (int, optional): Number of consecutive convolution blocks in the bottleneck. Defaults to 1.
-            upsampling (str, optional): Describes the upsampling method used. Defaults to "transpose_conv".
-            downsampling (str, optional): Describes the downsampling method. Defaults to "conv_stride_2".
+            upsampling (UpSampleType, optional): Describes the upsampling method used. Defaults to UpSampleType.TRANSPOSE_CONV.
+            downsampling (DownSampleType, optional): Describes the downsampling method. Defaults to DownSampleType.AVG_POOLING.
             dropout_rate (float, optional): Probability of the dropout layer. If the preceeding layer has more than one
                 channel, spatial dropout is applied, otherwise standard dropout. Defaults to 0.2.
             use_spec_norm (bool, optional): Applies spectral normalization to convolutional and dense layers. Defaults to
@@ -254,8 +254,9 @@ class ResNet(tf.keras.Model):
             use_bias (bool, optional): Whether convolutions and dense layers include a bias or not. Defaults to True.
             use_self_attention (bool, optional): Determines whether to apply self-attention in the decoder. Defaults to
                 False.
-            fully_connected (str, optional): Determines whether 1x1 convolutions are replaced by linear layers, which gives
-                the same result, but linear layers are faster. Option: "MLP" or "1x1_conv". Defaults to "MLP".
+            linear_layer_type (LinearLayerType, optional): Determines whether 1x1 convolutions are replaced by linear
+                layers, which gives the same result, but linear layers are faster. Option: LinearLayerType.MLP or
+                LinearLayerType.CONV_1x1. Defaults to LinearLayerType.MLP.
             padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
             kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
                 Defaults to None.
@@ -263,8 +264,8 @@ class ResNet(tf.keras.Model):
                 Defaults to None.
         """
         super(ResNet, self).__init__()
-        if fully_connected not in ("MLP", "1x1_conv"):
-            raise ValueError(f"{fully_connected= } is not a supported option.")
+        if linear_layer_type not in (LinearLayerType.MLP, LinearLayerType.CONV_1x1):
+            raise ValueError(f"{linear_layer_type= } is not a supported option.")
 
         self.number_of_levels=number_of_levels
         self.filters=filters
@@ -284,7 +285,7 @@ class ResNet(tf.keras.Model):
         self.use_spec_norm=use_spec_norm
         self.use_bias=use_bias
         self.use_self_attention=use_self_attention
-        self.fully_connected=fully_connected
+        self.linear_layer_type=linear_layer_type
         self.padding=padding
         self.kernel_initializer=kernel_initializer
         self.gamma_initializer=gamma_initializer
@@ -298,9 +299,9 @@ class ResNet(tf.keras.Model):
         self.linear_dtype = tf.keras.layers.Activation("linear", dtype = tf.float32)
 
     def build(self, input_shape:tf.TensorShape)->None:
-        if self.fully_connected == "MLP":
+        if self.linear_layer_type == LinearLayerType.MLP:
             self.img_reconstruction = DenseBlock(units = input_shape[-1], use_spec_norm = self.use_spec_norm, number_of_blocks = 1, activation = self.final_activation, apply_final_normalization = False, use_bias = self.use_bias, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer)
-        elif self.fully_connected == "1x1_conv":
+        elif self.linear_layer_type == LinearLayerType.CONV_1x1:
             self.img_reconstruction = Conv2DBlock(filters = input_shape[-1], kernels = 1, split_kernels  = False, number_of_blocks = 1, activation = self.final_activation, use_spec_norm=self.use_spec_norm, apply_final_normalization = False,use_bias = self.use_bias,padding = self.padding, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer)
 
 

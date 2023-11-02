@@ -16,6 +16,8 @@ from tests.DeepSaki_test.layers_test.mocked_layers import _mock_global_sum_pooli
 from tests.DeepSaki_test.layers_test.mocked_layers import _mock_scalar_gated_self_attention
 from tests.DeepSaki_test.models_test.models_test import CommonModelChecks
 from tests.DeepSaki_test.models_test.models_test import DeepSakiModelChecks
+from DeepSaki.types.layers_enums import LinearLayerType
+
 
 class TestLayoutContentDiscriminator(DeepSakiModelChecks):
     @pytest.fixture()
@@ -57,7 +59,7 @@ class TestLayoutContentDiscriminator(DeepSakiModelChecks):
         with expected_context:
             model_instance.build(input_shape)
 
-    @pytest.mark.parametrize("fully_connected", ["MLP", "1x1_conv"])
+    @pytest.mark.parametrize("linear_layer_type", [LinearLayerType.MLP, LinearLayerType.CONV_1x1])
     @pytest.mark.parametrize("use_self_attention", [True, False])
     @pytest.mark.parametrize("filters", [8, 16])
     @pytest.mark.parametrize(
@@ -67,9 +69,9 @@ class TestLayoutContentDiscriminator(DeepSakiModelChecks):
             tf.TensorShape((8, 256, 256, 4)),
         ],
     )
-    def test_call_correct_output_shape(self, input_shape, use_self_attention, filters, fully_connected):
+    def test_call_correct_output_shape(self, input_shape, use_self_attention, filters, linear_layer_type):
         model_instance = LayoutContentDiscriminator(
-            use_self_attention=use_self_attention, filters=filters, fully_connected=fully_connected
+            use_self_attention=use_self_attention, filters=filters, linear_layer_type=linear_layer_type
         )
         content_output, layout_output = model_instance(tf.ones(shape=input_shape))
         expected_shape_layout_output = [
@@ -162,7 +164,7 @@ class TestUNetDiscriminator(DeepSakiModelChecks):
     def test_call_raises_error_wrong_input_spec(self, model_instance, input_shape, expected_context):
         CommonModelChecks.does_call_raises_error_wrong_input_spec(model_instance, input_shape, expected_context)
 
-    @pytest.mark.parametrize("fully_connected", ["MLP", "1x1_conv"])
+    @pytest.mark.parametrize("linear_layer_type", [LinearLayerType.MLP, LinearLayerType.CONV_1x1])
     @pytest.mark.parametrize("number_of_levels", [2, 3, 4])
     @pytest.mark.parametrize("filters", [8, 16])
     @pytest.mark.parametrize(
@@ -172,9 +174,9 @@ class TestUNetDiscriminator(DeepSakiModelChecks):
             tf.TensorShape((8, 64, 64, 4)),
         ],
     )
-    def test_call_correct_output_shape(self, input_shape, number_of_levels, filters, fully_connected):
+    def test_call_correct_output_shape(self, input_shape, number_of_levels, filters, linear_layer_type):
         model_instance = UNetDiscriminator(
-            number_of_levels=number_of_levels, filters=filters, fully_connected=fully_connected
+            number_of_levels=number_of_levels, filters=filters, linear_layer_type=linear_layer_type
         )
         global_output, decoder_output = model_instance(tf.ones(shape=input_shape))
         expected_shape_decoder_output = [*input_shape[0:-1], 1]

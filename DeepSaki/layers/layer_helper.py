@@ -1,5 +1,3 @@
-"""Collection of functions to simplify the code in various layers."""
-from enum import Enum
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -9,44 +7,8 @@ import tensorflow as tf
 from DeepSaki.initializers.he_alpha import HeAlphaNormal
 from DeepSaki.initializers.he_alpha import HeAlphaUniform
 from DeepSaki.layers.padding import ReflectionPadding2D
-
-class PaddingType(Enum):
-    """`Enum` used to define different types of padding opperations.
-
-    Attributes:
-        ZERO (int): Indicates to apply a zero padding operations.
-        REFLECTION (int): Indicates to apply a reflection padding operation.
-    """
-
-    NONE = 0
-    ZERO = 1
-    REFLECTION = 2
-
-
-class InitializerFunc(Enum):
-    """`Enum` used to define different types of initializer functions.
-
-    Attributes:
-        RANDOM_NORMAL (int): Corresponds to a random normal initializer function.
-        RANDOM_UNIFORM (int): Corresponds to a random uniform initializer function.
-        GLOROT_NORMAL (int): Corresponds to a Glorot normal initializer function.
-        GLOROT_UNIFORM (int): Corresponds to a Glorot uniform initializer function.
-        HE_NORMAL (int): Corresponds to a He normal initializer function.
-        HE_UNIFORM (int): Corresponds to a He uniform initializer function.
-        HE_ALPHA_NORMAL (int): Corresponds to a He Alpha normal initializer function.
-        HE_ALPHA_UNIFORM (int): Corresponds to a He Alpha Uniform initializer function.
-    """
-
-    NONE = 0
-    RANDOM_NORMAL = 1
-    RANDOM_UNIFORM = 2
-    GLOROT_NORMAL = 3
-    GLOROT_UNIFORM = 4
-    HE_NORMAL = 5
-    HE_UNIFORM = 6
-    HE_ALPHA_NORMAL = 7
-    HE_ALPHA_UNIFORM = 8
-
+from DeepSaki.types.layers_enums import InitializerFunc
+from DeepSaki.types.layers_enums import PaddingType
 
 def get_initializer(
     initializer: InitializerFunc,

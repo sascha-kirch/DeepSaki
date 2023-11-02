@@ -38,3 +38,6 @@ for path in sorted(Path(package_name).rglob("__init__.py")):
 
 with mkdocs_gen_files.open("reference/SUMMARY.md", "w") as nav_file:
     nav_file.writelines(nav.build_literate_nav())
+
+# with mkdocs_gen_files.open("reference/DeepSaki/index.md", "a") as nav_file:
+#     nav_file.writelines((nav.build_literate_nav()).replace(package_name,"."))

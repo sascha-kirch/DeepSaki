@@ -7,7 +7,6 @@ from typing import Union
 
 import tensorflow as tf
 
-from DeepSaki.initializers.he_alpha import HeAlphaUniform
 from DeepSaki.layers.layer_composites import Conv2DBlock
 from DeepSaki.layers.layer_composites import DownSampleBlock
 from DeepSaki.layers.layer_composites import ResBlockDown
@@ -15,17 +14,19 @@ from DeepSaki.layers.layer_composites import ResBlockUp
 from DeepSaki.layers.layer_composites import ResidualBlock
 from DeepSaki.layers.layer_composites import ScalarGatedSelfAttention
 from DeepSaki.layers.layer_composites import UpSampleBlock
-from DeepSaki.layers.layer_helper import PaddingType
 from DeepSaki.layers.layer_helper import dropout_func
+from DeepSaki.types.layers_enums import DownSampleType
+from DeepSaki.types.layers_enums import PaddingType
+from DeepSaki.types.layers_enums import UpSampleType
 
 class Encoder(tf.keras.layers.Layer):
     """Combines conv blocks with down sample blocks.
 
     The spatial width is halved with every level while the channel depth is doubled.
-    Can be combined with `dsk.layers.Decoder` and `dsk.layers.Bottleneck` to form an auto encoder model.
+    Can be combined with `ds.layers.Decoder` and `ds.layers.Bottleneck` to form an auto encoder model.
 
     Tipp:
-        Checkout the dsk.models api to find models using this layer.
+        Checkout the ds.models api to find models using this layer.
     """
 
     def __init__(
@@ -33,7 +34,7 @@ class Encoder(tf.keras.layers.Layer):
         number_of_levels: int = 3,
         filters: int = 64,
         limit_filters: int = 1024,
-        downsampling: str = "conv_stride_2",
+        downsampling: DownSampleType = DownSampleType.CONV_STRIDE_2,
         kernels: int = 3,
         split_kernels: bool = False,
         number_of_blocks: int = 2,
@@ -59,7 +60,7 @@ class Encoder(tf.keras.layers.Layer):
             filters (int, optional): Number of filters for the initial encoder block. Defaults to 64.
             limit_filters (int, optional): Limits the number of filters, which is doubled with every downsampling block.
                 Defaults to 1024.
-            downsampling (str, optional): Describes the downsampling method. Defaults to "conv_stride_2".
+            downsampling (DownSampleType, optional): Describes the downsampling method. Defaults to DownSampleType.CONV_STRIDE_2.
             kernels (int, optional): Size of the convolutions kernels. Defaults to 3.
             split_kernels (bool, optional): To decrease the number of parameters, a convolution with the kernel_size
                 `(kernel,kernel)` can be splitted into two consecutive convolutions with the kernel_size `(kernel,1)` and
@@ -113,8 +114,8 @@ class Encoder(tf.keras.layers.Layer):
         self.padding = padding
         self.output_skips = output_skips
         self.use_bias = use_bias
-        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
-        self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+        self.kernel_initializer = kernel_initializer
+        self.gamma_initializer = gamma_initializer
 
         self.input_spec = tf.keras.layers.InputSpec(ndim=4, dtype=tf.float32)
 
@@ -273,10 +274,10 @@ class Bottleneck(tf.keras.layers.Layer):
 
     It is composed of multiple convolution blocks which might have residuals.
 
-    Can be combined with `dsk.layers.Encoder` and `dsk.layers.Decoder` to form an auto encoder model.
+    Can be combined with `ds.layers.Encoder` and `ds.layers.Decoder` to form an auto encoder model.
 
     Tipp:
-        Checkout the dsk.models api to find models using this layer.
+        Checkout the ds.models api to find models using this layer.
 
     """
 
@@ -441,16 +442,16 @@ class Decoder(tf.keras.layers.Layer):
     """Combines conv blocks with up sample blocks.
 
     The spatial width is doubled with every level while the channel depth is halfed.
-    Can be combined with `dsk.layers.Encoder` and `dsk.layers.Bottleneck` to form an auto encoder model.
+    Can be combined with `ds.layers.Encoder` and `ds.layers.Bottleneck` to form an auto encoder model.
 
     Tipp:
-        Checkout the dsk.models api to find models using this layer.
+        Checkout the ds.models api to find models using this layer.
     """
 
     def __init__(
         self,
         number_of_levels: int = 3,
-        upsampling: str = "2D_upsample_and_conv",
+        upsampling: UpSampleType = UpSampleType.RESAMPLE_AND_CONV,
         filters: int = 64,
         limit_filters: int = 1024,
         kernels: int = 3,
@@ -474,7 +475,8 @@ class Decoder(tf.keras.layers.Layer):
         Args:
             number_of_levels (int, optional): Number levels in the decoder. Effectivly the number of convolution and
                 upsample pairs. Defaults to 3.
-            upsampling (str, optional): Describes the upsampling method used. Defaults to "2D_upsample_and_conv".
+            upsampling (UpSampleType, optional): Describes the upsampling method used. Defaults to
+                UpSampleType.RESAMPLE_AND_CONV.
             filters (int, optional): Base size of filters the is doubled with every level of the decoder.
                 Defaults to 64.
             limit_filters (int, optional): Limits the number of filters, which is doubled with every downsampling block.
@@ -524,8 +526,8 @@ class Decoder(tf.keras.layers.Layer):
         self.residual_cardinality = residual_cardinality
         self.padding = padding
 
-        self.kernel_initializer = HeAlphaUniform() if kernel_initializer is None else kernel_initializer
-        self.gamma_initializer = HeAlphaUniform() if gamma_initializer is None else gamma_initializer
+        self.kernel_initializer = kernel_initializer
+        self.gamma_initializer = gamma_initializer
 
         self.input_spec = tf.keras.layers.InputSpec(ndim=4, dtype=tf.float32)
 

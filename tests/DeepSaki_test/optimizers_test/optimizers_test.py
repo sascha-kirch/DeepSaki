@@ -10,6 +10,7 @@ from tensorflow.python.keras.optimizer_v2 import optimizer_v2
 from DeepSaki.optimizers.swats import SwatsAdam
 from DeepSaki.optimizers.swats import SwatsNadam
 
+
 @pytest.mark.parametrize(
     "optimizer_object",
     [

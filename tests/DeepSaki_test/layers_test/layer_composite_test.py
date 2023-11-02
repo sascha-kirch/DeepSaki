@@ -10,7 +10,7 @@ from DeepSaki.layers.layer_composites import Conv2DBlock
 from DeepSaki.layers.layer_composites import Conv2DSplitted
 from DeepSaki.layers.layer_composites import DenseBlock
 from DeepSaki.layers.layer_composites import DownSampleBlock
-from DeepSaki.layers.layer_composites import PaddingType
+from DeepSaki.types.layers_enums import PaddingType, UpSampleType, DownSampleType
 from DeepSaki.layers.layer_composites import ResBlockDown
 from DeepSaki.layers.layer_composites import ResBlockUp
 from DeepSaki.layers.layer_composites import ResidualBlock
@@ -22,7 +22,6 @@ from tests.DeepSaki_test.layers_test.layers_test import DeepSakiLayerChecks
 from tests.DeepSaki_test.layers_test.mocked_layers import _mock_scale_layer
 
 # TODO: ensure I only test inputs relevant for that particular layer and that are relevant for the test. esp. when testing the output shape.
-
 # TODO: change expected output shape to be an equation. In that way it is easier to understand later and it is always the same shape, which is important for layers using this layer.
 
 
@@ -242,7 +241,15 @@ class TestDownSamplingBlock(DeepSakiLayerChecks):
     def downsample_block(self):
         return DownSampleBlock()
 
-    @pytest.mark.parametrize("downsampling", ["average_pooling", "max_pooling", "conv_stride_2", "space_to_depth"])
+    @pytest.mark.parametrize(
+        "downsampling",
+        [
+            DownSampleType.AVG_POOLING,
+            DownSampleType.MAX_POOLING,
+            DownSampleType.CONV_STRIDE_2,
+            DownSampleType.SPACE_TO_DEPTH,
+        ],
+    )
     @pytest.mark.parametrize("kernels", [3, 5])
     @pytest.mark.parametrize("use_bias", [True, False])
     @pytest.mark.parametrize(
@@ -279,10 +286,10 @@ class TestDownSamplingBlock(DeepSakiLayerChecks):
     @pytest.mark.parametrize(
         ("downsampling", "expected_context"),
         [
-            ("conv_stride_2", does_not_raise()),
-            ("max_pooling", does_not_raise()),
-            ("average_pooling", does_not_raise()),
-            ("space_to_depth", does_not_raise()),
+            (DownSampleType.CONV_STRIDE_2, does_not_raise()),
+            (DownSampleType.MAX_POOLING, does_not_raise()),
+            (DownSampleType.AVG_POOLING, does_not_raise()),
+            (DownSampleType.SPACE_TO_DEPTH, does_not_raise()),
             ("Any other String", pytest.raises(ValueError)),
         ],
     )
@@ -297,7 +304,9 @@ class TestUpSamplingBlock(DeepSakiLayerChecks):
     def upsample_block(self):
         return UpSampleBlock()
 
-    @pytest.mark.parametrize("upsampling", ["2D_upsample_and_conv", "transpose_conv", "depth_to_space"])
+    @pytest.mark.parametrize(
+        "upsampling", [UpSampleType.RESAMPLE_AND_CONV, UpSampleType.TRANSPOSE_CONV, UpSampleType.DEPTH_TO_SPACE]
+    )
     @pytest.mark.parametrize("kernels", [3, 5])
     @pytest.mark.parametrize("use_bias", [True, False])
     @pytest.mark.parametrize(
@@ -334,9 +343,9 @@ class TestUpSamplingBlock(DeepSakiLayerChecks):
     @pytest.mark.parametrize(
         ("upsampling", "expected_context"),
         [
-            ("2D_upsample_and_conv", does_not_raise()),
-            ("transpose_conv", does_not_raise()),
-            ("depth_to_space", does_not_raise()),
+            (UpSampleType.RESAMPLE_AND_CONV, does_not_raise()),
+            (UpSampleType.TRANSPOSE_CONV, does_not_raise()),
+            (UpSampleType.DEPTH_TO_SPACE, does_not_raise()),
             ("Any other String", pytest.raises(ValueError)),
         ],
     )

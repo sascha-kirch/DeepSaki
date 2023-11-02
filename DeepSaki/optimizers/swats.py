@@ -1,17 +1,9 @@
-"""The SWATS Optimizer is an optimizer that starts with ADAM and switches to SGD after a certain epoch.
-
-SWATS Paper: http://arxiv.org/abs/1712.07628
-
-This implementation is based on tensorflow's ADAM, SGD and NADAM optimizer
-TensorFlow ADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/adam.py
-Tensorflow SGD: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/gradient_descent.py
-Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/nadam.py
-"""
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from enum import Enum
+from enum import auto
 from typing import Any
 from typing import Dict
 from typing import List
@@ -27,7 +19,29 @@ from tensorflow.python.ops import state_ops
 from tensorflow.python.ops import variables as tf_variables
 from tensorflow.python.training import gen_training_ops
 
+class _CurrentOptimizer(Enum):
+    SGD = auto()
+    ADAM = auto()
+    NADAM = auto()
+
+
 class SwatsAdam(optimizer_v2.OptimizerV2):
+    """Initializer that can switch from ADAM to SGD and vice versa.
+
+    SWATS_ADAM is inspired by the [SWATS](http://arxiv.org/abs/1712.07628) (switching from adam to sgd) initializer.
+    During training, the optimizer can be changed by calling `switch_optimizer()` uppon the optimizer instance.
+
+    This optimizer combines tensorflow's [ADAM](https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/adam.py)
+    and [SGD](https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/gradient_descent.py) implementations.
+
+    **Example:**
+    ```python
+    import DeepSaki as ds
+    optimizer = ds.optimizer.SWATS_ADAM(learning_rate=disc_learning_rate, beta_1=0.5, amsgrad=False, momentum=0.9, nesterov=False)
+    optimizer.switch_optimizer()
+    ```
+    """
+
     _HAS_AGGREGATE_GRAD = True
 
     def __init__(
@@ -39,17 +53,33 @@ class SwatsAdam(optimizer_v2.OptimizerV2):
         amsgrad: bool = False,
         momentum: float = 0.0,
         nesterov: bool = False,
-        name: str = "SwatsAdam",
         **kwargs: Any,
     ) -> None:
-        super(SwatsAdam, self).__init__(name, **kwargs)
+        """Initializes the `SwatsAdam` optimizer.
+
+        Args:
+            learning_rate (float, optional): Learning rate of the optimization step. Defaults to 0.001.
+            beta_1 (float, optional): The exponential decay rate for the 1st moment estimates. Defaults to 0.9.
+            beta_2 (float, optional): The exponential decay rate for the 2nd moment estimates. Defaults to 0.999.
+            epsilon (float, optional): A small constant for numerical stability. Defaults to 1e-7.
+            amsgrad (bool, optional): Whether to apply AMSGrad variant of this algorithm from the paper "On the
+                Convergence of Adam and beyond". Defaults to False.
+            momentum (float, optional):  Hyperparameter >= 0 that accelerates gradient descent in the relevant direction
+                and dampens oscillations. Vanilla gradient descent means no momentum. Defaults to 0.0.
+            nesterov (bool, optional): Whether to apply Nesterov momentum. Defaults to False.
+            kwargs: keyword arguments passed to the parent class.
+
+        Raises:
+            ValueError: if `momentum` is not provided in an expected form.
+        """
+        super(SwatsAdam, self).__init__(name="SwatsAdam", **kwargs)
         self._set_hyper("learning_rate", kwargs.get("lr", learning_rate))
         self._set_hyper("decay", self._initial_decay)
         self._set_hyper("beta_1", beta_1)
         self._set_hyper("beta_2", beta_2)
         self.epsilon = epsilon or backend_config.epsilon()
         self.amsgrad = amsgrad
-        self.currentOptimizer = "adam"
+        self.currentOptimizer = _CurrentOptimizer.ADAM
 
         self._momentum = False
         if isinstance(momentum, ops.Tensor) or callable(momentum) or momentum > 0:
@@ -59,6 +89,13 @@ class SwatsAdam(optimizer_v2.OptimizerV2):
         self._set_hyper("momentum", momentum)
 
         self.nesterov = nesterov
+
+    def switch_optimizer(self) -> None:
+        """Switches the current optimizer to either ADAM or SGD, depending on what was previously set."""
+        if self.currentOptimizer == _CurrentOptimizer.ADAM:
+            self.currentOptimizer = _CurrentOptimizer.SGD
+        else:
+            self.currentOptimizer = _CurrentOptimizer.ADAM
 
     def _create_slots(self, var_list: List[tf.Variable]) -> None:
         # Create slots for the first and second moments.
@@ -114,7 +151,7 @@ class SwatsAdam(optimizer_v2.OptimizerV2):
             var_device, var_dtype
         )
 
-        if self.currentOptimizer == "sgd":
+        if self.currentOptimizer == _CurrentOptimizer.SGD:
             if self._momentum:
                 momentum_var = self.get_slot(var, "momentum")
                 return gen_training_ops.ResourceApplyKerasMomentum(
@@ -131,7 +168,7 @@ class SwatsAdam(optimizer_v2.OptimizerV2):
                 var=var.handle, alpha=coefficients["lr_t"], delta=grad, use_locking=self._use_locking
             )
 
-        if self.currentOptimizer == "adam":
+        if self.currentOptimizer == _CurrentOptimizer.ADAM:
             m = self.get_slot(var, "m")
             v = self.get_slot(var, "v")
             if not self.amsgrad:
@@ -173,7 +210,7 @@ class SwatsAdam(optimizer_v2.OptimizerV2):
             var_device, var_dtype
         )
 
-        if self.currentOptimizer == "sgd":
+        if self.currentOptimizer == _CurrentOptimizer.SGD:
             momentum_var = self.get_slot(var, "momentum")
             return gen_training_ops.ResourceSparseApplyKerasMomentum(
                 var=var.handle,
@@ -186,7 +223,7 @@ class SwatsAdam(optimizer_v2.OptimizerV2):
                 use_nesterov=self.nesterov,
             )
 
-        if self.currentOptimizer == "adam":
+        if self.currentOptimizer == _CurrentOptimizer.ADAM:
             m = self.get_slot(var, "m")
             m_scaled_g_values = grad * coefficients["one_minus_beta_1_t"]
             m_t = state_ops.assign(m, m * coefficients["beta_1_t"], use_locking=self._use_locking)
@@ -242,6 +279,22 @@ class SwatsAdam(optimizer_v2.OptimizerV2):
 
 
 class SwatsNadam(optimizer_v2.OptimizerV2):
+    """Initializer that can switch from NADAM to SGD and vice versa.
+
+    SWATS_NADAM is inspired by the [SWATS](http://arxiv.org/abs/1712.07628) (switching from adam to sgd) initializer.
+    During training, the optimizer can be changed by calling `switch_optimizer()` uppon the optimizer instance.
+
+    This optimizer combines tensorflow's [NADAM](https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/nadam.py)
+    and [SGD](https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/gradient_descent.py) implementations.
+
+    **Example:**
+    ```python
+    import DeepSaki as ds
+    optimizer = ds.optimizer.SWATS_NADAM(learning_rate=disc_learning_rate, beta_1=0.5, momentum=0.9, nesterov=False)
+    optimizer.switch_optimizer()
+    ```
+    """
+
     _HAS_AGGREGATE_GRAD = True
 
     def __init__(
@@ -252,16 +305,30 @@ class SwatsNadam(optimizer_v2.OptimizerV2):
         epsilon: float = 1e-7,
         momentum: float = 0.0,
         nesterov: bool = False,
-        name: str = "SwatsNadam",
         **kwargs: Any,
     ) -> None:
-        super(SwatsNadam, self).__init__(name, **kwargs)
+        """Initializes the `SwatsNadam` optimizer.
+
+        Args:
+            learning_rate (float, optional): Learning rate of the optimization step. Defaults to 0.001.
+            beta_1 (float, optional): The exponential decay rate for the 1st moment estimates. Defaults to 0.9.
+            beta_2 (float, optional): The exponential decay rate for the 2nd moment estimates. Defaults to 0.999.
+            epsilon (float, optional): A small constant for numerical stability. Defaults to 1e-7.
+            momentum (float, optional):  Hyperparameter >= 0 that accelerates gradient descent in the relevant direction
+                and dampens oscillations. Vanilla gradient descent means no momentum. Defaults to 0.0.
+            nesterov (bool, optional): Whether to apply Nesterov momentum. Defaults to False.
+            kwargs: keyword arguments passed to the parent class.
+
+        Raises:
+            ValueError: if `momentum` is not provided in an expected form.
+        """
+        super(SwatsNadam, self).__init__(name="SwatsNadam", **kwargs)
         self._set_hyper("learning_rate", kwargs.get("lr", learning_rate))
         self._set_hyper("decay", self._initial_decay)
         self._set_hyper("beta_1", beta_1)
         self._set_hyper("beta_2", beta_2)
         self.epsilon = epsilon or backend_config.epsilon()
-        self.currentOptimizer = "nadam"
+        self.currentOptimizer = _CurrentOptimizer.NADAM
 
         self._momentum = False
         if isinstance(momentum, ops.Tensor) or callable(momentum) or momentum > 0:
@@ -272,6 +339,13 @@ class SwatsNadam(optimizer_v2.OptimizerV2):
 
         self.nesterov = nesterov
         self._m_cache = None
+
+    def switch_optimizer(self) -> None:
+        """Switches the current optimizer to either ADAM or SGD, depending on what was previously set."""
+        if self.currentOptimizer == _CurrentOptimizer.NADAM:
+            self.currentOptimizer = _CurrentOptimizer.SGD
+        else:
+            self.currentOptimizer = _CurrentOptimizer.NADAM
 
     def _create_slots(self, var_list: List[tf.Variable]) -> None:
         # Create slots for the first and second moments.
@@ -346,7 +420,7 @@ class SwatsNadam(optimizer_v2.OptimizerV2):
         )
 
         # SGD Optimizer!
-        if self.currentOptimizer == "sgd":
+        if self.currentOptimizer == _CurrentOptimizer.SGD:
             if self._momentum:
                 momentum_var = self.get_slot(var, "momentum")
                 return gen_training_ops.ResourceApplyKerasMomentum(
@@ -362,7 +436,7 @@ class SwatsNadam(optimizer_v2.OptimizerV2):
                 var=var.handle, alpha=coefficients["lr_t"], delta=grad, use_locking=self._use_locking
             )
         # Nadam Optimizer!
-        if self.currentOptimizer == "nadam":
+        if self.currentOptimizer == _CurrentOptimizer.NADAM:
             m = self.get_slot(var, "m")
             v = self.get_slot(var, "v")
             g_prime = grad / coefficients["one_minus_m_schedule_new"]
@@ -385,7 +459,7 @@ class SwatsNadam(optimizer_v2.OptimizerV2):
         )
 
         # SGD Part
-        if self.currentOptimizer == "sgd":
+        if self.currentOptimizer == _CurrentOptimizer.SGD:
             momentum_var = self.get_slot(var, "momentum")
             return gen_training_ops.ResourceSparseApplyKerasMomentum(
                 var=var.handle,
@@ -398,7 +472,7 @@ class SwatsNadam(optimizer_v2.OptimizerV2):
                 use_nesterov=self.nesterov,
             )
         # Nadam Part
-        if self.currentOptimizer == "nadam":
+        if self.currentOptimizer == _CurrentOptimizer.NADAM:
             m = self.get_slot(var, "m")
             v = self.get_slot(var, "v")
 

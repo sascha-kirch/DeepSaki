@@ -7,6 +7,7 @@ import tensorflow as tf
 
 from DeepSaki.constraints.constraints import NonNegative
 
+
 class TestNonNegativeConstraint:
     @pytest.fixture(scope="class")
     def non_negative_constraint(self):

@@ -13,6 +13,8 @@ from tests.DeepSaki_test.layers_test.mocked_layers import _mock_decoder
 from tests.DeepSaki_test.layers_test.mocked_layers import _mock_encoder
 from tests.DeepSaki_test.models_test.models_test import CommonModelChecks
 from tests.DeepSaki_test.models_test.models_test import DeepSakiModelChecks
+from DeepSaki.types.layers_enums import LinearLayerType
+
 
 @pytest.mark.parametrize(("autoencoder_model"), [UNet, ResNet])
 class TestGenericAutoEncoder(DeepSakiModelChecks):
@@ -42,7 +44,7 @@ class TestGenericAutoEncoder(DeepSakiModelChecks):
     def test_call_raises_error_wrong_input_spec(self, model_instance, input_shape, expected_context):
         CommonModelChecks.does_call_raises_error_wrong_input_spec(model_instance, input_shape, expected_context)
 
-    @pytest.mark.parametrize("fully_connected", ["MLP", "1x1_conv"])
+    @pytest.mark.parametrize("linear_layer_type", [LinearLayerType.MLP, LinearLayerType.CONV_1x1])
     @pytest.mark.parametrize("number_of_levels", [2, 3, 4])
     @pytest.mark.parametrize("filters", [8, 16])
     @pytest.mark.parametrize(
@@ -53,21 +55,21 @@ class TestGenericAutoEncoder(DeepSakiModelChecks):
         ],
     )
     def test_call_correct_output_shape(
-        self, autoencoder_model, input_shape, number_of_levels, filters, fully_connected
+        self, autoencoder_model, input_shape, number_of_levels, filters, linear_layer_type
     ):
         model_instance = autoencoder_model(
-            number_of_levels=number_of_levels, filters=filters, fully_connected=fully_connected
+            number_of_levels=number_of_levels, filters=filters, linear_layer_type=linear_layer_type
         )
         CommonModelChecks.has_call_correct_output_shape(model_instance, input_shape, input_shape)
 
     @pytest.mark.parametrize(
-        ("fully_connected", "expected_context"),
+        ("linear_layer_type", "expected_context"),
         [
-            ("MLP", does_not_raise()),
-            ("1x1_conv", does_not_raise()),
+            (LinearLayerType.MLP, does_not_raise()),
+            (LinearLayerType.CONV_1x1, does_not_raise()),
             ("Any other String", pytest.raises(ValueError)),
         ],
     )
-    def test_init_raises_wrong_fully_connected_type(self, autoencoder_model, fully_connected, expected_context):
+    def test_init_raises_wrong_linear_layer_type_type(self, autoencoder_model, linear_layer_type, expected_context):
         with expected_context:
-            _ = autoencoder_model(number_of_levels=2, filters=8, fully_connected=fully_connected)
+            _ = autoencoder_model(number_of_levels=2, filters=8, linear_layer_type=linear_layer_type)
