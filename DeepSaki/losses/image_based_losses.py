@@ -1,4 +1,3 @@
-"""Loss functions designed for image-like data of the shape (`batch`, `height`, `width`, `channels`)."""
 from abc import ABC
 from abc import abstractmethod
 from typing import Callable

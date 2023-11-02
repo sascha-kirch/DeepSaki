@@ -8,7 +8,7 @@ from typing import Tuple
 import numpy as np
 import tensorflow as tf
 
-from DeepSaki.initializers.initializer_helper import make_initializer_complex
+from DeepSaki.initializers.complex_initializer import ComplexInitializer
 from DeepSaki.types.layers_enums import FrequencyFilter
 from DeepSaki.types.layers_enums import MultiplicationType
 
@@ -327,8 +327,8 @@ class FourierFilter2D(FourierLayer):
             tf.keras.initializers.RandomUniform(-0.05, 0.05) if filter_initializer is None else filter_initializer
         )
         bias_initializer = tf.keras.initializers.Zeros() if bias_initializer is None else bias_initializer
-        self.filter_initializer = make_initializer_complex(filter_initializer)
-        self.bias_initializer = make_initializer_complex(bias_initializer)
+        self.filter_initializer = ComplexInitializer(filter_initializer)
+        self.bias_initializer = ComplexInitializer(bias_initializer)
         self.multiply = self._get_multiplication_function(multiplication_type)
 
         self.input_spec = tf.keras.layers.InputSpec(ndim=4, dtype=tf.complex64)

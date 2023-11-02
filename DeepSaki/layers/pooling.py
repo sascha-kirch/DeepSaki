@@ -1,4 +1,4 @@
-"""Collection of pooling layer operations to reduce the spatial dimensionality of a feature map."""
+
 from typing import Any
 from typing import Dict
 

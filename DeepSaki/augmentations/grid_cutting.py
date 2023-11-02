@@ -1,4 +1,3 @@
-"""Cutting operations performed on batched 3D grid-shaped data types like images."""
 from typing import Optional
 from typing import Tuple
 

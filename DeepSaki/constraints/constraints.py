@@ -1,12 +1,3 @@
-"""Collection of custom constraints.
-
-Description of TensorFlow's `tf.keras.constraints.Constraint` base class:
-    A Constraint instance works like a stateless function. Users who subclass this class should override the
-    `__call__` method, which takes a single weight parameter and return a projected version of that parameter (e.g.
-    normalized or clipped). Constraints can be used with various Keras layers via the `kernel_constraint` or
-    `bias_constraint` arguments.
-"""
-
 import tensorflow as tf
 
 class NonNegative(tf.keras.constraints.Constraint):

@@ -110,7 +110,7 @@ class Conv2DSplitted(tf.keras.layers.Layer):
 
 
 # TODO: Normalization should be setable
-# Todo: how to deal with dropout func?
+# TODO: how to deal with dropout func?
 class Conv2DBlock(tf.keras.layers.Layer):
     """Wraps a two-dimensional convolution into a more complex building block."""
 

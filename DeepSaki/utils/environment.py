@@ -1,10 +1,3 @@
-"""Collection of methods for setting-up the compute environment.
-
-Tips:
-    * Overview on [distributed training with TensorFlow](https://www.tensorflow.org/api_docs/python/tf/distribute).
-    * Tutorial of using [tf.distrubute](https://www.tensorflow.org/tutorials/distribute/custom_training) on custom
-        training.
-"""
 import logging
 from typing import List
 from typing import Optional

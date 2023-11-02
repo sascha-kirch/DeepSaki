@@ -1,4 +1,4 @@
-"""Collection of functions to simplify the code in various layers."""
+
 from typing import List
 from typing import Optional
 from typing import Tuple

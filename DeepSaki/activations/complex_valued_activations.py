@@ -1,5 +1,3 @@
-"""Activation functions applicable to complex-valued and real-valued inputs."""
-
 from typing import Any
 from typing import Dict
 from typing import Union
@@ -7,7 +5,22 @@ from typing import Union
 import tensorflow as tf
 
 class ComplexActivation(tf.keras.layers.Layer):
-    """Wrapper to apply a given `activation` to a complex input individually for the real and imaginary part."""
+    """Wrapper to apply a given `activation` to a complex input individually for the real and imaginary part.
+
+    **Example:**
+    ```python hl_lines="4"
+    import DeepSaki as ds
+    import tensorflow as tf
+
+    activation = tf.keras.layers.LeakyReLU(alpha=0.3)
+
+    complex_activation = ds.activations.ComplexActivation(activation=activation)
+    complex_tensor = tf.complex(real=[-1.0,1.0], imag=[-2.0,2.0])
+    x = complex_activation(complex_tensor)
+    print(x)
+    #output: <tf.Tensor: shape=(2,), dtype=complex64, numpy=array([-0.3-0.6j,  1. +2.j ], dtype=complex64)>
+    ```
+    """
 
     def __init__(self, activation: tf.keras.layers.Layer, **kwargs: Any) -> None:
         """Initialize ComplexActivation.

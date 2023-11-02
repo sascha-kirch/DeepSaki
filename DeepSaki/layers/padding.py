@@ -1,4 +1,4 @@
-"""Collection of padding layer operations."""
+
 from typing import Any
 from typing import Callable
 from typing import Dict
