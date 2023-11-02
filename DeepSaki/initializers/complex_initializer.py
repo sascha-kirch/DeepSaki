@@ -1,5 +1,5 @@
-from typing import Optional
 from typing import List
+from typing import Optional
 
 import tensorflow as tf
 
@@ -34,10 +34,12 @@ class ComplexInitializer(tf.keras.initializers.Initializer):
     layer = tf.keras.layers.Dense(3, kernel_initializer=initializer)
     ```
     """
-    def __init__(self,
-                initializer_real: tf.keras.initializers.Initializer,
-                initializer_imag: Optional[tf.keras.initializers.Initializer]=None,
-                ) -> None:
+
+    def __init__(
+        self,
+        initializer_real: tf.keras.initializers.Initializer,
+        initializer_imag: Optional[tf.keras.initializers.Initializer] = None,
+    ) -> None:
         """Initializes the `ComplexInitializer` instance.
 
         Args:
@@ -50,7 +52,11 @@ class ComplexInitializer(tf.keras.initializers.Initializer):
         self.initializer_real = initializer_real
         self.initializer_imag = initializer_imag if initializer_imag is not None else initializer_real
 
-    def __call__(self,shape: List[int], dtype: tf.DType = tf.complex64, )->tf.Tensor:
+    def __call__(
+        self,
+        shape: List[int],
+        dtype: tf.DType = tf.complex64,
+    ) -> tf.Tensor:
         """Calls the initializer.
 
         Args:

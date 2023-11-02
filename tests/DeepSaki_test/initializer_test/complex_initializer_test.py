@@ -10,7 +10,8 @@ from DeepSaki.initializers.complex_initializer import ComplexInitializer
 
 @pytest.mark.parametrize(
     ("initializer_imag"),
-    [   None,
+    [
+        None,
         tf.initializers.HeNormal(seed=123),
         tf.keras.initializers.RandomNormal(seed=123),
         tf.initializers.GlorotUniform(seed=123),
@@ -31,17 +32,18 @@ class TestComplexInitializer:
         complex_initializer = ComplexInitializer(initializer_real, initializer_imag)
         return complex_initializer(shape, dtype)
 
-    def test_initializer_values_complex(self, initializer_real,initializer_imag, dtype, shape):
-        values = self._get_initializer_values(initializer_real,initializer_imag, dtype, shape)
+    def test_initializer_values_complex(self, initializer_real, initializer_imag, dtype, shape):
+        values = self._get_initializer_values(initializer_real, initializer_imag, dtype, shape)
         assert values.dtype == dtype
 
-    def test_initializer_values_correct_shape(self, initializer_real,initializer_imag, dtype, shape):
-        values = self._get_initializer_values(initializer_real,initializer_imag, dtype, shape)
+    def test_initializer_values_correct_shape(self, initializer_real, initializer_imag, dtype, shape):
+        values = self._get_initializer_values(initializer_real, initializer_imag, dtype, shape)
         assert values.shape == shape
 
-    def test_real_imag_same_if_single_initializer(self, initializer_real,initializer_imag, dtype, shape):
-        values = self._get_initializer_values(initializer_real,initializer_imag, dtype, shape)
+    def test_real_imag_same_if_single_initializer(self, initializer_real, initializer_imag, dtype, shape):
+        values = self._get_initializer_values(initializer_real, initializer_imag, dtype, shape)
 
         assert tf.math.reduce_all(
-            (tf.math.real(values).numpy() == pytest.approx(tf.math.imag(values).numpy(), 0.01))==(initializer_imag is None)
-            )
+            (tf.math.real(values).numpy() == pytest.approx(tf.math.imag(values).numpy(), 0.01))
+            == (initializer_imag is None)
+        )

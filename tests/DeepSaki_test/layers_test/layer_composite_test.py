@@ -24,6 +24,7 @@ from tests.DeepSaki_test.layers_test.mocked_layers import _mock_scale_layer
 # TODO: ensure I only test inputs relevant for that particular layer and that are relevant for the test. esp. when testing the output shape.
 # TODO: change expected output shape to be an equation. In that way it is easier to understand later and it is always the same shape, which is important for layers using this layer.
 
+
 class TestConv2DSplitted(DeepSakiLayerChecks):
     @pytest.fixture()
     def conv_2d_splitted(self):
