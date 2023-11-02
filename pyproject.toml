@@ -38,7 +38,7 @@ dynamic = ["version","readme","dependencies"]
 Homepage = "https://sascha-kirch.github.io/"
 Documentation = "https://sascha-kirch.github.io/DeepSaki"
 Repository = "https://github.com/sascha-kirch/DeepSaki"
-#Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
+Changelog = "https://sascha-kirch.github.io/DeepSaki/latest/CHANGELOG/"
 
 [tool.setuptools]
 platforms = ["unix", "linux", "osx", "cygwin", "win32"]
@@ -46,7 +46,7 @@ packages = ["DeepSaki"]
 
 [tool.setuptools.dynamic]
 version = {attr = "DeepSaki.__version__"}
-readme = {file = "README.md"}
+readme = {file = "./docs/README.md"}
 dependencies = {file = ["./environment/requirements.txt"]}
 
 [tool.pytest.ini_options]
