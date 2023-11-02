@@ -1,13 +1,15 @@
 # https://www.mkdocs.org/user-guide/configuration/
 site_name: DeepSaki
 site_author: "Sascha Kirch"
-site_description: "Custom deep learning code for TensorFlow."
+site_description: "DeepSaki - Deep Learning Extension for TensorFlow"
 site_url: https://sascha-kirch.github.io/DeepSaki
 
 repo_url: https://github.com/sascha-kirch/DeepSaki
 repo_name: sascha-kirch/DeepSaki
 
 theme:
+  logo: assets/images/ds_logo_small_white.png
+  favicon: assets/images/ds_logo_small.png
   icon:
     repo: fontawesome/brands/github
   features:
@@ -18,22 +20,23 @@ theme:
     - navigation.footer
     - toc.follow
     - toc.integrate
+    - content.code.copy
   name: "material"
   # https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/
   palette:
     - media: "(prefers-color-scheme: light)"
-      primary: "blue"
-      accent: "grey"
+      primary: deep orange
+      accent: deep orange
       scheme: default
       toggle:
-        icon: material/toggle-switch-off-outline
+        icon: material/brightness-7
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
-      primary: "indigo"
-      accent: "white"
+      primary: deep orange
+      accent: deep orange
       scheme: slate
       toggle:
-        icon: material/toggle-switch
+        icon: material/brightness-4
         name: Switch to light mode
 
 # https://mkdocstrings.github.io/recipes/#generate-pages-on-the-fly
@@ -91,10 +94,13 @@ markdown_extensions:
   - toc:
       permalink: true
       toc_depth: 2
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
 nav:
-  - "Start": README.md
+  - Start: README.md
   - Code Reference: reference/
-  - "Contribute": contribute.md
+  - Contribute: CONTRIBUTE.md
+  - Changelog: CHANGELOG.md
 
 extra_javascript:
   - javascripts/katex.js

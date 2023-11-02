@@ -15,7 +15,7 @@ authors = [
 maintainers = [
     {name = "Sascha Kirch", email = "susch130993@googlemail.com"},
 ]
-description = "Collection of useful deep learning custom implementations to extend TensorFlow."
+description = "DeepSaki is an add-on to TensorFlow. It provides a variaty of custom classes ranging from activation functions to entire models, helper functions to facilitate connectiong to your, compute HW and many more!"
 keywords = ["deeplearning", "machinelearning", "tensorflow","TPU"]
 license = {file = "LICENSE"}
 requires-python = ">=3.11"
