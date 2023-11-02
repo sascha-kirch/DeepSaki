@@ -46,7 +46,7 @@ packages = ["DeepSaki"]
 
 [tool.setuptools.dynamic]
 version = {attr = "DeepSaki.__version__"}
-readme = {file = "./docs/README.md"}
+readme = {file = "./docs/README.md",content-type = "text/markdown"}
 dependencies = {file = ["./environment/requirements.txt"]}
 
 [tool.pytest.ini_options]
