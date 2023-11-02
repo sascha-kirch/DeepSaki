@@ -1,5 +1,5 @@
 <p align="center">
- <img src="assets/images/ds_logo.png"  alt="results_in_the_wild_1" width = 80% >
+ <img src="assets/images/ds_logo.png"  alt="deepsaki-logo" width = 80% >
 </p>
 
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
@@ -57,7 +57,7 @@ pip install DeepSaki
 ```
 
 ## :handshake: Contribute to DeepSaki
-I highly encourage you to contribute to DeepSaki. Checkout our [contribution guide](CONTRIBUTE.md) to get started. 
+I highly encourage you to contribute to DeepSaki. Checkout our [contribution guide](https://sascha-kirch.github.io/DeepSaki/latest/CONTRIBUTE/) to get started. 
 
 ## :star: Star History
 [![Star History Chart](https://api.star-history.com/svg?repos=sascha-kirch/DeepSaki&type=Date)](https://star-history.com/#sascha-kirch/DeepSaki&Date)
