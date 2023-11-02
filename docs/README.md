@@ -2,7 +2,7 @@
  <img src="assets/images/ds_logo.png"  alt="deepsaki-logo" width = 80% >
 </p>
 
-![Python](https://img.shields.io/badge/python-3.11+-blue)
+![Python](https://img.shields.io/badge/python-3.10+-blue)
 ![GitHub](https://img.shields.io/github/license/sascha-kirch/deepsaki)
 
 **Main-Branch:**<br>
@@ -21,7 +21,7 @@ DeepSaki is an add-on to [TensorFlow](https://github.com/tensorflow/tensorflow).
 
 The project started as fun project to learn and to collect the code snippets I was using in my projects. Now it has been transformed into a modern SW package featuring CI/CD and a documentation. 
 
-**:medal: Some highlights:**
+**:medal_military: Some highlights:**
 
 - Layers to transform data into the frequency domain using FFTs, like [FFT2D](https://sascha-kirch.github.io/DeepSaki/latest/reference/DeepSaki/layers/#DeepSaki.layers.fourier_layer.FFT2D) and [FFT3D](https://sascha-kirch.github.io/DeepSaki/latest/reference/DeepSaki/layers/#DeepSaki.layers.fourier_layer.FFT3D).
 - Layers to perform calculations in the frequency domain supporting complex values like [FourierPooling2D](https://sascha-kirch.github.io/DeepSaki/latest/reference/DeepSaki/layers/#DeepSaki.layers.fourier_layer.FourierPooling2D).
