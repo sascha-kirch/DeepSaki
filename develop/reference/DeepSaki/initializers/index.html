@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Custom deep learning code for TensorFlow.">
+        <meta name="description" content="DeepSaki - Deep Learning Extension for TensorFlow">
       
       
         <meta name="author" content="Sascha Kirch">
@@ -21,7 +21,7 @@
         <link rel="next" href="../layers/">
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/ds_logo_small.png">
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.7">
     
     
@@ -73,7 +73,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="grey">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-orange" data-md-color-accent="deep-orange">
   
     
     
@@ -107,8 +107,7 @@
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../../.." title="DeepSaki" class="md-header__button md-logo" aria-label="DeepSaki" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <img src="../../../assets/images/ds_logo_small_white.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -138,20 +137,20 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="grey"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-orange" data-md-color-accent="deep-orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
       </label>
     
   
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="white"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-orange" data-md-color-accent="deep-orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
       </label>
     
   
@@ -255,6 +254,40 @@
   
 
       
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../CONTRIBUTE/" class="md-tabs__link">
+        
+  
+    
+  
+  Contribute
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../CHANGELOG/" class="md-tabs__link">
+        
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
     </ul>
   </div>
 </nav>
@@ -287,8 +320,7 @@
   <label class="md-nav__title" for="__drawer">
     <a href="../../.." title="DeepSaki" class="md-nav__button md-logo" aria-label="DeepSaki" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <img src="../../../assets/images/ds_logo_small_white.png" alt="logo">
 
     </a>
     DeepSaki
@@ -543,8 +575,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#DeepSaki.initializers.initializer_helper.make_initializer_complex" class="md-nav__link">
-    make_initializer_complex()
+  <a href="#DeepSaki.initializers.complex_initializer.ComplexInitializer" class="md-nav__link">
+    ComplexInitializer
   </a>
   
 </li>
@@ -644,6 +676,26 @@
   
   
     <li class="md-nav__item">
+      <a href="../types/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    types
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../utils/" class="md-nav__link">
         
   
@@ -669,6 +721,44 @@
           </ul>
         </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribute
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CHANGELOG/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -699,10 +789,6 @@
 
 
   <div class="doc doc-contents first">
-  
-      <p>Set of initializers based on the <a href="https://arxiv.org/abs/1502.01852">He initializer</a>.</p>
-<p>In contrast to the tensorflow implementation, an alpha value can be set to consider the non-zero slope of a
-LeakyReLU activation.</p>
 
   
 
@@ -786,16 +872,16 @@ alpha value of the LeakyReLU activation. Defaults to 0.3.</p>
 
                 <details class="quote">
                   <summary>Source code in <code>DeepSaki/initializers/he_alpha.py</code></summary>
-                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">25</span>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
 <span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Dunder method to initialize HeAlpha object.</span>
 
 <span class="sd">    Args:</span>
@@ -916,19 +1002,19 @@ subclass.</p>
 
           <details class="quote">
             <summary>Source code in <code>DeepSaki/initializers/he_alpha.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">40</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span>
 <span class="normal">43</span>
 <span class="normal">44</span>
 <span class="normal">45</span>
 <span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">DType</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="normal">47</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">DType</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract dunder method to call the object instance that must be overridden by child classes.</span>
 
 <span class="sd">    Args:</span>
@@ -1021,7 +1107,12 @@ subclass.</p>
 
           <details class="quote">
             <summary>Source code in <code>DeepSaki/initializers/he_alpha.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">62</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
 <span class="normal">63</span>
 <span class="normal">64</span>
 <span class="normal">65</span>
@@ -1040,12 +1131,7 @@ subclass.</p>
 <span class="normal">78</span>
 <span class="normal">79</span>
 <span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_fans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="normal">81</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_fans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the number of input and output units for a weight shape.</span>
 
 <span class="sd">    Args:</span>
@@ -1120,13 +1206,13 @@ subclass.</p>
 
           <details class="quote">
             <summary>Source code in <code>DeepSaki/initializers/he_alpha.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize object and return dictionary containing member variables.</span>
 
 <span class="sd">    Returns:</span>
@@ -1225,15 +1311,15 @@ alpha value of the LeakyReLU activation. Defaults to 0.3.</p>
 
                 <details class="quote">
                   <summary>Source code in <code>DeepSaki/initializers/he_alpha.py</code></summary>
-                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">135</span>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
 <span class="normal">136</span>
 <span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Dunder method to initialize HeAlphaUniform object.</span>
 
 <span class="sd">    Args:</span>
@@ -1342,15 +1428,15 @@ alpha value of the LeakyReLU activation. Defaults to 0.3.</p>
 
                 <details class="quote">
                   <summary>Source code in <code>DeepSaki/initializers/he_alpha.py</code></summary>
-                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Dunder method to initialize HeAlphaUniform object.</span>
 
 <span class="sd">    Args:</span>
@@ -1409,47 +1495,78 @@ alpha value of the LeakyReLU activation. Defaults to 0.3.</p>
 
 
 
-
-
-<div class="doc doc-object doc-function">
+<div class="doc doc-object doc-class">
 
 
 
 
-<h2 id="DeepSaki.initializers.initializer_helper.make_initializer_complex" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">make_initializer_complex</span>
+<h2 id="DeepSaki.initializers.complex_initializer.ComplexInitializer" class="doc doc-heading">
+          <span class="doc doc-object-name doc-class-name">ComplexInitializer</span>
 
 
-<a href="#DeepSaki.initializers.initializer_helper.make_initializer_complex" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#DeepSaki.initializers.complex_initializer.ComplexInitializer" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">make_initializer_complex</span><span class="p">(</span>
-    <span class="n">initializer</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">Initializer</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">tf</span><span class="o">.</span><span class="n">DType</span><span class="p">],</span> <span class="n">tf</span><span class="o">.</span><span class="n">complex</span><span class="p">]</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ComplexInitializer</span><span class="p">(</span>
+    <span class="n">initializer_real</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">Initializer</span><span class="p">,</span>
+    <span class="n">initializer_imag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">Initializer</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 
   <div class="doc doc-contents ">
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="tensorflow">tf</span>.<span title="tensorflow.keras">keras</span>.<span title="tensorflow.keras.initializers">initializers</span>.<span title="tensorflow.keras.initializers.Initializer">Initializer</span></code></p>
+
   
-      <p>Returns a function that applies a given <code>initializer</code> to generate a complex-valued tensor for initialization.</p>
-<p>The function applies the initializer twice, once for the <code>real</code> part and once for the <code>imaginary</code> part and then
-constructs a complex-valued tensor of the provided <code>shape</code>.</p>
-<p><strong>Examples:</strong>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+      <p>Wraps an initializer to generate a complex-valued tensor for initialization.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Standalone usage with single initializer for real and imaginary part.</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Standalone usage:</span>
-<span class="kn">import</span> <span class="nn">DeepSaki</span> <span class="k">as</span> <span class="nn">dsk</span>
-<span class="n">initializer</span> <span class="o">=</span> <span class="n">dsk</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">make_initializer_complex</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">GlorotUniform</span><span class="p">())</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">DeepSaki</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="n">initializer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">ComplexInitializer</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">HeNormal</span><span class="p">())</span>
 <span class="n">values</span> <span class="o">=</span> <span class="n">initializer</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+<span class="c1"># Output: &lt;tf.Tensor: shape=(2, 2), dtype=complex64, numpy=</span>
+<span class="c1">#         array([[2.146195  +2.146195j  , -0.61122435-0.61122435j],</span>
+<span class="c1">#                [-1.9168953 -1.9168953j ,  0.7456977 +0.7456977j ]], dtype=complex64)&gt;</span>
 </code></pre></div></td></tr></table></div>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Standalone usage with seperate initializer for real and imaginary part.</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">DeepSaki</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="n">initializer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">ComplexInitializer</span><span class="p">(</span>
+    <span class="n">initializer_real</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">HeNormal</span><span class="p">(),</span>
+    <span class="n">initializer_imag</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">Ones</span><span class="p">()</span>
+    <span class="p">)</span>
+<span class="n">values</span> <span class="o">=</span> <span class="n">initializer</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+<span class="c1"># Output: &lt;tf.Tensor: shape=(2, 2), dtype=complex64, numpy=</span>
+<span class="c1">#         array([[ 0.93472564+1.j,  1.364944  +1.j],</span>
+<span class="c1">#                [-0.18844277+1.j,  0.46844056+1.j]], dtype=complex64)&gt;</span>
+</code></pre></div></td></tr></table></div>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Usage in a Keras layer</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Usage in a Keras layer:</span>
-<span class="kn">import</span> <span class="nn">DeepSaki</span> <span class="k">as</span> <span class="nn">dsk</span>
-<span class="n">initializer</span> <span class="o">=</span> <span class="n">dsk</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">make_initializer_complex</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">GlorotUniform</span><span class="p">())</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">DeepSaki</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="n">initializer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">ComplexInitializer</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">GlorotUniform</span><span class="p">())</span>
 <span class="n">layer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">initializer</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div></p>
+  
+      <p>Initializes the <code>ComplexInitializer</code> instance.</p>
 
 
 
@@ -1465,17 +1582,148 @@ constructs a complex-valued tensor of the provided <code>shape</code>.</p>
     </thead>
     <tbody>
         <tr>
-          <td><code>initializer</code></td>
+          <td><code>initializer_real</code></td>
           <td>
                 <code><span title="tensorflow">tf</span>.<span title="tensorflow.keras">keras</span>.<span title="tensorflow.keras.initializers">initializers</span>.<span title="tensorflow.keras.initializers.Initializer">Initializer</span></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Any real valued initializer object.</p>
+              <p>Initializer used to initialize the real part of the
+complex tensor.</p>
             </div>
           </td>
           <td>
               <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>initializer_imag</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[<span title="tensorflow">tf</span>.<span title="tensorflow.keras">keras</span>.<span title="tensorflow.keras.initializers">initializers</span>.<span title="tensorflow.keras.initializers.Initializer">Initializer</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Initializer used to initialize
+the imaginary part of the complex tensor. If <code>None</code>, the same initializer is used as for the real part.
+Defaults to None.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+                <details class="quote">
+                  <summary>Source code in <code>DeepSaki/initializers/complex_initializer.py</code></summary>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">initializer_real</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">Initializer</span><span class="p">,</span>
+    <span class="n">initializer_imag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">Initializer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the `ComplexInitializer` instance.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        initializer_real (tf.keras.initializers.Initializer): Initializer used to initialize the real part of the</span>
+<span class="sd">            complex tensor.</span>
+<span class="sd">        initializer_imag (Optional[tf.keras.initializers.Initializer], optional): Initializer used to initialize</span>
+<span class="sd">            the imaginary part of the complex tensor. If `None`, the same initializer is used as for the real part.</span>
+<span class="sd">            Defaults to None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">initializer_real</span> <span class="o">=</span> <span class="n">initializer_real</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">initializer_imag</span> <span class="o">=</span> <span class="n">initializer_imag</span> <span class="k">if</span> <span class="n">initializer_imag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">initializer_real</span>
+</code></pre></div></td></tr></table></div>
+                </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.initializers.complex_initializer.ComplexInitializer.__call__" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">__call__</span>
+
+
+<a href="#DeepSaki.initializers.complex_initializer.ComplexInitializer.__call__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="fm">__call__</span><span class="p">(</span>
+    <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">DType</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">complex64</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Calls the initializer.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>shape</code></td>
+          <td>
+                <code><span title="typing.List">List</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Shape of the tensor to be initialized.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>dtype</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.DType">DType</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>dtype of the individual terms of the complex number. Defaults to tf.complex64.</p>
+            </div>
+          </td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.complex64">complex64</span></code>
           </td>
         </tr>
     </tbody>
@@ -1494,11 +1742,11 @@ constructs a complex-valued tensor of the provided <code>shape</code>.</p>
     <tbody>
         <tr>
           <td>
-                <code><span title="typing.Callable">Callable</span>[[<span title="typing.List">List</span>[int], <span title="tensorflow">tf</span>.<span title="tensorflow.DType">DType</span>], <span title="tensorflow">tf</span>.<span title="tensorflow.complex">complex</span>]</code>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Wrapper function with same function signature as a <code>tf.keras.initializers.Initializer</code> object.</p>
+              <p>Complex-valued tensor with values drawn from the <code>initializer_real</code> and <code>initializer_imag</code>.</p>
             </div>
           </td>
         </tr>
@@ -1506,109 +1754,62 @@ constructs a complex-valued tensor of the provided <code>shape</code>.</p>
   </table>
 
           <details class="quote">
-            <summary>Source code in <code>DeepSaki/initializers/initializer_helper.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">make_initializer_complex</span><span class="p">(</span>
-    <span class="n">initializer</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">Initializer</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">tf</span><span class="o">.</span><span class="n">DType</span><span class="p">],</span> <span class="n">tf</span><span class="o">.</span><span class="n">complex</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a function that applies a given `initializer` to generate a complex-valued tensor for initialization.</span>
-
-<span class="sd">    The function applies the initializer twice, once for the `real` part and once for the `imaginary` part and then</span>
-<span class="sd">    constructs a complex-valued tensor of the provided `shape`.</span>
-
-
-<span class="sd">    **Examples:**</span>
-<span class="sd">    ```python</span>
-<span class="sd">    # Standalone usage:</span>
-<span class="sd">    import DeepSaki as dsk</span>
-<span class="sd">    initializer = dsk.initializers.make_initializer_complex(tf.keras.initializers.GlorotUniform())</span>
-<span class="sd">    values = initializer(shape=(2, 2))</span>
-<span class="sd">    ```</span>
-<span class="sd">    ```python</span>
-<span class="sd">    # Usage in a Keras layer:</span>
-<span class="sd">    import DeepSaki as dsk</span>
-<span class="sd">    initializer = dsk.initializers.make_initializer_complex(tf.keras.initializers.GlorotUniform())</span>
-<span class="sd">    layer = tf.keras.layers.Dense(3, kernel_initializer=initializer)</span>
-<span class="sd">    ```</span>
+            <summary>Source code in <code>DeepSaki/initializers/complex_initializer.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">DType</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">complex64</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calls the initializer.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        initializer (tf.keras.initializers.Initializer): Any real valued initializer object.</span>
+<span class="sd">        shape (List[int]): Shape of the tensor to be initialized.</span>
+<span class="sd">        dtype (tf.DType, optional): dtype of the individual terms of the complex number. Defaults to tf.complex64.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Wrapper function with same function signature as a `tf.keras.initializers.Initializer` object.</span>
+<span class="sd">        Complex-valued tensor with values drawn from the `initializer_real` and `initializer_imag`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">complex_initializer</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">DType</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">complex</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function that applies a given `initializer` to generate a complex-valued tensor for initialization.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            shape (List[int]): Shape of the tensor to be initialized.</span>
-<span class="sd">            dtype (tf.DType, optional): dtype of the individual terms of the complex number. Defaults to `tf.complex64`.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Complex-valued tensor with values drawn from the `initializer`, seperatly for `real` and `imaginary` part.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">tf</span><span class="o">.</span><span class="n">complex64</span><span class="p">:</span>
-            <span class="n">dtype</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span>
-        <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">tf</span><span class="o">.</span><span class="n">complex128</span><span class="p">:</span>
-            <span class="n">dtype</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">float64</span>
-        <span class="n">real</span> <span class="o">=</span> <span class="n">initializer</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
-        <span class="n">imag</span> <span class="o">=</span> <span class="n">initializer</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">complex</span><span class="p">(</span><span class="n">real</span><span class="p">,</span> <span class="n">imag</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">complex_initializer</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">tf</span><span class="o">.</span><span class="n">complex64</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span>
+    <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">tf</span><span class="o">.</span><span class="n">complex128</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">float64</span>
+    <span class="n">real</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initializer_real</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+    <span class="n">imag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initializer_imag</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">complex</span><span class="p">(</span><span class="n">real</span><span class="p">,</span> <span class="n">imag</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
 
 </div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
 
 
 
@@ -1749,7 +1950,7 @@ constructs a complex-valued tensor of the provided <code>shape</code>.</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.path", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "toc.follow", "toc.integrate"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.path", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "toc.follow", "toc.integrate", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
       <script src="../../../assets/javascripts/bundle.aecac24b.min.js"></script>

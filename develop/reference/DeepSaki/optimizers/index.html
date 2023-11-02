@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Custom deep learning code for TensorFlow.">
+        <meta name="description" content="DeepSaki - Deep Learning Extension for TensorFlow">
       
       
         <meta name="author" content="Sascha Kirch">
@@ -18,10 +18,10 @@
         <link rel="prev" href="../models/">
       
       
-        <link rel="next" href="../utils/">
+        <link rel="next" href="../types/">
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/ds_logo_small.png">
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.7">
     
     
@@ -73,7 +73,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="grey">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-orange" data-md-color-accent="deep-orange">
   
     
     
@@ -107,8 +107,7 @@
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../../.." title="DeepSaki" class="md-header__button md-logo" aria-label="DeepSaki" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <img src="../../../assets/images/ds_logo_small_white.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -138,20 +137,20 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="grey"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-orange" data-md-color-accent="deep-orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
       </label>
     
   
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="white"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-orange" data-md-color-accent="deep-orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
       </label>
     
   
@@ -255,6 +254,40 @@
   
 
       
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../CONTRIBUTE/" class="md-tabs__link">
+        
+  
+    
+  
+  Contribute
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../CHANGELOG/" class="md-tabs__link">
+        
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
     </ul>
   </div>
 </nav>
@@ -287,8 +320,7 @@
   <label class="md-nav__title" for="__drawer">
     <a href="../../.." title="DeepSaki" class="md-nav__button md-logo" aria-label="DeepSaki" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <img src="../../../assets/images/ds_logo_small_white.png" alt="logo">
 
     </a>
     DeepSaki
@@ -630,6 +662,26 @@
   
   
     <li class="md-nav__item">
+      <a href="../types/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    types
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../utils/" class="md-nav__link">
         
   
@@ -655,6 +707,44 @@
           </ul>
         </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribute
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CHANGELOG/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -685,13 +775,6 @@
 
 
   <div class="doc doc-contents first">
-  
-      <p>The SWATS Optimizer is an optimizer that starts with ADAM and switches to SGD after a certain epoch.</p>
-<p>SWATS Paper: http://arxiv.org/abs/1712.07628</p>
-<p>This implementation is based on tensorflow's ADAM, SGD and NADAM optimizer
-TensorFlow ADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/adam.py
-Tensorflow SGD: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/gradient_descent.py
-Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/nadam.py</p>
 
   
 
@@ -723,8 +806,7 @@ Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e
 <span class="normal"> 7</span>
 <span class="normal"> 8</span>
 <span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">SwatsAdam</span><span class="p">(</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">SwatsAdam</span><span class="p">(</span>
     <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
     <span class="n">beta_1</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span>
     <span class="n">beta_2</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.999</span><span class="p">,</span>
@@ -732,7 +814,6 @@ Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e
     <span class="n">amsgrad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">momentum</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="n">nesterov</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;SwatsAdam&quot;</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -741,24 +822,179 @@ Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e
           <p class="doc doc-class-bases">
             Bases: <code><span title="tensorflow.python.keras.optimizer_v2.optimizer_v2">optimizer_v2</span>.<span title="tensorflow.python.keras.optimizer_v2.optimizer_v2.OptimizerV2">OptimizerV2</span></code></p>
 
+  
+      <p>Initializer that can switch from ADAM to SGD and vice versa.</p>
+<p>SWATS_ADAM is inspired by the <a href="http://arxiv.org/abs/1712.07628">SWATS</a> (switching from adam to sgd) initializer.
+During training, the optimizer can be changed by calling <code>switch_optimizer()</code> uppon the optimizer instance.</p>
+<p>This optimizer combines tensorflow's <a href="https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/adam.py">ADAM</a>
+and <a href="https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/gradient_descent.py">SGD</a> implementations.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">DeepSaki</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">SWATS_ADAM</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">disc_learning_rate</span><span class="p">,</span> <span class="n">beta_1</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">amsgrad</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">nesterov</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">optimizer</span><span class="o">.</span><span class="n">switch_optimizer</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div></p>
+  
+      <p>Initializes the <code>SwatsAdam</code> optimizer.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>learning_rate</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Learning rate of the optimization step. Defaults to 0.001.</p>
+            </div>
+          </td>
+          <td>
+                <code>0.001</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>beta_1</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The exponential decay rate for the 1st moment estimates. Defaults to 0.9.</p>
+            </div>
+          </td>
+          <td>
+                <code>0.9</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>beta_2</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The exponential decay rate for the 2nd moment estimates. Defaults to 0.999.</p>
+            </div>
+          </td>
+          <td>
+                <code>0.999</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>epsilon</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A small constant for numerical stability. Defaults to 1e-7.</p>
+            </div>
+          </td>
+          <td>
+                <code>1e-07</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>amsgrad</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to apply AMSGrad variant of this algorithm from the paper "On the
+Convergence of Adam and beyond". Defaults to False.</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>momentum</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Hyperparameter &gt;= 0 that accelerates gradient descent in the relevant direction
+and dampens oscillations. Vanilla gradient descent means no momentum. Defaults to 0.0.</p>
+            </div>
+          </td>
+          <td>
+                <code>0.0</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>nesterov</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to apply Nesterov momentum. Defaults to False.</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>kwargs</code></td>
+          <td>
+                <code><span title="typing.Any">Any</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>keyword arguments passed to the parent class.</p>
+            </div>
+          </td>
+          <td>
+                <code>{}</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Raises:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>ValueError</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>if <code>momentum</code> is not provided in an expected form.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
 
                 <details class="quote">
                   <summary>Source code in <code>DeepSaki/optimizers/swats.py</code></summary>
-                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">47</span>
 <span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span>
@@ -772,7 +1008,37 @@ Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e
 <span class="normal">58</span>
 <span class="normal">59</span>
 <span class="normal">60</span>
-<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
     <span class="n">beta_1</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span>
@@ -781,17 +1047,33 @@ Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e
     <span class="n">amsgrad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">momentum</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="n">nesterov</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;SwatsAdam&quot;</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="nb">super</span><span class="p">(</span><span class="n">SwatsAdam</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the `SwatsAdam` optimizer.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        learning_rate (float, optional): Learning rate of the optimization step. Defaults to 0.001.</span>
+<span class="sd">        beta_1 (float, optional): The exponential decay rate for the 1st moment estimates. Defaults to 0.9.</span>
+<span class="sd">        beta_2 (float, optional): The exponential decay rate for the 2nd moment estimates. Defaults to 0.999.</span>
+<span class="sd">        epsilon (float, optional): A small constant for numerical stability. Defaults to 1e-7.</span>
+<span class="sd">        amsgrad (bool, optional): Whether to apply AMSGrad variant of this algorithm from the paper &quot;On the</span>
+<span class="sd">            Convergence of Adam and beyond&quot;. Defaults to False.</span>
+<span class="sd">        momentum (float, optional):  Hyperparameter &gt;= 0 that accelerates gradient descent in the relevant direction</span>
+<span class="sd">            and dampens oscillations. Vanilla gradient descent means no momentum. Defaults to 0.0.</span>
+<span class="sd">        nesterov (bool, optional): Whether to apply Nesterov momentum. Defaults to False.</span>
+<span class="sd">        kwargs: keyword arguments passed to the parent class.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: if `momentum` is not provided in an expected form.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">SwatsAdam</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;SwatsAdam&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_set_hyper</span><span class="p">(</span><span class="s2">&quot;learning_rate&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lr&quot;</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">))</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_set_hyper</span><span class="p">(</span><span class="s2">&quot;decay&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_decay</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_set_hyper</span><span class="p">(</span><span class="s2">&quot;beta_1&quot;</span><span class="p">,</span> <span class="n">beta_1</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_set_hyper</span><span class="p">(</span><span class="s2">&quot;beta_2&quot;</span><span class="p">,</span> <span class="n">beta_2</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">epsilon</span> <span class="ow">or</span> <span class="n">backend_config</span><span class="o">.</span><span class="n">epsilon</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">amsgrad</span> <span class="o">=</span> <span class="n">amsgrad</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">currentOptimizer</span> <span class="o">=</span> <span class="s2">&quot;adam&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">currentOptimizer</span> <span class="o">=</span> <span class="n">_CurrentOptimizer</span><span class="o">.</span><span class="n">ADAM</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_momentum</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">momentum</span><span class="p">,</span> <span class="n">ops</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">callable</span><span class="p">(</span><span class="n">momentum</span><span class="p">)</span> <span class="ow">or</span> <span class="n">momentum</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -860,27 +1142,27 @@ Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e
 
           <details class="quote">
             <summary>Source code in <code>DeepSaki/optimizers/swats.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialization of the object.</span>
 
 <span class="sd">    Returns:</span>
@@ -908,6 +1190,43 @@ Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e
 </div>
 
 
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.optimizers.swats.SwatsAdam.switch_optimizer" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">switch_optimizer</span>
+
+
+<a href="#DeepSaki.optimizers.swats.SwatsAdam.switch_optimizer" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">switch_optimizer</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Switches the current optimizer to either ADAM or SGD, depending on what was previously set.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/optimizers/swats.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span>
+<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">switch_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Switches the current optimizer to either ADAM or SGD, depending on what was previously set.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">currentOptimizer</span> <span class="o">==</span> <span class="n">_CurrentOptimizer</span><span class="o">.</span><span class="n">ADAM</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currentOptimizer</span> <span class="o">=</span> <span class="n">_CurrentOptimizer</span><span class="o">.</span><span class="n">SGD</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currentOptimizer</span> <span class="o">=</span> <span class="n">_CurrentOptimizer</span><span class="o">.</span><span class="n">ADAM</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
 
   </div>
 
@@ -925,23 +1244,21 @@ Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e
 
 
 <a href="#DeepSaki.optimizers.swats.SwatsNadam" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">SwatsNadam</span><span class="p">(</span>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">SwatsNadam</span><span class="p">(</span>
     <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
     <span class="n">beta_1</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span>
     <span class="n">beta_2</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.999</span><span class="p">,</span>
     <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-07</span><span class="p">,</span>
     <span class="n">momentum</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="n">nesterov</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;SwatsNadam&quot;</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -950,37 +1267,205 @@ Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e
           <p class="doc doc-class-bases">
             Bases: <code><span title="tensorflow.python.keras.optimizer_v2.optimizer_v2">optimizer_v2</span>.<span title="tensorflow.python.keras.optimizer_v2.optimizer_v2.OptimizerV2">OptimizerV2</span></code></p>
 
+  
+      <p>Initializer that can switch from NADAM to SGD and vice versa.</p>
+<p>SWATS_NADAM is inspired by the <a href="http://arxiv.org/abs/1712.07628">SWATS</a> (switching from adam to sgd) initializer.
+During training, the optimizer can be changed by calling <code>switch_optimizer()</code> uppon the optimizer instance.</p>
+<p>This optimizer combines tensorflow's <a href="https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/nadam.py">NADAM</a>
+and <a href="https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e979ecd1ed95bff1dc1335cff/tensorflow/python/keras/optimizer_v2/gradient_descent.py">SGD</a> implementations.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">DeepSaki</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">SWATS_NADAM</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">disc_learning_rate</span><span class="p">,</span> <span class="n">beta_1</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">nesterov</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">optimizer</span><span class="o">.</span><span class="n">switch_optimizer</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div></p>
+  
+      <p>Initializes the <code>SwatsNadam</code> optimizer.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>learning_rate</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Learning rate of the optimization step. Defaults to 0.001.</p>
+            </div>
+          </td>
+          <td>
+                <code>0.001</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>beta_1</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The exponential decay rate for the 1st moment estimates. Defaults to 0.9.</p>
+            </div>
+          </td>
+          <td>
+                <code>0.9</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>beta_2</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The exponential decay rate for the 2nd moment estimates. Defaults to 0.999.</p>
+            </div>
+          </td>
+          <td>
+                <code>0.999</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>epsilon</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A small constant for numerical stability. Defaults to 1e-7.</p>
+            </div>
+          </td>
+          <td>
+                <code>1e-07</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>momentum</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Hyperparameter &gt;= 0 that accelerates gradient descent in the relevant direction
+and dampens oscillations. Vanilla gradient descent means no momentum. Defaults to 0.0.</p>
+            </div>
+          </td>
+          <td>
+                <code>0.0</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>nesterov</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to apply Nesterov momentum. Defaults to False.</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>kwargs</code></td>
+          <td>
+                <code><span title="typing.Any">Any</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>keyword arguments passed to the parent class.</p>
+            </div>
+          </td>
+          <td>
+                <code>{}</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Raises:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>ValueError</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>if <code>momentum</code> is not provided in an expected form.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
 
                 <details class="quote">
                   <summary>Source code in <code>DeepSaki/optimizers/swats.py</code></summary>
-                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
     <span class="n">beta_1</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span>
@@ -988,16 +1473,30 @@ Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e
     <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span>
     <span class="n">momentum</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="n">nesterov</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;SwatsNadam&quot;</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="nb">super</span><span class="p">(</span><span class="n">SwatsNadam</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the `SwatsNadam` optimizer.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        learning_rate (float, optional): Learning rate of the optimization step. Defaults to 0.001.</span>
+<span class="sd">        beta_1 (float, optional): The exponential decay rate for the 1st moment estimates. Defaults to 0.9.</span>
+<span class="sd">        beta_2 (float, optional): The exponential decay rate for the 2nd moment estimates. Defaults to 0.999.</span>
+<span class="sd">        epsilon (float, optional): A small constant for numerical stability. Defaults to 1e-7.</span>
+<span class="sd">        momentum (float, optional):  Hyperparameter &gt;= 0 that accelerates gradient descent in the relevant direction</span>
+<span class="sd">            and dampens oscillations. Vanilla gradient descent means no momentum. Defaults to 0.0.</span>
+<span class="sd">        nesterov (bool, optional): Whether to apply Nesterov momentum. Defaults to False.</span>
+<span class="sd">        kwargs: keyword arguments passed to the parent class.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: if `momentum` is not provided in an expected form.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">SwatsNadam</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;SwatsNadam&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_set_hyper</span><span class="p">(</span><span class="s2">&quot;learning_rate&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lr&quot;</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">))</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_set_hyper</span><span class="p">(</span><span class="s2">&quot;decay&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_decay</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_set_hyper</span><span class="p">(</span><span class="s2">&quot;beta_1&quot;</span><span class="p">,</span> <span class="n">beta_1</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_set_hyper</span><span class="p">(</span><span class="s2">&quot;beta_2&quot;</span><span class="p">,</span> <span class="n">beta_2</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">epsilon</span> <span class="ow">or</span> <span class="n">backend_config</span><span class="o">.</span><span class="n">epsilon</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">currentOptimizer</span> <span class="o">=</span> <span class="s2">&quot;nadam&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">currentOptimizer</span> <span class="o">=</span> <span class="n">_CurrentOptimizer</span><span class="o">.</span><span class="n">NADAM</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_momentum</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">momentum</span><span class="p">,</span> <span class="n">ops</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">callable</span><span class="p">(</span><span class="n">momentum</span><span class="p">)</span> <span class="ow">or</span> <span class="n">momentum</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -1067,26 +1566,26 @@ Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e
 
           <details class="quote">
             <summary>Source code in <code>DeepSaki/optimizers/swats.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">434</span>
-<span class="normal">435</span>
-<span class="normal">436</span>
-<span class="normal">437</span>
-<span class="normal">438</span>
-<span class="normal">439</span>
-<span class="normal">440</span>
-<span class="normal">441</span>
-<span class="normal">442</span>
-<span class="normal">443</span>
-<span class="normal">444</span>
-<span class="normal">445</span>
-<span class="normal">446</span>
-<span class="normal">447</span>
-<span class="normal">448</span>
-<span class="normal">449</span>
-<span class="normal">450</span>
-<span class="normal">451</span>
-<span class="normal">452</span>
-<span class="normal">453</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">508</span>
+<span class="normal">509</span>
+<span class="normal">510</span>
+<span class="normal">511</span>
+<span class="normal">512</span>
+<span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span>
+<span class="normal">517</span>
+<span class="normal">518</span>
+<span class="normal">519</span>
+<span class="normal">520</span>
+<span class="normal">521</span>
+<span class="normal">522</span>
+<span class="normal">523</span>
+<span class="normal">524</span>
+<span class="normal">525</span>
+<span class="normal">526</span>
+<span class="normal">527</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialization of the object.</span>
 
 <span class="sd">    Returns:</span>
@@ -1106,6 +1605,43 @@ Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e
         <span class="p">}</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">config</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.optimizers.swats.SwatsNadam.switch_optimizer" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">switch_optimizer</span>
+
+
+<a href="#DeepSaki.optimizers.swats.SwatsNadam.switch_optimizer" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">switch_optimizer</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Switches the current optimizer to either ADAM or SGD, depending on what was previously set.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/optimizers/swats.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">switch_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Switches the current optimizer to either ADAM or SGD, depending on what was previously set.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">currentOptimizer</span> <span class="o">==</span> <span class="n">_CurrentOptimizer</span><span class="o">.</span><span class="n">NADAM</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currentOptimizer</span> <span class="o">=</span> <span class="n">_CurrentOptimizer</span><span class="o">.</span><span class="n">SGD</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currentOptimizer</span> <span class="o">=</span> <span class="n">_CurrentOptimizer</span><span class="o">.</span><span class="n">NADAM</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
@@ -1172,13 +1708,13 @@ Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e
         
         
           
-          <a href="../utils/" class="md-footer__link md-footer__link--next" aria-label="Next: utils">
+          <a href="../types/" class="md-footer__link md-footer__link--next" aria-label="Next: types">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                utils
+                types
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -1260,7 +1796,7 @@ Tensorflow NADAM: https://github.com/tensorflow/tensorflow/blob/85c8b2a817f95a3e
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.path", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "toc.follow", "toc.integrate"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.path", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "toc.follow", "toc.integrate", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
       <script src="../../../assets/javascripts/bundle.aecac24b.min.js"></script>

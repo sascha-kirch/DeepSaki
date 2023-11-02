@@ -12,13 +12,13 @@
         <meta name="author" content="Sascha Kirch">
       
       
-        <link rel="canonical" href="https://sascha-kirch.github.io/DeepSaki/develop/reference/DeepSaki/constraints/">
+        <link rel="canonical" href="https://sascha-kirch.github.io/DeepSaki/develop/reference/DeepSaki/types/">
       
       
-        <link rel="prev" href="../augmentations/">
+        <link rel="prev" href="../optimizers/">
       
       
-        <link rel="next" href="../initializers/">
+        <link rel="next" href="../utils/">
       
       
       <link rel="icon" href="../../../assets/images/ds_logo_small.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>constraints - DeepSaki</title>
+        <title>types - DeepSaki</title>
       
     
     
@@ -85,7 +85,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#DeepSaki.constraints.constraints.NonNegative" class="md-skip">
+        <a href="#DeepSaki.types.layers_enums.DownSampleType" class="md-skip">
           Skip to content
         </a>
       
@@ -124,7 +124,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              constraints
+              types
             
           </span>
         </div>
@@ -490,27 +490,9 @@
                 
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    constraints
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../constraints/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -519,31 +501,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#DeepSaki.constraints.constraints.NonNegative" class="md-nav__link">
-    NonNegative
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -653,9 +610,27 @@
                 
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../types/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    types
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -664,6 +639,87 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.types.layers_enums.DownSampleType" class="md-nav__link">
+    DownSampleType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.types.layers_enums.FrequencyFilter" class="md-nav__link">
+    FrequencyFilter
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.types.layers_enums.InitializerFunc" class="md-nav__link">
+    InitializerFunc
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.types.layers_enums.LinearLayerType" class="md-nav__link">
+    LinearLayerType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.types.layers_enums.MultiplicationType" class="md-nav__link">
+    MultiplicationType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.types.layers_enums.PaddingType" class="md-nav__link">
+    PaddingType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.types.layers_enums.UpSampleType" class="md-nav__link">
+    UpSampleType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.types.losses_enums.LossCalcType" class="md-nav__link">
+    LossCalcType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.types.losses_enums.LossType" class="md-nav__link">
+    LossType
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -760,7 +816,7 @@
   
 
 
-  <h1>constraints</h1>
+  <h1>types</h1>
 
 <div class="doc doc-object doc-module">
 
@@ -785,19 +841,83 @@
 
 
 
-<h2 id="DeepSaki.constraints.constraints.NonNegative" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">NonNegative</span>
+<h2 id="DeepSaki.types.layers_enums.DownSampleType" class="doc doc-heading">
+          <span class="doc doc-object-name doc-class-name">DownSampleType</span>
 
 
-<a href="#DeepSaki.constraints.constraints.NonNegative" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#DeepSaki.types.layers_enums.DownSampleType" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
   <div class="doc doc-contents ">
           <p class="doc doc-class-bases">
-            Bases: <code><span title="tensorflow">tf</span>.<span title="tensorflow.keras">keras</span>.<span title="tensorflow.keras.constraints">constraints</span>.<span title="tensorflow.keras.constraints.Constraint">Constraint</span></code></p>
+            Bases: <code><span title="enum.Enum">Enum</span></code></p>
 
   
-      <p>Constraint that enforces positive activations.</p>
+      <p><code>Enum</code> used to define different types of down sampling functions.</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>AVG_POOLING</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Use average pooling.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>CONV_STRIDE_2</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Use a convolution with a stride of (2,2).</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>MAX_POOLING</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Use max pooling.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>SPACE_TO_DEPTH</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Use a space to depth operation followed by a convolution the adjust the filters.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <p><strong>Example:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">DeepSaki</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span>
+<span class="hll">            <span class="n">downsampling</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">DownSampleType</span><span class="o">.</span><span class="n">SPACE_TO_DEPTH</span>
+</span>        <span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
 
 
   
@@ -813,103 +933,775 @@
 
 
 
-<div class="doc doc-object doc-function">
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
 
 
 
 
-<h3 id="DeepSaki.constraints.constraints.NonNegative.__call__" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">__call__</span>
+<h2 id="DeepSaki.types.layers_enums.FrequencyFilter" class="doc doc-heading">
+          <span class="doc doc-object-name doc-class-name">FrequencyFilter</span>
 
 
-<a href="#DeepSaki.constraints.constraints.NonNegative.__call__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="fm">__call__</span><span class="p">(</span><span class="n">w</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span>
-</code></pre></div></td></tr></table></div>
+<a href="#DeepSaki.types.layers_enums.FrequencyFilter" class="headerlink" title="Permanent link">&para;</a></h2>
+
 
   <div class="doc doc-contents ">
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
   
-      <p>Clips negative values of a provided weight tensor <code>w</code> to 0.0 and leaves positive values unchanged.</p>
+      <p><code>Enum</code> used to define valid filters for <code>rFFT2DFilter</code>.</p>
 
 
 
-  <p><strong>Parameters:</strong></p>
+  <p><strong>Attributes:</strong></p>
   <table>
     <thead>
       <tr>
         <th>Name</th>
         <th>Type</th>
         <th>Description</th>
-        <th>Default</th>
       </tr>
     </thead>
     <tbody>
         <tr>
-          <td><code>w</code></td>
+          <td><code>LOW_PASS</code></td>
           <td>
-                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Tensor containing the wehights of a layer.</p>
+              <p>Indicates that low frequency components shall be kept and high frequency components shall be
+filtered.</p>
             </div>
           </td>
+        </tr>
+        <tr>
+          <td><code>HIGH_PASS</code></td>
           <td>
-              <em>required</em>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Indicates that high frequency components shall be kept and low frequency components shall be
+filtered.</p>
+            </div>
           </td>
         </tr>
     </tbody>
   </table>
+      <p><strong>Example:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">DeepSaki</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">rFFT2DFilter</span><span class="p">(</span>
+<span class="hll">            <span class="n">filter_type</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">FrequencyFilter</span><span class="o">.</span><span class="n">LOW_PASS</span>
+</span>        <span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+
+
+  
+
+  <div class="doc doc-children">
 
 
 
-  <p><strong>Returns:</strong></p>
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+
+<h2 id="DeepSaki.types.layers_enums.InitializerFunc" class="doc doc-heading">
+          <span class="doc doc-object-name doc-class-name">InitializerFunc</span>
+
+
+<a href="#DeepSaki.types.layers_enums.InitializerFunc" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
+  
+      <p><code>Enum</code> used to define different types of initializer functions.</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
   <table>
     <thead>
       <tr>
+        <th>Name</th>
         <th>Type</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
         <tr>
+          <td><code>RANDOM_NORMAL</code></td>
           <td>
-                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Tensor where negative values are clipped to 0.0.</p>
+              <p>Corresponds to a random normal initializer function.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>RANDOM_UNIFORM</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Corresponds to a random uniform initializer function.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>GLOROT_NORMAL</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Corresponds to a Glorot normal initializer function.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>GLOROT_UNIFORM</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Corresponds to a Glorot uniform initializer function.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>HE_NORMAL</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Corresponds to a He normal initializer function.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>HE_UNIFORM</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Corresponds to a He uniform initializer function.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>HE_ALPHA_NORMAL</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Corresponds to a He Alpha normal initializer function.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>HE_ALPHA_UNIFORM</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Corresponds to a He Alpha Uniform initializer function.</p>
             </div>
           </td>
         </tr>
     </tbody>
   </table>
+      <p><strong>Example:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">DeepSaki</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">get_initializer</span><span class="p">(</span>
+<span class="hll">            <span class="n">initializer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">InitializerFunc</span><span class="o">.</span><span class="n">HE_ALPHA_NORMAL</span>
+</span>        <span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
 
-          <details class="quote">
-            <summary>Source code in <code>DeepSaki/constraints/constraints.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Clips negative values of a provided weight tensor `w` to 0.0 and leaves positive values unchanged.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        w (tf.Tensor): Tensor containing the wehights of a layer.</span>
+  
 
-<span class="sd">    Returns:</span>
-<span class="sd">        Tensor where negative values are clipped to 0.0.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">w</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">w</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-          </details>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
   </div>
 
 </div>
+
+<div class="doc doc-object doc-class">
+
+
+
+
+<h2 id="DeepSaki.types.layers_enums.LinearLayerType" class="doc doc-heading">
+          <span class="doc doc-object-name doc-class-name">LinearLayerType</span>
+
+
+<a href="#DeepSaki.types.layers_enums.LinearLayerType" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
+  
+      <p><code>Enum</code> used to define different types of linear functions.</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>MLP</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Uses an MLP.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>CONV_1x1</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Use a convolution with a kernel of (1,1).</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <p><strong>Example:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">DeepSaki</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">UNet</span><span class="p">(</span>
+<span class="hll">            <span class="n">linear_layer_type</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">LinearLayerType</span><span class="o">.</span><span class="n">MLP</span>
+</span>        <span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+
+<h2 id="DeepSaki.types.layers_enums.MultiplicationType" class="doc doc-heading">
+          <span class="doc doc-object-name doc-class-name">MultiplicationType</span>
+
+
+<a href="#DeepSaki.types.layers_enums.MultiplicationType" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
+  
+      <p><code>Enum</code> used to define how two matrices shall be multiplied.</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>ELEMENT_WISE</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Indicates to apply an element-wise multiplication of 2 tensors.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>MATRIX_PRODUCT</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Indicates to apply a matrix-product between 2 tensors.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <p><strong>Example:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">DeepSaki</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">FourierConvolution2D</span><span class="p">(</span>
+<span class="hll">            <span class="n">multiplication_type</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">MultiplicationType</span><span class="o">.</span><span class="n">MATRIX_PRODUCT</span>
+</span>        <span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+
+<h2 id="DeepSaki.types.layers_enums.PaddingType" class="doc doc-heading">
+          <span class="doc doc-object-name doc-class-name">PaddingType</span>
+
+
+<a href="#DeepSaki.types.layers_enums.PaddingType" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
+  
+      <p><code>Enum</code> used to define different types of padding opperations.</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>ZERO</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Indicates to apply a zero padding operations.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>REFLECTION</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Indicates to apply a reflection padding operation.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <p><strong>Example:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">DeepSaki</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">LayoutContentDiscriminator</span><span class="p">(</span>
+<span class="hll">            <span class="n">padding</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">PaddingType</span><span class="o">.</span><span class="n">ZERO</span>
+</span>        <span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+
+<h2 id="DeepSaki.types.layers_enums.UpSampleType" class="doc doc-heading">
+          <span class="doc doc-object-name doc-class-name">UpSampleType</span>
+
+
+<a href="#DeepSaki.types.layers_enums.UpSampleType" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
+  
+      <p><code>Enum</code> used to define different types of up sampling functions.</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>RESAMPLE_AND_CONV</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Use a resampling technique like interpolation followed by a convolution.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>TRANSPOSE_CONV</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Use a transpose convolution.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>DEPTH_TO_SPACE</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Use a depth to space operation after a convolution the adjust the filters.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <p><strong>Example:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">DeepSaki</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Decoder</span><span class="p">(</span>
+<span class="hll">            <span class="n">upsampling</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">UpSampleType</span><span class="o">.</span><span class="n">TRANSPOSE_CONV</span>
+</span>        <span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+  <div class="doc doc-contents first">
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+
+<h2 id="DeepSaki.types.losses_enums.LossCalcType" class="doc doc-heading">
+          <span class="doc doc-object-name doc-class-name">LossCalcType</span>
+
+
+<a href="#DeepSaki.types.losses_enums.LossCalcType" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
+  
+      <p><code>Enum</code> to define the loss calculation type used for image based losses derived from <code>ImageBasedLoss</code>.</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>PER_IMAGE</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Loss is calculated over the entire image.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>PER_CHANNEL</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Loss is calculated per channel.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <p><strong>Example:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">DeepSaki</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">StructuralSimilarityLoss</span><span class="p">(</span>
+<span class="hll">            <span class="n">calculation_type</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">LossCalcType</span><span class="o">.</span><span class="n">PER_IMAGE</span>
+</span>        <span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+
+<h2 id="DeepSaki.types.losses_enums.LossType" class="doc doc-heading">
+          <span class="doc doc-object-name doc-class-name">LossType</span>
+
+
+<a href="#DeepSaki.types.losses_enums.LossType" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
+  
+      <p><code>Enum</code> to define the loss type used for image based losses derived from <code>ImageBasedLoss</code>.</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>MAE</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Loss is a form of mean absolute error.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>MSE</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Loss is a form of mean squared error.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <p><strong>Example:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">DeepSaki</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">PixelDistanceLoss</span><span class="p">(</span>
+<span class="hll">            <span class="n">loss_type</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">LossCalcType</span><span class="o">.</span><span class="n">MSE</span>
+</span>        <span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
 
 
 
@@ -954,7 +1746,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../augmentations/" class="md-footer__link md-footer__link--prev" aria-label="Previous: augmentations">
+          <a href="../optimizers/" class="md-footer__link md-footer__link--prev" aria-label="Previous: optimizers">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
@@ -964,20 +1756,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                augmentations
+                optimizers
               </div>
             </div>
           </a>
         
         
           
-          <a href="../initializers/" class="md-footer__link md-footer__link--next" aria-label="Next: initializers">
+          <a href="../utils/" class="md-footer__link md-footer__link--next" aria-label="Next: utils">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                initializers
+                utils
               </div>
             </div>
             <div class="md-footer__button md-icon">

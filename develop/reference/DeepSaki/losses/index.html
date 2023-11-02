@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Custom deep learning code for TensorFlow.">
+        <meta name="description" content="DeepSaki - Deep Learning Extension for TensorFlow">
       
       
         <meta name="author" content="Sascha Kirch">
@@ -21,7 +21,7 @@
         <link rel="next" href="../models/">
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/ds_logo_small.png">
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.7">
     
     
@@ -73,7 +73,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="grey">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-orange" data-md-color-accent="deep-orange">
   
     
     
@@ -107,8 +107,7 @@
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../../.." title="DeepSaki" class="md-header__button md-logo" aria-label="DeepSaki" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <img src="../../../assets/images/ds_logo_small_white.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -138,20 +137,20 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="grey"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-orange" data-md-color-accent="deep-orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
       </label>
     
   
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="white"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-orange" data-md-color-accent="deep-orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
       </label>
     
   
@@ -255,6 +254,40 @@
   
 
       
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../CONTRIBUTE/" class="md-tabs__link">
+        
+  
+    
+  
+  Contribute
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../CHANGELOG/" class="md-tabs__link">
+        
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
     </ul>
   </div>
 </nav>
@@ -287,8 +320,7 @@
   <label class="md-nav__title" for="__drawer">
     <a href="../../.." title="DeepSaki" class="md-nav__button md-logo" aria-label="DeepSaki" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <img src="../../../assets/images/ds_logo_small_white.png" alt="logo">
 
     </a>
     DeepSaki
@@ -637,6 +669,26 @@
   
   
     <li class="md-nav__item">
+      <a href="../types/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    types
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../utils/" class="md-nav__link">
         
   
@@ -662,6 +714,44 @@
           </ul>
         </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribute
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CHANGELOG/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -692,8 +782,6 @@
 
 
   <div class="doc doc-contents first">
-  
-      <p>Loss functions designed for image like data of the shape (<code>batch</code>, <code>height</code>, <code>width</code>, <code>channels</code>).</p>
 
   
 
@@ -723,7 +811,7 @@
 <span class="normal">5</span>
 <span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ImageBasedLoss</span><span class="p">(</span>
     <span class="n">global_batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">calculation_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;per_image&quot;</span><span class="p">,</span>
+    <span class="n">calculation_type</span><span class="p">:</span> <span class="n">LossCalcType</span> <span class="o">=</span> <span class="n">LossCalcType</span><span class="o">.</span><span class="n">PER_IMAGE</span><span class="p">,</span>
     <span class="n">normalize_depth_channel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">loss_reduction</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">Reduction</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">Reduction</span><span class="o">.</span><span class="n">AUTO</span><span class="p">,</span>
 <span class="p">)</span>
@@ -770,16 +858,16 @@ loss function that callculates the loss between two tensors.</p>
         <tr>
           <td><code>calculation_type</code></td>
           <td>
-                <code>str</code>
+                <code><a class="autorefs autorefs-internal" title="DeepSaki.types.losses_enums.LossCalcType" href="../types/#DeepSaki.types.losses_enums.LossCalcType">LossCalcType</a></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Determines how the loss is calculated: ["per_image" | "per_channel"].
-Defaults to "per_image".</p>
+              <p>Determines how the loss is calculated.
+Defaults to LossCalcType.PER_IMAGE.</p>
             </div>
           </td>
           <td>
-                <code>&#39;per_image&#39;</code>
+                <code><a class="autorefs autorefs-internal" title="DeepSaki.types.losses_enums.LossCalcType" href="../types/#DeepSaki.types.losses_enums.LossCalcType">LossCalcType</a>.<span title="DeepSaki.types.losses_enums.LossCalcType.PER_IMAGE">PER_IMAGE</span></code>
           </td>
         </tr>
         <tr>
@@ -841,9 +929,7 @@ tf.keras.losses.Reduction.AUTO.</p>
 
                 <details class="quote">
                   <summary>Source code in <code>DeepSaki/losses/image_based_losses.py</code></summary>
-                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
@@ -873,10 +959,12 @@ tf.keras.losses.Reduction.AUTO.</p>
 <span class="normal">45</span>
 <span class="normal">46</span>
 <span class="normal">47</span>
-<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">global_batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">calculation_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;per_image&quot;</span><span class="p">,</span>
+    <span class="n">calculation_type</span><span class="p">:</span> <span class="n">LossCalcType</span> <span class="o">=</span> <span class="n">LossCalcType</span><span class="o">.</span><span class="n">PER_IMAGE</span><span class="p">,</span>
     <span class="n">normalize_depth_channel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">loss_reduction</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">Reduction</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">Reduction</span><span class="o">.</span><span class="n">AUTO</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -884,8 +972,8 @@ tf.keras.losses.Reduction.AUTO.</p>
 
 <span class="sd">    Args:</span>
 <span class="sd">        global_batch_size (int): Batch size considering all workers running in parallel in a data parallel setup</span>
-<span class="sd">        calculation_type (str, optional): Determines how the loss is calculated: [&quot;per_image&quot; | &quot;per_channel&quot;].</span>
-<span class="sd">            Defaults to &quot;per_image&quot;.</span>
+<span class="sd">        calculation_type (LossCalcType, optional): Determines how the loss is calculated.</span>
+<span class="sd">            Defaults to LossCalcType.PER_IMAGE.</span>
 <span class="sd">        normalize_depth_channel (bool, optional): For RGBD images, the weight of depth is increased by multiplying</span>
 <span class="sd">            the depth by the number of color channels. Defaults to False.</span>
 <span class="sd">        loss_reduction (tf.keras.losses.Reduction, optional): Determines how the loss is reduced. Defaults to</span>
@@ -897,12 +985,12 @@ tf.keras.losses.Reduction.AUTO.</p>
     <span class="nb">super</span><span class="p">(</span><span class="n">ImageBasedLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="n">loss_reduction</span><span class="p">)</span>
 
     <span class="k">match</span> <span class="n">calculation_type</span><span class="p">:</span>
-        <span class="k">case</span> <span class="s2">&quot;per_channel&quot;</span><span class="p">:</span>
+        <span class="k">case</span> <span class="n">LossCalcType</span><span class="o">.</span><span class="n">PER_CHANNEL</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loss_calc_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_loss_per_channel</span>
-        <span class="k">case</span> <span class="s2">&quot;per_image&quot;</span><span class="p">:</span>
+        <span class="k">case</span> <span class="n">LossCalcType</span><span class="o">.</span><span class="n">PER_IMAGE</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loss_calc_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_loss_per_image</span>
         <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pixel distance type &#39;</span><span class="si">{</span><span class="n">calculation_type</span><span class="si">}</span><span class="s2">&#39; is not defined.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pixel distance type &#39;</span><span class="si">{</span><span class="n">calculation_type</span><span class="si">}</span><span class="s2">&#39; is not supported.&quot;</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">global_batch_size</span> <span class="o">=</span> <span class="n">global_batch_size</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">normalize_depth_channel</span> <span class="o">=</span> <span class="n">normalize_depth_channel</span>
@@ -1009,9 +1097,7 @@ tf.keras.losses.Reduction.AUTO.</p>
 
           <details class="quote">
             <summary>Source code in <code>DeepSaki/losses/image_based_losses.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">84</span>
 <span class="normal">85</span>
 <span class="normal">86</span>
 <span class="normal">87</span>
@@ -1022,7 +1108,9 @@ tf.keras.losses.Reduction.AUTO.</p>
 <span class="normal">92</span>
 <span class="normal">93</span>
 <span class="normal">94</span>
-<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img1</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">img2</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img1</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">img2</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates the image loss between `img1` and `img2` using the overriden `error_func` from the sub-class.</span>
 
 <span class="sd">    Args:</span>
@@ -1068,9 +1156,9 @@ tf.keras.losses.Reduction.AUTO.</p>
 <span class="normal">6</span>
 <span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">PixelDistanceLoss</span><span class="p">(</span>
     <span class="n">global_batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">calculation_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;per_image&quot;</span><span class="p">,</span>
+    <span class="n">calculation_type</span><span class="p">:</span> <span class="n">LossCalcType</span> <span class="o">=</span> <span class="n">LossCalcType</span><span class="o">.</span><span class="n">PER_IMAGE</span><span class="p">,</span>
     <span class="n">normalize_depth_channel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">loss_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mae&quot;</span><span class="p">,</span>
+    <span class="n">loss_type</span><span class="p">:</span> <span class="n">LossType</span> <span class="o">=</span> <span class="n">LossType</span><span class="o">.</span><span class="n">MAE</span><span class="p">,</span>
     <span class="n">loss_reduction</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">Reduction</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">Reduction</span><span class="o">.</span><span class="n">AUTO</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -1115,16 +1203,16 @@ tf.keras.losses.Reduction.AUTO.</p>
         <tr>
           <td><code>calculation_type</code></td>
           <td>
-                <code>str</code>
+                <code><a class="autorefs autorefs-internal" title="DeepSaki.types.losses_enums.LossCalcType" href="../types/#DeepSaki.types.losses_enums.LossCalcType">LossCalcType</a></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Determines how the loss is calculated: ["per_image" | "per_channel"].
-Defaults to "per_image".</p>
+              <p>Determines how the loss is calculated.
+Defaults to LossCalcType.PER_IMAGE.</p>
             </div>
           </td>
           <td>
-                <code>&#39;per_image&#39;</code>
+                <code><a class="autorefs autorefs-internal" title="DeepSaki.types.losses_enums.LossCalcType" href="../types/#DeepSaki.types.losses_enums.LossCalcType">LossCalcType</a>.<span title="DeepSaki.types.losses_enums.LossCalcType.PER_IMAGE">PER_IMAGE</span></code>
           </td>
         </tr>
         <tr>
@@ -1145,15 +1233,15 @@ the depth by the number of color channels. Defaults to False.</p>
         <tr>
           <td><code>loss_type</code></td>
           <td>
-                <code>str</code>
+                <code><a class="autorefs autorefs-internal" title="DeepSaki.types.losses_enums.LossType" href="../types/#DeepSaki.types.losses_enums.LossType">LossType</a></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Loss to apply: ["mae" | "mse"]. Defaults to "mae".</p>
+              <p>Loss to apply. Defaults to LossType.MAE.</p>
             </div>
           </td>
           <td>
-                <code>&#39;mae&#39;</code>
+                <code><a class="autorefs autorefs-internal" title="DeepSaki.types.losses_enums.LossType" href="../types/#DeepSaki.types.losses_enums.LossType">LossType</a>.<span title="DeepSaki.types.losses_enums.LossType.MAE">MAE</span></code>
           </td>
         </tr>
         <tr>
@@ -1200,9 +1288,7 @@ tf.keras.losses.Reduction.AUTO.</p>
 
                 <details class="quote">
                   <summary>Source code in <code>DeepSaki/losses/image_based_losses.py</code></summary>
-                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">106</span>
 <span class="normal">107</span>
 <span class="normal">108</span>
 <span class="normal">109</span>
@@ -1236,23 +1322,25 @@ tf.keras.losses.Reduction.AUTO.</p>
 <span class="normal">137</span>
 <span class="normal">138</span>
 <span class="normal">139</span>
-<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">global_batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">calculation_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;per_image&quot;</span><span class="p">,</span>
+    <span class="n">calculation_type</span><span class="p">:</span> <span class="n">LossCalcType</span> <span class="o">=</span> <span class="n">LossCalcType</span><span class="o">.</span><span class="n">PER_IMAGE</span><span class="p">,</span>
     <span class="n">normalize_depth_channel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">loss_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mae&quot;</span><span class="p">,</span>
+    <span class="n">loss_type</span><span class="p">:</span> <span class="n">LossType</span> <span class="o">=</span> <span class="n">LossType</span><span class="o">.</span><span class="n">MAE</span><span class="p">,</span>
     <span class="n">loss_reduction</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">Reduction</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">Reduction</span><span class="o">.</span><span class="n">AUTO</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the `PixelDistanceLoss`.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        global_batch_size (int): Batch size considering all workers running in parallel in a data parallel setup</span>
-<span class="sd">        calculation_type (str, optional): Determines how the loss is calculated: [&quot;per_image&quot; | &quot;per_channel&quot;].</span>
-<span class="sd">            Defaults to &quot;per_image&quot;.</span>
+<span class="sd">        calculation_type (LossCalcType, optional): Determines how the loss is calculated.</span>
+<span class="sd">            Defaults to LossCalcType.PER_IMAGE.</span>
 <span class="sd">        normalize_depth_channel (bool, optional): For RGBD images, the weight of depth is increased by multiplying</span>
 <span class="sd">            the depth by the number of color channels. Defaults to False.</span>
-<span class="sd">        loss_type (str, optional): Loss to apply: [&quot;mae&quot; | &quot;mse&quot;]. Defaults to &quot;mae&quot;.</span>
+<span class="sd">        loss_type (LossType, optional): Loss to apply. Defaults to LossType.MAE.</span>
 <span class="sd">        loss_reduction (tf.keras.losses.Reduction, optional): Determines how the loss is reduced. Defaults to</span>
 <span class="sd">            tf.keras.losses.Reduction.AUTO.</span>
 
@@ -1260,12 +1348,12 @@ tf.keras.losses.Reduction.AUTO.</p>
 <span class="sd">        ValueError: if `loss_type` is not a valid option.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">match</span> <span class="n">loss_type</span><span class="p">:</span>
-        <span class="k">case</span> <span class="s2">&quot;mae&quot;</span><span class="p">:</span>
+        <span class="k">case</span> <span class="n">LossType</span><span class="o">.</span><span class="n">MAE</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">error_func_type</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">abs</span>
-        <span class="k">case</span> <span class="s2">&quot;mse&quot;</span><span class="p">:</span>
+        <span class="k">case</span> <span class="n">LossType</span><span class="o">.</span><span class="n">MSE</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">error_func_type</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">square</span>
         <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameter loss_type=</span><span class="si">{</span><span class="n">loss_type</span><span class="si">}</span><span class="s2"> is not defined. Use &#39;mae&#39; or &#39;mse&#39; instead.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameter loss_type=</span><span class="si">{</span><span class="n">loss_type</span><span class="si">}</span><span class="s2"> is not supported.&quot;</span><span class="p">)</span>
 
     <span class="nb">super</span><span class="p">(</span><span class="n">PixelDistanceLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
         <span class="n">global_batch_size</span><span class="o">=</span><span class="n">global_batch_size</span><span class="p">,</span>
@@ -1318,7 +1406,7 @@ tf.keras.losses.Reduction.AUTO.</p>
 <span class="normal">10</span>
 <span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">StructuralSimilarityLoss</span><span class="p">(</span>
     <span class="n">global_batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">calculation_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;per_image&quot;</span><span class="p">,</span>
+    <span class="n">calculation_type</span><span class="p">:</span> <span class="n">LossCalcType</span> <span class="o">=</span> <span class="n">LossCalcType</span><span class="o">.</span><span class="n">PER_IMAGE</span><span class="p">,</span>
     <span class="n">normalize_depth_channel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -1380,16 +1468,16 @@ SSIM(x,y)=
         <tr>
           <td><code>calculation_type</code></td>
           <td>
-                <code>str</code>
+                <code><a class="autorefs autorefs-internal" title="DeepSaki.types.losses_enums.LossCalcType" href="../types/#DeepSaki.types.losses_enums.LossCalcType">LossCalcType</a></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Determines how the loss is calculated: ["per_image" | "per_channel"].
-Defaults to "per_image".</p>
+              <p>Determines how the loss is calculated.
+Defaults to LossCalcType.PER_IMAGE.</p>
             </div>
           </td>
           <td>
-                <code>&#39;per_image&#39;</code>
+                <code><a class="autorefs autorefs-internal" title="DeepSaki.types.losses_enums.LossCalcType" href="../types/#DeepSaki.types.losses_enums.LossCalcType">LossCalcType</a>.<span title="DeepSaki.types.losses_enums.LossCalcType.PER_IMAGE">PER_IMAGE</span></code>
           </td>
         </tr>
         <tr>
@@ -1497,9 +1585,7 @@ tf.keras.losses.Reduction.AUTO.</p>
 
                 <details class="quote">
                   <summary>Source code in <code>DeepSaki/losses/image_based_losses.py</code></summary>
-                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">169</span>
 <span class="normal">170</span>
 <span class="normal">171</span>
 <span class="normal">172</span>
@@ -1537,10 +1623,12 @@ tf.keras.losses.Reduction.AUTO.</p>
 <span class="normal">204</span>
 <span class="normal">205</span>
 <span class="normal">206</span>
-<span class="normal">207</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">global_batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">calculation_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;per_image&quot;</span><span class="p">,</span>
+    <span class="n">calculation_type</span><span class="p">:</span> <span class="n">LossCalcType</span> <span class="o">=</span> <span class="n">LossCalcType</span><span class="o">.</span><span class="n">PER_IMAGE</span><span class="p">,</span>
     <span class="n">normalize_depth_channel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -1553,8 +1641,8 @@ tf.keras.losses.Reduction.AUTO.</p>
 
 <span class="sd">    Args:</span>
 <span class="sd">        global_batch_size (int): Batch size considering all workers running in parallel in a data parallel setup.</span>
-<span class="sd">        calculation_type (str, optional): Determines how the loss is calculated: [&quot;per_image&quot; | &quot;per_channel&quot;].</span>
-<span class="sd">            Defaults to &quot;per_image&quot;.</span>
+<span class="sd">        calculation_type (LossCalcType, optional): Determines how the loss is calculated.</span>
+<span class="sd">            Defaults to LossCalcType.PER_IMAGE.</span>
 <span class="sd">        normalize_depth_channel (bool, optional): For RGBD images, the weight of depth is increased by multiplying</span>
 <span class="sd">            the depth by the number of color channels. Defaults to False.</span>
 <span class="sd">        alpha (float, optional): Weighting factor for contrast. Defaults to 1.0.</span>
@@ -1741,7 +1829,7 @@ tf.keras.losses.Reduction.AUTO.</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.path", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "toc.follow", "toc.integrate"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.path", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "toc.follow", "toc.integrate", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
       <script src="../../../assets/javascripts/bundle.aecac24b.min.js"></script>
