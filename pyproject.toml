@@ -185,7 +185,7 @@ max-branches = 8
 max-returns = 3
 max-statements = 30
 max-args = 15
-allow-magic-value-types = ["str", "bytes", "complex", "float", "int", "tuple"]
+allow-magic-value-types = ["str", "bytes", "complex", "float", "int"]
 [tool.ruff.pep8-naming]
 ignore-names = ["iFFT2D","iFFT3D","rFFT2D","use_residual_Conv2DBlock","use_ResidualBlock","rFFT2DFilter"]
 [tool.ruff.flake8-pytest-style]
