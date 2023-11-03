@@ -787,6 +787,24 @@ I especially want to encourage students and those of you eager to learn to code 
 <li>contribute example notebooks</li>
 </ul>
 <h2 id="install-the-dev-environment">Install the Dev Environment<a class="headerlink" href="#install-the-dev-environment" title="Permanent link">&para;</a></h2>
+<p>The eseaist way is to install the provided <a href="../environment/Dockerfile">docker container</a>, which requires you to have docker installed with nvidia gpu support.</p>
+<ol>
+<li>
+<p>build the image:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>docker<span class="w"> </span>build<span class="w"> </span>--build-arg<span class="w"> </span>HTTP_PROXY<span class="w"> </span>-t<span class="w"> </span>deepsaki<span class="w"> </span>-f<span class="w"> </span>Dockerfile<span class="w"> </span>.
+</code></pre></div></td></tr></table></div></p>
+</li>
+<li>
+<p>Create an container
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>docker<span class="w"> </span>container<span class="w"> </span>create<span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>--name<span class="w"> </span>deepsaki<span class="w"> </span>-p<span class="w"> </span><span class="m">8888</span>:8888<span class="w"> </span>-v<span class="w"> </span>~/git/sascha-kirch/DeepSaki:/deepsaki<span class="w"> </span>-it<span class="w"> </span>deepsaki
+</code></pre></div></td></tr></table></div></p>
+</li>
+<li>
+<p>start container
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>docker<span class="w"> </span>container<span class="w"> </span>start<span class="w"> </span>-i<span class="w"> </span>deepsaki
+</code></pre></div></td></tr></table></div></p>
+</li>
+</ol>
 <h2 id="before-you-create-a-pr">Before you create a PR<a class="headerlink" href="#before-you-create-a-pr" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Review your contribution</li>

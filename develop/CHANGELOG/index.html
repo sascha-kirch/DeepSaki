@@ -726,8 +726,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#v100-nov-xx-2023" class="md-nav__link">
-    v1.0.0 Nov xx, 2023
+  <a href="#v100-nov-5-2023" class="md-nav__link">
+    v1.0.0 Nov 5, 2023
   </a>
   
 </li>
@@ -780,9 +780,92 @@
 
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
-<h2 id="v100-nov-xx-2023"><img alt="🚀" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/72x72/1f680.png" title=":rocket:" /> v1.0.0 Nov xx, 2023<a class="headerlink" href="#v100-nov-xx-2023" title="Permanent link">&para;</a></h2>
+<h2 id="v100-nov-5-2023"><img alt="🚀" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/72x72/1f680.png" title=":rocket:" /> v1.0.0 Nov 5, 2023<a class="headerlink" href="#v100-nov-5-2023" title="Permanent link">&para;</a></h2>
 <p>GitHub Release Tag: <a href="https://github.com/sascha-kirch/DeepSaki/releases/tag/v1.0.0">v1.0.0</a></p>
 <p><strong>Changes:</strong></p>
+<ul>
+<li>
+<p><strong>Framework:</strong></p>
+<ul>
+<li>Upgrade from python 3.8 to python 3.10 since it supports a wide range of tensorflow version(2.6-2.14)</li>
+<li>update of project structure to a modern SW project</li>
+<li>automated CI/CD</li>
+<li>docstrings and type annotations</li>
+<li>initial automated documentation using mkdocs and mike supporting multiple version. Will be further improved in a future.</li>
+<li>automated code coverage reports</li>
+<li>automated publishing of packages on release</li>
+<li>add changelog and contribution documentation</li>
+<li>providing a dockerfile for the dev environment</li>
+</ul>
+</li>
+<li>
+<p><strong>DeepSaki.initializers:</strong></p>
+<ul>
+<li>renamed DeepSaki.initializer -&gt; DeepSaki.initializers</li>
+<li>Refactored function make_initializer_complex() into a class called ComplexInitializer</li>
+</ul>
+</li>
+<li>
+<p><strong>DeepSaki.layers:</strong></p>
+<ul>
+<li>renamed ResidualIdentityBlock -&gt; ResidualBlock</li>
+<li>New Layers:<ul>
+<li>LearnedPooling</li>
+<li>FFT3D</li>
+<li>iFFT3D</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>DeepSaki.losses:</strong></p>
+<ul>
+<li>New abstract base class for image based losses.</li>
+</ul>
+</li>
+<li>
+<p><strong>DeepSaki.optimizers:</strong></p>
+<ul>
+<li>renamed module from optimizer -&gt; optimizers</li>
+<li>new method switch_optimizer() to change the current optimizer of SwatsAdam or SwatsNadam optimizer.</li>
+</ul>
+</li>
+<li>
+<p><strong>DeepSaki.augmentations:</strong></p>
+<ul>
+<li>renamed module from regularizations to augmentations since it only contained augmentations.</li>
+</ul>
+</li>
+<li>
+<p><strong>DeepSaki.utils:</strong></p>
+<ul>
+<li>renamed DetectHw() -&gt; detect_accelerator()</li>
+<li>renamed EnableXlaAcceleration() -&gt; enable_xla_acceleration()</li>
+<li>renamed EnableMixedPrecision() -&gt; enable_mixed_precision()</li>
+</ul>
+</li>
+<li>
+<p><strong>New modules:</strong></p>
+<ul>
+<li>DeepSaki.types: provides type definitions and enums used in the package.</li>
+</ul>
+</li>
+<li>
+<p><strong>Misc:</strong></p>
+<ul>
+<li>general code cleaning and refactoring.</li>
+<li>changed print expressions to logging</li>
+<li>using pyproject.toml for project config</li>
+</ul>
+</li>
+<li>
+<p><strong>Outlook:</strong></p>
+<ul>
+<li>improved changelogs with issue tickets</li>
+<li>new modules are planned, e.g. a diffusion module and a framework module featuring CycleGAN and DDPM.</li>
+</ul>
+</li>
+</ul>
 <h2 id="v013-may-28-2022">v0.1.3 May 28, 2022<a class="headerlink" href="#v013-may-28-2022" title="Permanent link">&para;</a></h2>
 <p>GitHub Release Tag: <a href="https://github.com/sascha-kirch/DeepSaki/releases/tag/v0.1.3">v0.1.3</a></p>
 <p><strong>Changes:</strong></p>
