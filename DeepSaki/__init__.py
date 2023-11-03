@@ -8,7 +8,7 @@ from DeepSaki import models
 from DeepSaki import optimizers
 from DeepSaki import utils
 
-__version__ = "1.0.0"
+__version__ = "1.0.2"
 
 __author__ = "Sascha Kirch"
 
