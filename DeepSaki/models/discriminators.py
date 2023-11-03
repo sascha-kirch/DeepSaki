@@ -125,7 +125,7 @@ class LayoutContentDiscriminator(tf.keras.Model):
         #To enable mixed precission support for matplotlib and distributed training and to increase training stability
         self.linear_dtype = tf.keras.layers.Activation("linear", dtype = tf.float32)
 
-    def build(self, input_shape):
+    def build(self, input_shape:tf.TensorShape)->None:
         _, height, width,_ = input_shape
         if height < 256 or width < 256:
             raise ValueError(f"Input requires a height and width of minimum 256, but got {height=} and {width=}")

@@ -83,4 +83,4 @@ def enable_mixed_precision() -> None:
     policy_config = "mixed_bfloat16" if tpu else "mixed_float16"
     policy = tf.keras.mixed_precision.Policy(policy_config)
     tf.keras.mixed_precision.set_global_policy(policy)
-    logging.info("Mixed precision enabled to {}".format(policy_config))
+    logging.info(f"Mixed precision enabled to {policy_config}")

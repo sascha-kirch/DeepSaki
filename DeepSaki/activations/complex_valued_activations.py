@@ -1,6 +1,5 @@
 from typing import Any
 from typing import Dict
-from typing import Union
 
 import tensorflow as tf
 
@@ -32,14 +31,14 @@ class ComplexActivation(tf.keras.layers.Layer):
         super(ComplexActivation, self).__init__(**kwargs)
         self.activation = activation
 
-    def call(self, inputs: tf.Tensor) -> Union[tf.complex64, tf.complex128]:
+    def call(self, inputs: tf.Tensor) -> tf.Tensor:
         """Splits its intput `inputs`into a real and imaginary part, applies `activation` and constructs a complex number.
 
         Args:
             inputs (tf.Tensor): Input tensor to be activated. Might be a complex or real valued tensor.
 
         Returns:
-            tf.complex64 | tf.complex128: Complex tensor with activated real and imaginary part.
+            Complex-valued tensor with activated real and imaginary part.
         """
         real = self.activation(tf.math.real(inputs))
         imag = self.activation(tf.math.imag(inputs))

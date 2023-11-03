@@ -1,12 +1,13 @@
-from . import activations
-from . import augmentations
-from . import constraints
-from . import initializers
-from . import layers
-from . import losses
-from . import models
-from . import optimizers
-from . import utils
+from DeepSaki import activations
+from DeepSaki import augmentations
+from DeepSaki import constraints
+from DeepSaki import initializers
+from DeepSaki import layers
+from DeepSaki import losses
+from DeepSaki import models
+from DeepSaki import optimizers
+from DeepSaki import types
+from DeepSaki import utils
 
 __version__ = "1.0.0"
 
@@ -21,5 +22,6 @@ __all__ = [
     "losses",
     "models",
     "optimizers",
+    "types",
     "utils",
 ]
