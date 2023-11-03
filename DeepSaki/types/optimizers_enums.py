@@ -9,6 +9,7 @@ class CurrentOptimizer(Enum):
         ADAM: Indicates to switch to the ADAM optimizer.
         NADAM: Indicates to switch to the NADAM optimizer.
     """
+
     SGD = auto()
     ADAM = auto()
     NADAM = auto()

@@ -2,8 +2,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from enum import Enum
-from enum import auto
 from typing import Any
 from typing import Dict
 from typing import List
@@ -20,8 +18,6 @@ from tensorflow.python.ops import variables as tf_variables
 from tensorflow.python.training import gen_training_ops
 
 from DeepSaki.types.optimizers_enums import CurrentOptimizer
-
-
 
 class SwatsAdam(optimizer_v2.OptimizerV2):
     """Initializer that can switch from ADAM to SGD and vice versa.
