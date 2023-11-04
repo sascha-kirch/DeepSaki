@@ -1,0 +1,124 @@
+# https://www.mkdocs.org/user-guide/configuration/
+site_name: DeepSaki
+site_author: "Sascha Kirch"
+site_description: "DeepSaki - Deep Learning Extension for TensorFlow"
+site_url: https://sascha-kirch.github.io/DeepSaki
+
+repo_url: https://github.com/sascha-kirch/DeepSaki
+repo_name: sascha-kirch/DeepSaki
+
+theme:
+  logo: assets/images/ds_logo_small_white.png
+  favicon: assets/images/ds_logo_small.png
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.path
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - toc.integrate
+    - content.code.copy
+  name: "material"
+  # https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      primary: deep orange
+      accent: deep orange
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      primary: deep orange
+      accent: deep orange
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+# https://mkdocstrings.github.io/recipes/#generate-pages-on-the-fly
+# https://mkdocstrings.github.io/usage/#docsmy_pagemd
+# https://mkdocstrings.github.io/python/usage/configuration/general/
+# https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/
+plugins:
+  - search
+  - gen-files:
+      scripts:
+      - docs/gen_ref_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - section-index
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_root_heading: false
+            heading_level: 2
+            show_root_toc_entry: false
+            show_root_full_path: true
+            show_root_members_full_path: false
+            show_object_full_path: false
+            group_by_category: true
+            show_category_heading: false
+            show_submodules: false
+            ignore_init_summary: true
+            merge_init_into_class: true
+            docstring_section_style: table
+            show_if_no_docstring: false
+            annotations_path: source
+            separate_signature: true
+            show_signature_annotations: true
+            show_docstring_other_parameters: true
+
+
+  #- autorefs
+
+# https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown-extensions/
+# https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown/#table-of-contents
+# http://mermaid.js.org/syntax/flowchart.html
+markdown_extensions:
+  - pymdownx.highlight:
+      linenums: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.arithmatex:
+      generic: true
+  - toc:
+      permalink: true
+      toc_depth: 2
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+nav:
+  - Start: README.md
+  - Code Reference: reference/
+  - Contribute: CONTRIBUTE.md
+  - Changelog: CHANGELOG.md
+
+extra_javascript:
+  - javascripts/katex.js
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
+
+extra_css:
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
+
+extra:
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/dribbble
+      link: https://sascha-kirch.github.io/
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/sascha-kirch/
+    - icon: fontawesome/brands/github
+      link: https://github.com/sascha-kirch
+    - icon: fontawesome/brands/medium
+      link: https://medium.com/@SaschaKirch

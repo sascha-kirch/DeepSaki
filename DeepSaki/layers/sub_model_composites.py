@@ -1,421 +1,678 @@
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import Union
+
 import tensorflow as tf
-import DeepSaki.layers
+
+from DeepSaki.layers.layer_composites import Conv2DBlock
+from DeepSaki.layers.layer_composites import DownSampleBlock
+from DeepSaki.layers.layer_composites import ResBlockDown
+from DeepSaki.layers.layer_composites import ResBlockUp
+from DeepSaki.layers.layer_composites import ResidualBlock
+from DeepSaki.layers.layer_composites import ScalarGatedSelfAttention
+from DeepSaki.layers.layer_composites import UpSampleBlock
+from DeepSaki.layers.layer_helper import dropout_func
+from DeepSaki.types.layers_enums import DownSampleType
+from DeepSaki.types.layers_enums import PaddingType
+from DeepSaki.types.layers_enums import UpSampleType
 
 class Encoder(tf.keras.layers.Layer):
-  '''
-  Encoder sub-model combines convolutional blocks with down sample blocks. The spatial width is halfed with every level while the channel depth is doubled.
-  args:
-    - number_of_levels (optional, default:3): number of conv2D -> Downsampling pairs
-    - filters (optional, default:64): defines the number of filters to which the input is exposed.
-    - kernels: size of the convolutions kernels
-    - limit_filters (optional, default:1024): limits the number of filters, which is doubled with every downsampling block 
-    - useResidualConv2DBlock (optional, default: False): ads a residual connection in parallel to the Conv2DBlock
-    - downsampling(optional, default: "conv_stride_2"): describes the downsampling method used
-    - split_kernels (optional, default: False): to decrease the number of parameters, a convolution with the kernel_size (kernel,kernel) can be splitted into two consecutive convolutions with the kernel_size (kernel,1) and (1,kernel) respectivly
-    - numberOfConvs (optional, default: 1): number of consecutive convolutional building blocks, i.e. Conv2DBlock.
-    - activation (optional, default: "leaky_relu"): string literal or tensorflow activation function object to obtain activation function
-    - first_kernel (optional, default: 5): The first convolution can have a different kernel size, to e.g. increase the perceptive field, while the channel depth is still low.
-    - useResidualIdentityBlock (optional, default: False): Whether or not to use the ResidualIdentityBlock instead of the Conv2DBlock
-    - residual_cardinality (optional, default: 1): cardinality for the ResidualIdentityBlock
-    - channelList (optional, default:None): alternativly to number_of_layers and filters, a list with the disired filters for each level can be provided. e.g. channel_list = [64, 128, 256] results in a 3-level Encoder with 64, 128, 256 filters for level 1, 2 and 3 respectivly.
-    - useSpecNorm (optional, default: False): applies spectral normalization to convolutional and dense layers
-    - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
-    - dropout_rate (optional, default: 0): probability of the dropout layer. If the preceeding layer has more than one channel, spatial dropout is applied, otherwise standard dropout 
-    - useSelfAttention (optional, default: False): Determines whether to apply self-attention after the encoder before branching.
-    - omit_skips (optional, default: 0): defines how many layers should not output a skip connection output. Requires outputSkips to be True. E.g. if omit_skips = 2, the first two levels do not output a skip connection, it starts at level 3.
-    - padding (optional, default: "none"): padding type. Options are "none", "zero" or "reflection"
-    - outputSkips (optional, default: False): Whether or not to output skip connections at each level
-    - kernel_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the convolutions kernels.
-    - gamma_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the normalization layers.
-  '''
-  def __init__(self,
-            number_of_levels = 3, 
-            filters = 64, 
-            limit_filters = 1024, 
-            useResidualConv2DBlock = False, 
-            downsampling = "conv_stride_2", 
-            kernels = 3,
-            split_kernels = False,
-            numberOfConvs = 2,
-            activation = "leaky_relu",
-            first_kernel = None,  
-            useResidualIdentityBlock = False,
-            residual_cardinality = 1, 
-            channelList = None,
-            useSpecNorm=False, 
-            use_bias = True,
-            dropout_rate=0,
-            useSelfAttention=False,
-            omit_skips = 0,
-            padding = "zero",
-            outputSkips = False,
-            kernel_initializer = DeepSaki.initializer.HeAlphaUniform(),
-            gamma_initializer =  DeepSaki.initializer.HeAlphaUniform()
-            ):
-    super(Encoder, self).__init__()
-    self.number_of_levels = number_of_levels
-    self.filters = filters
-    self.limit_filters = limit_filters
-    self.useResidualConv2DBlock = useResidualConv2DBlock
-    self.downsampling = downsampling
-    self.kernels = kernels
-    self.split_kernels = split_kernels
-    self.numberOfConvs = numberOfConvs
-    self.activation = activation
-    self.first_kernel = first_kernel
-    self.useResidualIdentityBlock = useResidualIdentityBlock
-    self.residual_cardinality = residual_cardinality
-    self.channelList = channelList
-    self.useSpecNorm = useSpecNorm
-    self.dropout_rate = dropout_rate
-    self.useSelfAttention = useSelfAttention
-    self.omit_skips = omit_skips
-    self.padding = padding
-    self.outputSkips = outputSkips
-    self.use_bias = use_bias
-    self.kernel_initializer = kernel_initializer
-    self.gamma_initializer = gamma_initializer
+    """Combines conv blocks with down sample blocks.
 
-  def build(self, input_shape):
-    super(Encoder, self).build(input_shape)
+    The spatial width is halved with every level while the channel depth is doubled.
+    Can be combined with `ds.layers.Decoder` and `ds.layers.Bottleneck` to form an auto encoder model.
 
-    if self.channelList == None:
-      self.channelList = [min(self.filters * 2**i, self.limit_filters) for i in range(self.number_of_levels)]
-    else:
-      self.number_of_levels = len(self.channelList)
+    Tipp:
+        Checkout the ds.models api to find models using this layer.
+    """
 
-    self.encoderBlocks = []
-    self.downSampleBlocks = []
+    def __init__(
+        self,
+        number_of_levels: int = 3,
+        filters: int = 64,
+        limit_filters: int = 1024,
+        downsampling: DownSampleType = DownSampleType.CONV_STRIDE_2,
+        kernels: int = 3,
+        split_kernels: bool = False,
+        number_of_blocks: int = 2,
+        activation: str = "leaky_relu",
+        first_kernel: Optional[int] = None,
+        use_ResidualBlock: bool = False,
+        residual_cardinality: int = 1,
+        channel_list: Optional[List[int]] = None,
+        use_spec_norm: bool = False,
+        use_bias: bool = True,
+        dropout_rate: float = 0.0,
+        use_self_attention: bool = False,
+        omit_skips: int = 0,
+        padding: PaddingType = PaddingType.ZERO,
+        output_skips: bool = False,
+        kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
+        gamma_initializer: Optional[tf.keras.initializers.Initializer] = None,
+    ) -> None:
+        """Initializes the `Encoder` layer.
 
-    if self.useSelfAttention:
-        self.SA = DeepSaki.layers.ScalarGatedSelfAttention(useSpecNorm=self.useSpecNorm, intermediateChannel=None, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer)
-    else: 
-      self.SA = None
+        Args:
+            number_of_levels (int, optional): Number of downsampling levels of the model. Defaults to 3.
+            filters (int, optional): Number of filters for the initial encoder block. Defaults to 64.
+            limit_filters (int, optional): Limits the number of filters, which is doubled with every downsampling block.
+                Defaults to 1024.
+            downsampling (DownSampleType, optional): Describes the downsampling method. Defaults to DownSampleType.CONV_STRIDE_2.
+            kernels (int, optional): Size of the convolutions kernels. Defaults to 3.
+            split_kernels (bool, optional): To decrease the number of parameters, a convolution with the kernel_size
+                `(kernel,kernel)` can be splitted into two consecutive convolutions with the kernel_size `(kernel,1)` and
+                `(1,kernel)` respectivly. Defaults to False.
+            number_of_blocks (int, optional): Number of consecutive convolutional building blocks, i.e. `Conv2DBlock`.
+                Defaults to 2.
+            activation (str, optional): String literal or tensorflow activation function object to obtain activation
+                function. Defaults to "leaky_relu".
+            first_kernel (Optional[int], optional): The first convolution can have a different kernel size, to e.g.
+                increase the perceptive field, while the channel depth is still low. Defaults to None.
+            use_ResidualBlock (bool, optional): Whether or not to use the `ResidualBlock` instead of the
+                `Conv2DBlock`. Defaults to False.
+            residual_cardinality (int, optional): Cardinality for the `ResidualBlock`. Defaults to 1.
+            channel_list (Optional[List[int]], optional): alternativly to number_of_layers and filters, a list with the
+                disired filters for each level can be provided. e.g. channel_list = [64, 128, 256] results in a 3-level
+                Encoder with 64, 128, 256 filters for level 1, 2 and 3 respectivly. Defaults to None.
+            use_spec_norm (bool, optional): Applies spectral normalization to convolutional and dense layers.
+                Defaults to False.
+            use_bias (bool, optional): Whether convolutions and dense layers include a bias or not. Defaults to True.
+            dropout_rate (float, optional): Probability of the dropout layer. If the preceeding layer has more than one
+                channel, spatial dropout is applied, otherwise standard dropout. Defaults to 0.0.
+            use_self_attention (bool, optional): Determines whether to apply self-attention in the encoder. Defaults to False.
+            omit_skips (int, optional): Defines how many layers should not output a skip connection output. Requires
+                `output_skips` to be True. E.g. if `omit_skips = 2`, the first two levels do not output a skip connection,
+                it starts at level 3. Defaults to 0.
+            padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
+            output_skips (bool, optional): If true, ski connections are output. Could be used to attach an encoder to a
+                decoder model. Defaults to False.
+            kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
+                Defaults to None.
+            gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
+                Defaults to None.
+        """
+        super(Encoder, self).__init__()
+        self.number_of_levels = number_of_levels
+        self.filters = filters
+        self.limit_filters = limit_filters
+        self.downsampling = downsampling
+        self.kernels = kernels
+        self.split_kernels = split_kernels
+        self.number_of_blocks = number_of_blocks
+        self.activation = activation
+        self.first_kernel = first_kernel
+        self.use_ResidualBlock = use_ResidualBlock
+        self.residual_cardinality = residual_cardinality
+        self.channel_list = channel_list
+        self.use_spec_norm = use_spec_norm
+        self.dropout_rate = dropout_rate
+        self.use_self_attention = use_self_attention
+        self.omit_skips = omit_skips
+        self.padding = padding
+        self.output_skips = output_skips
+        self.use_bias = use_bias
+        self.kernel_initializer = kernel_initializer
+        self.gamma_initializer = gamma_initializer
 
-    for i, ch in enumerate(self.channelList):
-      if i == 0 and self.first_kernel:
-        encoder_kernels = self.first_kernel
-      else:
-        encoder_kernels = self.kernels
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4, dtype=tf.float32)
 
-      if self.useResidualIdentityBlock:
-        self.encoderBlocks.append(DeepSaki.layers.ResidualIdentityBlock(filters =ch, activation = self.activation, kernels = encoder_kernels,numberOfBlocks=self.numberOfConvs, useSpecNorm=self.useSpecNorm,dropout_rate=self.dropout_rate, use_bias = self.use_bias, residual_cardinality = self.residual_cardinality,padding = self.padding, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer))
-        self.downSampleBlocks.append(DeepSaki.layers.ResBlockDown(activation = self.activation, useSpecNorm=self.useSpecNorm, use_bias = self.use_bias,padding = self.padding, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer))
-      else:
-        self.encoderBlocks.append(DeepSaki.layers.Conv2DBlock(filters=ch, useResidualConv2DBlock = self.useResidualConv2DBlock,kernels = encoder_kernels,split_kernels = self.split_kernels, activation = self.activation, numberOfConvs=self.numberOfConvs,useSpecNorm=self.useSpecNorm,dropout_rate=self.dropout_rate,padding=self.padding,use_bias = self.use_bias, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer))
-        self.downSampleBlocks.append(DeepSaki.layers.DownSampleBlock( downsampling = self.downsampling, activation=self.activation,kernels = encoder_kernels,useSpecNorm=self.useSpecNorm,padding=self.padding, use_bias = self.use_bias, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer))
+    def build(self, input_shape: tf.TensorShape) -> None:
+        """Build layer depending on the `input_shape` (output shape of the previous layer).
 
-  def call(self, inputs):
-    if not self.built:
-      raise ValueError('This model has not yet been built.')
+        Args:
+            input_shape (tf.TensorShape): Shape of the input tensor to this layer.
+        """
+        super(Encoder, self).build(input_shape)
 
-    x = inputs
-    skips = []
-
-    for level in range(self.number_of_levels):
-      if level == 3 and self.SA is not None:
-        x = self.SA(x) 
-      skip = self.encoderBlocks[level](x)
-      x = self.downSampleBlocks[level](skip)
-      if self.outputSkips:
-        if level >= self.omit_skips: # omit the first skip connection
-          skips.append(skip)
+        if self.channel_list is None:
+            self.channel_list = [min(self.filters * 2**i, self.limit_filters) for i in range(self.number_of_levels)]
         else:
-          skips.append(None)
+            self.number_of_levels = len(self.channel_list)
 
-    if self.outputSkips:
-      return x, skips
-    else:
-      return x
+        self.encoderBlocks = []
+        self.downSampleBlocks = []
 
-  def get_config(self):
-    config = super(Encoder, self).get_config()
-    config.update({
-        "number_of_levels":self.number_of_levels,
-        "filters":self.filters,
-        "limit_filters":self.limit_filters,
-        "useResidualConv2DBlock":self.useResidualConv2DBlock,
-        "downsampling":self.downsampling,
-        "kernels":self.kernels,
-        "split_kernels":self.split_kernels,
-        "numberOfConvs":self.numberOfConvs,
-        "activation":self.activation,
-        "first_kernel":self.first_kernel,
-        "useResidualIdentityBlock":self.useResidualIdentityBlock,
-        "residual_cardinality":self.residual_cardinality,
-        "channelList":self.channelList,
-        "useSpecNorm":self.useSpecNorm,
-        "use_bias":self.use_bias,
-        "dropout_rate":self.dropout_rate,
-        "useSelfAttention":self.useSelfAttention,
-        "omit_skips":self.omit_skips,
-        "padding":self.padding,
-        "outputSkips":self.outputSkips,
-        "kernel_initializer":self.kernel_initializer,
-        "gamma_initializer":self.gamma_initializer
-        })
-    return config
+        if self.use_self_attention:
+            self.SA = ScalarGatedSelfAttention(
+                use_spec_norm=self.use_spec_norm,
+                intermediate_channel=None,
+                kernel_initializer=self.kernel_initializer,
+                gamma_initializer=self.gamma_initializer,
+            )
+        else:
+            self.SA = None
 
-#Testcode
-#layer = Encoder( number_of_levels = 5, filters = 64, limit_filters = 512, useSelfAttention = True,useResidualConv2DBlock = True, downsampling="max_pooling", kernels=3, split_kernels = True,  numberOfConvs = 2,activation = "leaky_relu", first_kernel=3,useResidualIdentityBlock = True,useSpecNorm=True, omit_skips=2)
-#print(layer.get_config())
-#DeepSaki.layers.helper.PlotLayer(layer,inputShape=(256,256,4))
+        for i, ch in enumerate(self.channel_list):
+            encoder_kernels = self.first_kernel if i == 0 and self.first_kernel else self.kernels
+
+            if self.use_ResidualBlock:
+                self.encoderBlocks.append(
+                    ResidualBlock(
+                        filters=ch,
+                        activation=self.activation,
+                        kernels=encoder_kernels,
+                        number_of_blocks=self.number_of_blocks,
+                        use_spec_norm=self.use_spec_norm,
+                        dropout_rate=self.dropout_rate,
+                        use_bias=self.use_bias,
+                        residual_cardinality=self.residual_cardinality,
+                        padding=self.padding,
+                        kernel_initializer=self.kernel_initializer,
+                        gamma_initializer=self.gamma_initializer,
+                    )
+                )
+                self.downSampleBlocks.append(
+                    ResBlockDown(
+                        activation=self.activation,
+                        use_spec_norm=self.use_spec_norm,
+                        use_bias=self.use_bias,
+                        padding=self.padding,
+                        kernel_initializer=self.kernel_initializer,
+                        gamma_initializer=self.gamma_initializer,
+                    )
+                )
+            else:
+                self.encoderBlocks.append(
+                    Conv2DBlock(
+                        filters=ch,
+                        kernels=encoder_kernels,
+                        split_kernels=self.split_kernels,
+                        activation=self.activation,
+                        number_of_blocks=self.number_of_blocks,
+                        use_spec_norm=self.use_spec_norm,
+                        dropout_rate=self.dropout_rate,
+                        padding=self.padding,
+                        use_bias=self.use_bias,
+                        kernel_initializer=self.kernel_initializer,
+                        gamma_initializer=self.gamma_initializer,
+                    )
+                )
+                self.downSampleBlocks.append(
+                    DownSampleBlock(
+                        downsampling=self.downsampling,
+                        activation=self.activation,
+                        kernels=encoder_kernels,
+                        use_spec_norm=self.use_spec_norm,
+                        padding=self.padding,
+                        use_bias=self.use_bias,
+                        kernel_initializer=self.kernel_initializer,
+                        gamma_initializer=self.gamma_initializer,
+                    )
+                )
+
+    def call(self, inputs: tf.Tensor) -> Union[tf.Tensor, Tuple[tf.Tensor, tf.Tensor]]:
+        """Calls the `Encoder` layer.
+
+        Args:
+            inputs (tf.Tensor): Input tensor of shape (batch, height, width, channel)
+
+        Returns:
+            If `output_skips=False` only the final output of the Encoder is returned as a tensor of shape
+                (`batch`, `height/2**number_of_levels`, `width/2**number_of_levels`,
+                `min(filters * 2 ** (number_of_levels - 1), limit_filters)`. If `output_skips=True` additionally returns
+                a tensor of tensor (one for each level of the encoder) of shape (`batch`, `height/2**level`,
+                `width/2**level`, `min(filters * 2 ** (number_of_levels - 1), limit_filters)`.
+        """
+        x = inputs
+        skips = []
+
+        for level in range(self.number_of_levels):
+            if level == 3 and self.SA is not None:
+                x = self.SA(x)
+            skip = self.encoderBlocks[level](x)
+            x = self.downSampleBlocks[level](skip)
+            if self.output_skips:
+                if level >= self.omit_skips:  # omit the first skip connection
+                    skips.append(skip)
+                else:
+                    skips.append(None)
+
+        if self.output_skips:
+            return x, skips
+        return x
+
+    def get_config(self) -> Dict[str, Any]:
+        """Serialization of the object.
+
+        Returns:
+            Dictionary with the class' variable names as keys.
+        """
+        config = super(Encoder, self).get_config()
+        config.update(
+            {
+                "number_of_levels": self.number_of_levels,
+                "filters": self.filters,
+                "limit_filters": self.limit_filters,
+                "downsampling": self.downsampling,
+                "kernels": self.kernels,
+                "split_kernels": self.split_kernels,
+                "number_of_blocks": self.number_of_blocks,
+                "activation": self.activation,
+                "first_kernel": self.first_kernel,
+                "use_ResidualBlock": self.use_ResidualBlock,
+                "residual_cardinality": self.residual_cardinality,
+                "channel_list": self.channel_list,
+                "use_spec_norm": self.use_spec_norm,
+                "use_bias": self.use_bias,
+                "dropout_rate": self.dropout_rate,
+                "use_self_attention": self.use_self_attention,
+                "omit_skips": self.omit_skips,
+                "padding": self.padding,
+                "output_skips": self.output_skips,
+                "kernel_initializer": self.kernel_initializer,
+                "gamma_initializer": self.gamma_initializer,
+            }
+        )
+        return config
 
 
 class Bottleneck(tf.keras.layers.Layer):
-  '''
-  Bottlenecks are sub-model blocks in auto-encoder-like models such as UNet or ResNet. It is composed of multiple convolution blocks which might have residuals
-  args:
-    - n_bottleneck_blocks (optional, default: 3): Number of consecutive convolution blocks
-    - kernels: size of the convolutions kernels
-    - split_kernels (optional, default: False): to decrease the number of parameters, a convolution with the kernel_size (kernel,kernel) can be splitted into two consecutive convolutions with the kernel_size (kernel,1) and (1,kernel) respectivly
-    - numberOfConvs (optional, default: 2): number of consecutive convolutional building blocks, i.e. Conv2DBlock.
-    - useResidualConv2DBlock (optional, default: True): ads a residual connection in parallel to the Conv2DBlock
-    - useResidualIdentityBlock (optional, default: False): Whether or not to use the ResidualIdentityBlock instead of the Conv2DBlock
-    - activation (optional, default: "leaky_relu"): string literal or tensorflow activation function object to obtain activation function
-    - dropout_rate (optional, default: 0): probability of the dropout layer. If the preceeding layer has more than one channel, spatial dropout is applied, otherwise standard dropout
-    - channelList (optional, default:None): alternativly to number_of_layers and filters, a list with the disired filters for each block can be provided. e.g. channel_list = [64, 128, 256] results in a 3-staged Bottleneck with 64, 128, 256 filters for stage 1, 2 and 3 respectivly.
-    - useSpecNorm (optional, default: False): applies spectral normalization to convolutional and dense layers
-    - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
-    - residual_cardinality (optional, default: 1): cardinality for the ResidualIdentityBlock
-    - padding (optional, default: "none"): padding type. Options are "none", "zero" or "reflection"
-    - kernel_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the convolutions kernels.
-    - gamma_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the normalization layers.
-  '''
-  def __init__(self,
-               n_bottleneck_blocks = 3, 
-               kernels = 3,
-               split_kernels = False,
-               numberOfConvs = 2, 
-               useResidualConv2DBlock = True, 
-               useResidualIdentityBlock = False, 
-               activation = "leaky_relu", 
-               dropout_rate = 0.2, 
-               channelList = None,
-               useSpecNorm = False,
-               use_bias = True,
-               residual_cardinality = 1,
-               padding = "zero",
-               kernel_initializer = DeepSaki.initializer.HeAlphaUniform(),
-               gamma_initializer =  DeepSaki.initializer.HeAlphaUniform()
-               ):
-    super(Bottleneck, self).__init__()
-    self.useResidualIdentityBlock = useResidualIdentityBlock 
-    self.n_bottleneck_blocks = n_bottleneck_blocks
-    self.useResidualConv2DBlock = useResidualConv2DBlock 
-    self.kernels = kernels
-    self.split_kernels = split_kernels 
-    self.numberOfConvs = numberOfConvs
-    self.activation = activation
-    self.dropout_rate = dropout_rate
-    self.channelList = channelList
-    self.useSpecNorm = useSpecNorm
-    self.use_bias = use_bias
-    self.residual_cardinality = residual_cardinality
-    self.padding = padding
-    self.kernel_initializer = kernel_initializer
-    self.gamma_initializer = gamma_initializer
+    """Bottlenecks are sub-model blocks in auto-encoder-like models such as UNet or ResNet.
 
-  def build(self, input_shape):
-    super(Bottleneck, self).build(input_shape)
+    It is composed of multiple convolution blocks which might have residuals.
 
-    if self.channelList == None:
-      ch = input_shape[-1]
-      self.channelList = [ch for i in range(self.n_bottleneck_blocks)]
+    Can be combined with `ds.layers.Encoder` and `ds.layers.Decoder` to form an auto encoder model.
 
-    self.layers = []
-    for ch in self.channelList:
-      if self.useResidualIdentityBlock:
-        self.layers.append(DeepSaki.layers.ResidualIdentityBlock(activation = self.activation,filters=ch, kernels = self.kernels,numberOfBlocks=self.numberOfConvs,useSpecNorm=self.useSpecNorm, use_bias = self.use_bias,residual_cardinality = self.residual_cardinality,padding = self.padding, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer))  
-      else:
-        self.layers.append(DeepSaki.layers.Conv2DBlock(filters=ch, useResidualConv2DBlock = self.useResidualConv2DBlock, kernels = self.kernels, split_kernels = self.split_kernels,numberOfConvs=self.numberOfConvs,activation=self.activation,useSpecNorm=self.useSpecNorm, use_bias = self.use_bias,padding = self.padding, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer))
+    Tipp:
+        Checkout the ds.models api to find models using this layer.
 
-    self.dropout = DeepSaki.layers.helper.dropout_func(self.channelList[-1], self.dropout_rate)
+    """
 
-  def call(self, inputs):
-    if not self.built:
-      raise ValueError('This model has not yet been built.')
-    x = inputs
+    def __init__(
+        self,
+        n_bottleneck_blocks: int = 3,
+        kernels: int = 3,
+        split_kernels: bool = False,
+        number_of_blocks: int = 2,
+        use_ResidualBlock: bool = False,
+        activation: str = "leaky_relu",
+        dropout_rate: float = 0.2,
+        channel_list: Optional[List[int]] = None,
+        use_spec_norm: bool = False,
+        use_bias: bool = True,
+        residual_cardinality: int = 1,
+        padding: PaddingType = PaddingType.ZERO,
+        kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
+        gamma_initializer: Optional[tf.keras.initializers.Initializer] = None,
+    ) -> None:
+        """Initializes the `Bottleneck` layer.
 
-    for layer in self.layers:
-      x = layer(x)
+        Args:
+            n_bottleneck_blocks (int, optional): Number of consecutive blocks. Defaults to 3.
+            kernels (int, optional): Size of the convolutions kernels. Defaults to 3.
+            split_kernels (bool, optional): To decrease the number of parameters, a convolution with the kernel_size
+                `(kernel,kernel)` can be splitted into two consecutive convolutions with the kernel_size `(kernel,1)`
+                and `(1,kernel)` respectivly. Defaults to False.
+            number_of_blocks (int, optional): : Number of consecutive conv layers within a basic building block.
+                Defaults to 2.
+            use_ResidualBlock (bool, optional): Whether or not to use the `ResidualBlock` instead of the
+                `Conv2DBlock`. Defaults to False.
+            activation (str, optional): String literal or tensorflow activation function object to obtain activation
+                function. Defaults to "leaky_relu".
+            dropout_rate (float, optional): Probability of the dropout layer. If the preceeding layer has more than one
+                channel, spatial dropout is applied, otherwise standard dropout. Defaults to 0.2.
+            channel_list (Optional[List[int]], optional): Alternativly to number_of_layers and filters, a list with the
+                disired filters for each level can be provided. e.g. channel_list = [64, 128, 256] results in a 3-level
+                Decoder with 64, 128, 256 filters for level 1, 2 and 3 respectivly. Defaults to None.
+            use_spec_norm (bool, optional): Applies spectral normalization to convolutional and dense layers. Defaults
+                to False.
+            use_bias (bool, optional): Whether convolutions and dense layers include a bias or not. Defaults to True.
+            residual_cardinality (int, optional): Cardinality for the `ResidualBlock`. Defaults to 1.
+            padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
+            kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
+                Defaults to None.
+            gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
+                Defaults to None.
+        """
+        super(Bottleneck, self).__init__()
+        self.use_ResidualBlock = use_ResidualBlock
+        self.n_bottleneck_blocks = n_bottleneck_blocks
+        self.kernels = kernels
+        self.split_kernels = split_kernels
+        self.number_of_blocks = number_of_blocks
+        self.activation = activation
+        self.dropout_rate = dropout_rate
+        self.channel_list = channel_list
+        self.use_spec_norm = use_spec_norm
+        self.use_bias = use_bias
+        self.residual_cardinality = residual_cardinality
+        self.padding = padding
+        self.kernel_initializer = kernel_initializer
+        self.gamma_initializer = gamma_initializer
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4, dtype=tf.float32)
 
-    if self.dropout_rate > 0:
-      x = self.dropout(x)
+    def build(self, input_shape: tf.TensorShape) -> None:
+        """Build layer depending on the `input_shape` (output shape of the previous layer).
 
-    return x
+        Args:
+            input_shape (tf.TensorShape): Shape of the input tensor to this layer.
+        """
+        super(Bottleneck, self).build(input_shape)
 
-  def get_config(self):
-    config = super(Bottleneck, self).get_config()
-    config.update({
-        "useResidualIdentityBlock":self.useResidualIdentityBlock,
-        "n_bottleneck_blocks":self.n_bottleneck_blocks,
-        "useResidualConv2DBlock":self.useResidualConv2DBlock,
-        "kernels":self.kernels,
-        "split_kernels":self.split_kernels,
-        "numberOfConvs":self.numberOfConvs,
-        "activation":self.activation,
-        "dropout_rate":self.dropout_rate,
-        "useSpecNorm":self.useSpecNorm,
-        "use_bias":self.use_bias,
-        "channelList":self.channelList,
-        "residual_cardinality":self.residual_cardinality,
-        "padding": self.padding,
-        "kernel_initializer":self.kernel_initializer,
-        "gamma_initializer":self.gamma_initializer
-        })
-    return config
+        if self.channel_list is None:
+            ch = input_shape[-1]
+            self.channel_list = [ch for _ in range(self.n_bottleneck_blocks)]
 
-#Testcode
-#layer = Bottleneck(True, 3, False, 3,False,1, "leaky_relu" , dropout_rate = 0.2, channelList = None)
-#print(layer.get_config())
-#DeepSaki.layers.helper.PlotLayer(layer,inputShape=(256,256,64))
+        self.layers = []
+        for ch in self.channel_list:
+            if self.use_ResidualBlock:
+                self.layers.append(
+                    ResidualBlock(
+                        activation=self.activation,
+                        filters=ch,
+                        kernels=self.kernels,
+                        number_of_blocks=self.number_of_blocks,
+                        use_spec_norm=self.use_spec_norm,
+                        use_bias=self.use_bias,
+                        residual_cardinality=self.residual_cardinality,
+                        padding=self.padding,
+                        kernel_initializer=self.kernel_initializer,
+                        gamma_initializer=self.gamma_initializer,
+                    )
+                )
+            else:
+                self.layers.append(
+                    Conv2DBlock(
+                        filters=ch,
+                        kernels=self.kernels,
+                        split_kernels=self.split_kernels,
+                        number_of_blocks=self.number_of_blocks,
+                        activation=self.activation,
+                        use_spec_norm=self.use_spec_norm,
+                        use_bias=self.use_bias,
+                        padding=self.padding,
+                        kernel_initializer=self.kernel_initializer,
+                        gamma_initializer=self.gamma_initializer,
+                    )
+                )
+
+        self.dropout = dropout_func(self.channel_list[-1], self.dropout_rate)
+
+    def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """Calls the `Bottleneck` layer.
+
+        Args:
+            inputs (tf.Tensor): Input tensor of shape (batch, height, width, channel)
+
+        Returns:
+            Tensor of shape (batch, height, width, channel)
+        """
+        x = inputs
+
+        for layer in self.layers:
+            x = layer(x)
+
+        if self.dropout_rate > 0:
+            x = self.dropout(x)
+
+        return x
+
+    def get_config(self) -> Dict[str, Any]:
+        """Serialization of the object.
+
+        Returns:
+            Dictionary with the class' variable names as keys.
+        """
+        config = super(Bottleneck, self).get_config()
+        config.update(
+            {
+                "use_ResidualBlock": self.use_ResidualBlock,
+                "n_bottleneck_blocks": self.n_bottleneck_blocks,
+                "kernels": self.kernels,
+                "split_kernels": self.split_kernels,
+                "number_of_blocks": self.number_of_blocks,
+                "activation": self.activation,
+                "dropout_rate": self.dropout_rate,
+                "use_spec_norm": self.use_spec_norm,
+                "use_bias": self.use_bias,
+                "channel_list": self.channel_list,
+                "residual_cardinality": self.residual_cardinality,
+                "padding": self.padding,
+                "kernel_initializer": self.kernel_initializer,
+                "gamma_initializer": self.gamma_initializer,
+            }
+        )
+        return config
+
 
 class Decoder(tf.keras.layers.Layer):
-  '''
-  Decoder sub-model combines convolutional blocks with up sample blocks. The spatial width is double with every level while the channel depth is halfed.
-  args:
-    - number_of_levels (optional, default:3): number of conv2D -> Upsampling pairs
-    - upsampling(optional, default: "2D_upsample_and_conv"): describes the upsampling method used
-    - filters (optional, default:64): defines the number of filters to which the input is exposed.
-    - limit_filters (optional, default:1024): limits the number of filters 
-    - useResidualConv2DBlock (optional, default: False): ads a residual connection in parallel to the Conv2DBlock
-    - kernels: size of the convolutions kernels
-    - split_kernels (optional, default: False): to decrease the number of parameters, a convolution with the kernel_size (kernel,kernel) can be splitted into two consecutive convolutions with the kernel_size (kernel,1) and (1,kernel) respectivly
-    - numberOfConvs (optional, default: 1): number of consecutive convolutional building blocks, i.e. Conv2DBlock.
-    - activation (optional, default: "leaky_relu"): string literal or tensorflow activation function object to obtain activation function
-    - dropout_rate (optional, default: 0): probability of the dropout layer. If the preceeding layer has more than one channel, spatial dropout is applied, otherwise standard dropout. In the decoder only applied to the first half of levels. 
-    - useResidualIdentityBlock (optional, default: False): Whether or not to use the ResidualIdentityBlock instead of the Conv2DBlock
-    - residual_cardinality (optional, default: 1): cardinality for the ResidualIdentityBlock
-    - channelList (optional, default:None): alternativly to number_of_layers and filters, a list with the disired filters for each level can be provided. e.g. channel_list = [64, 128, 256] results in a 3-level Decoder with 64, 128, 256 filters for level 1, 2 and 3 respectivly.
-    - useSpecNorm (optional, default: False): applies spectral normalization to convolutional and dense layers
-    - use_bias (optional, default: True): determines whether convolutions and dense layers include a bias or not
-    - useSelfAttention (optional, default: False): Determines whether to apply self-attention after the encoder before branching.
-    - enableSkipConnectionsInput (optional, default: False): Whether or not to input skip connections at each level
-    - padding (optional, default: "none"): padding type. Options are "none", "zero" or "reflection"
-    - kernel_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the convolutions kernels.
-    - gamma_initializer (optional, default: DeepSaki.initializer.HeAlphaUniform()): Initialization of the normalization layers.
-  '''
-  def __init__(self,
-            number_of_levels = 3, 
-            upsampling = "2D_upsample_and_conv", 
-            filters = 64, 
-            limit_filters = 1024, 
-            useResidualConv2DBlock = False,
-            kernels = 3,
-            split_kernels = False,
-            numberOfConvs = 2,
-            activation = "leaky_relu", 
-            dropout_rate = 0.2, 
-            useResidualIdentityBlock = False,
-            residual_cardinality = 1,
-            channelList = None, 
-            useSpecNorm=False, 
-            use_bias = True,
-            useSelfAttention=False,
-            enableSkipConnectionsInput = False,
-            padding = "zero",
-            kernel_initializer = DeepSaki.initializer.HeAlphaUniform(),
-            gamma_initializer =  DeepSaki.initializer.HeAlphaUniform()
-            ):
-    super(Decoder, self).__init__()
-    self.number_of_levels = number_of_levels
-    self.filters = filters
-    self.upsampling = upsampling
-    self.limit_filters = limit_filters
-    self.useResidualConv2DBlock = useResidualConv2DBlock
-    self.kernels = kernels
-    self.split_kernels = split_kernels
-    self.numberOfConvs = numberOfConvs
-    self.activation = activation
-    self.useResidualIdentityBlock = useResidualIdentityBlock
-    self.channelList = channelList
-    self.useSpecNorm = useSpecNorm
-    self.use_bias = use_bias
-    self.dropout_rate = dropout_rate
-    self.useSelfAttention = useSelfAttention
-    self.enableSkipConnectionsInput = enableSkipConnectionsInput
-    self.residual_cardinality = residual_cardinality
-    self.padding = padding
-    self.kernel_initializer = kernel_initializer
-    self.gamma_initializer = gamma_initializer
+    """Combines conv blocks with up sample blocks.
 
-  def build(self, input_shape):
-    super(Decoder, self).build(input_shape)
+    The spatial width is doubled with every level while the channel depth is halfed.
+    Can be combined with `ds.layers.Encoder` and `ds.layers.Bottleneck` to form an auto encoder model.
 
-    if self.channelList == None:
-      self.channelList = [min(self.filters * 2**i, self.limit_filters) for i in reversed(range(self.number_of_levels))]
-    else:
-      self.number_of_levels = len(self.channelList)
+    Tipp:
+        Checkout the ds.models api to find models using this layer.
+    """
 
-    self.decoderBlocks = []
-    self.upSampleBlocks = []
-    self.dropouts = []
+    def __init__(
+        self,
+        number_of_levels: int = 3,
+        upsampling: UpSampleType = UpSampleType.RESAMPLE_AND_CONV,
+        filters: int = 64,
+        limit_filters: int = 1024,
+        kernels: int = 3,
+        split_kernels: bool = False,
+        number_of_blocks: int = 2,
+        activation: str = "leaky_relu",
+        dropout_rate: float = 0.2,
+        use_ResidualBlock: bool = False,
+        residual_cardinality: int = 1,
+        channel_list: Optional[List[int]] = None,
+        use_spec_norm: bool = False,
+        use_bias: bool = True,
+        use_self_attention: bool = False,
+        enable_skip_connections_input: bool = False,
+        padding: PaddingType = PaddingType.ZERO,
+        kernel_initializer: Optional[tf.keras.initializers.Initializer] = None,
+        gamma_initializer: Optional[tf.keras.initializers.Initializer] = None,
+    ) -> None:
+        """Initializes the `Decoder` layer.
 
-    if self.useSelfAttention:
-        self.SA =DeepSaki.layers.ScalarGatedSelfAttention(useSpecNorm=self.useSpecNorm, intermediateChannel=None, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer)
-    else: 
-      self.SA = None
+        Args:
+            number_of_levels (int, optional): Number levels in the decoder. Effectivly the number of convolution and
+                upsample pairs. Defaults to 3.
+            upsampling (UpSampleType, optional): Describes the upsampling method used. Defaults to
+                UpSampleType.RESAMPLE_AND_CONV.
+            filters (int, optional): Base size of filters the is doubled with every level of the decoder.
+                Defaults to 64.
+            limit_filters (int, optional): Limits the number of filters, which is doubled with every downsampling block.
+                Defaults to 512.
+            kernels (int, optional): Size of the convolutions kernels. Defaults to 3.
+            split_kernels (bool, optional): To decrease the number of parameters, a convolution with the kernel_size
+                `(kernel,kernel)` can be splitted into two consecutive convolutions with the kernel_size `(kernel,1)` and
+                `(1,kernel)` respectivly. Defaults to False.
+            number_of_blocks (int, optional): Number of consecutive convolutional building blocks, i.e. `Conv2DBlock`.
+                Defaults to 2.
+            activation (str, optional): String literal or tensorflow activation function object to obtain activation
+                function. Defaults to "leaky_relu".
+            dropout_rate (float, optional): Probability of the dropout layer. If the preceeding layer has more than one
+                channel, spatial dropout is applied, otherwise standard dropout. Defaults to 0.2.
+            use_ResidualBlock (bool, optional): Whether or not to use the `ResidualBlock` instead of the
+                `Conv2DBlock`. Defaults to False.
+            residual_cardinality (int, optional): Cardinality for the `ResidualBlock`. Defaults to 1.
+            channel_list (Optional[List[int]], optional): Alternativly to number_of_layers and filters, a list with the
+                disired filters for each level can be provided. e.g. channel_list = [64, 128, 256] results in a 3-level
+                Decoder with 64, 128, 256 filters for level 1, 2 and 3 respectivly. Defaults to None.
+            use_spec_norm (bool, optional): Applies spectral normalization to convolutional and dense layers. Defaults to False.
+            use_bias (bool, optional): Whether convolutions and dense layers include a bias or not. Defaults to True.
+            use_self_attention (bool, optional): Determines whether to apply self-attention in the decoder. Defaults to False.
+            enable_skip_connections_input (bool, optional): Whether or not to input skip connections at each level. Defaults to False.
+            padding (PaddingType, optional): Padding type. Defaults to PaddingType.ZERO.
+            kernel_initializer (tf.keras.initializers.Initializer, optional): Initialization of the convolutions kernels.
+                Defaults to None.
+            gamma_initializer (tf.keras.initializers.Initializer, optional): Initialization of the normalization layers.
+                Defaults to None.
+        """
+        super(Decoder, self).__init__()
+        self.number_of_levels = number_of_levels
+        self.filters = filters
+        self.upsampling = upsampling
+        self.limit_filters = limit_filters
+        self.kernels = kernels
+        self.split_kernels = split_kernels
+        self.number_of_blocks = number_of_blocks
+        self.activation = activation
+        self.use_ResidualBlock = use_ResidualBlock
+        self.channel_list = channel_list
+        self.use_spec_norm = use_spec_norm
+        self.use_bias = use_bias
+        self.dropout_rate = dropout_rate
+        self.use_self_attention = use_self_attention
+        self.enable_skip_connections_input = enable_skip_connections_input
+        self.residual_cardinality = residual_cardinality
+        self.padding = padding
 
-    for i, ch in enumerate(self.channelList):
-      if i < int(self.number_of_levels/2): # ">" since i is reversed
-        dropout_rate = self.dropout_rate
-      else:
-        dropout_rate = 0
+        self.kernel_initializer = kernel_initializer
+        self.gamma_initializer = gamma_initializer
 
-      if self.useResidualIdentityBlock:
-        self.decoderBlocks.append(DeepSaki.layers.ResidualIdentityBlock(filters =ch, activation = self.activation, kernels = self.kernels,numberOfBlocks=self.numberOfConvs,useSpecNorm=self.useSpecNorm,dropout_rate=dropout_rate, use_bias = self.use_bias, residual_cardinality = self.residual_cardinality,padding = self.padding, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer))
-        self.upSampleBlocks.append(DeepSaki.layers.ResBlockUp(activation=self.activation,useSpecNorm=self.useSpecNorm, use_bias = self.use_bias,padding = self.padding, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer))
-      else:
-        self.decoderBlocks.append(DeepSaki.layers.Conv2DBlock(filters = ch,useResidualConv2DBlock=self.useResidualConv2DBlock, kernels = self.kernels,split_kernels=self.split_kernels, activation = self.activation,numberOfConvs=self.numberOfConvs, dropout_rate=dropout_rate,useSpecNorm=self.useSpecNorm, use_bias = self.use_bias,padding = self.padding, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer))
-        self.upSampleBlocks.append(DeepSaki.layers.UpSampleBlock(kernels = self.kernels, upsampling = self.upsampling, split_kernels = self.split_kernels,activation=self.activation,useSpecNorm=self.useSpecNorm, use_bias = self.use_bias,padding = self.padding, kernel_initializer = self.kernel_initializer, gamma_initializer = self.gamma_initializer))
+        self.input_spec = tf.keras.layers.InputSpec(ndim=4, dtype=tf.float32)
 
-  def call(self, inputs):
-    if not self.built:
-      raise ValueError('This model has not yet been built.')
-    skipConnections = None
-    if self.enableSkipConnectionsInput:
-      x, skipConnections = inputs
-    else:
-      x = inputs
+    def build(self, input_shape: tf.TensorShape) -> None:
+        """Build layer depending on the `input_shape` (output shape of the previous layer).
 
-    for level in range(self.number_of_levels):
-      if level == 3 and self.SA is not None:
-        x = self.SA(x) 
-      x = self.upSampleBlocks[level](x)
-      if skipConnections is not None: 
-        x = tf.keras.layers.concatenate([x, skipConnections[self.number_of_levels - (level+1)]])
-      x = self.decoderBlocks[level](x)
+        Args:
+            input_shape (tf.TensorShape): Shape of the input tensor to this layer.
+        """
+        super(Decoder, self).build(input_shape)
 
-    return x
+        if self.channel_list is None:
+            self.channel_list = [
+                min(self.filters * 2**i, self.limit_filters) for i in reversed(range(self.number_of_levels))
+            ]
+        else:
+            self.number_of_levels = len(self.channel_list)
 
-  def get_config(self):
-    config = super(Decoder, self).get_config()
-    config.update({
-        "number_of_levels":self.number_of_levels,
-        "filters":self.filters,
-        "limit_filters":self.limit_filters,
-        "useResidualConv2DBlock":self.useResidualConv2DBlock,
-        "upsampling":self.upsampling,
-        "kernels":self.kernels,
-        "split_kernels":self.split_kernels,
-        "numberOfConvs":self.numberOfConvs,
-        "activation":self.activation,
-        "useResidualIdentityBlock":self.useResidualIdentityBlock,
-        "residual_cardinality": self.residual_cardinality,
-        "channelList":self.channelList,
-        "useSpecNorm":self.useSpecNorm,
-        "dropout_rate":self.dropout_rate,
-        "useSelfAttention":self.useSelfAttention,
-        "enableSkipConnectionsInput":self.enableSkipConnectionsInput,
-        "padding": self.padding,
-        "kernel_initializer":self.kernel_initializer,
-        "gamma_initializer":self.gamma_initializer
-        })
-    return config
+        self.decoderBlocks = []
+        self.upSampleBlocks = []
 
-#Testcode
-#layer = Decoder( number_of_levels = 5, filters = 64, limit_filters = 2048, useSelfAttention = True,useResidualConv2DBlock = False, upsampling="depth_to_space", kernels=3, split_kernels = False,  numberOfConvs = 2,activation = "leaky_relu",useResidualIdentityBlock = True,useSpecNorm=False, dropout_rate = 0.2)
-#print(layer.get_config())
-#DeepSaki.layers.helper.PlotLayer(layer,inputShape=(256,256,4))
+        if self.use_self_attention:
+            self.SA = ScalarGatedSelfAttention(
+                use_spec_norm=self.use_spec_norm,
+                intermediate_channel=None,
+                kernel_initializer=self.kernel_initializer,
+                gamma_initializer=self.gamma_initializer,
+            )
+        else:
+            self.SA = None
 
+        for i, ch in enumerate(self.channel_list):
+            dropout_rate = self.dropout_rate if i < int(self.number_of_levels / 2) else 0
+
+            if self.use_ResidualBlock:
+                self.decoderBlocks.append(
+                    ResidualBlock(
+                        filters=ch,
+                        activation=self.activation,
+                        kernels=self.kernels,
+                        number_of_blocks=self.number_of_blocks,
+                        use_spec_norm=self.use_spec_norm,
+                        dropout_rate=dropout_rate,
+                        use_bias=self.use_bias,
+                        residual_cardinality=self.residual_cardinality,
+                        padding=self.padding,
+                        kernel_initializer=self.kernel_initializer,
+                        gamma_initializer=self.gamma_initializer,
+                    )
+                )
+                self.upSampleBlocks.append(
+                    ResBlockUp(
+                        activation=self.activation,
+                        use_spec_norm=self.use_spec_norm,
+                        use_bias=self.use_bias,
+                        padding=self.padding,
+                        kernel_initializer=self.kernel_initializer,
+                        gamma_initializer=self.gamma_initializer,
+                    )
+                )
+            else:
+                self.decoderBlocks.append(
+                    Conv2DBlock(
+                        filters=ch,
+                        kernels=self.kernels,
+                        split_kernels=self.split_kernels,
+                        activation=self.activation,
+                        number_of_blocks=self.number_of_blocks,
+                        dropout_rate=dropout_rate,
+                        use_spec_norm=self.use_spec_norm,
+                        use_bias=self.use_bias,
+                        padding=self.padding,
+                        kernel_initializer=self.kernel_initializer,
+                        gamma_initializer=self.gamma_initializer,
+                    )
+                )
+                self.upSampleBlocks.append(
+                    UpSampleBlock(
+                        kernels=self.kernels,
+                        upsampling=self.upsampling,
+                        activation=self.activation,
+                        use_spec_norm=self.use_spec_norm,
+                        use_bias=self.use_bias,
+                        padding=self.padding,
+                        kernel_initializer=self.kernel_initializer,
+                        gamma_initializer=self.gamma_initializer,
+                    )
+                )
+
+    def call(self, inputs: Union[tf.Tensor, Tuple[tf.Tensor, tf.Tensor]]) -> tf.Tensor:
+        """Calls the `Decoder` layer.
+
+        Args:
+            inputs (Union[tf.Tensor , Tuple[tf.Tensor, tf.Tensor]]): If `enable_skip_connections_input=False` only
+                inputs a tensor of shape (batch, height, width, min(channel*2**level, limit_filters)). If
+                `enable_skip_connections_input=True`, additonally at every level of the decoder, skip connections from
+                an encoder can be inserted.
+
+        Returns:
+            tf.Tensor: Tensor of shape (`batch`, `height*2**number_of_levels`, `width*2**number_of_levels`,`filters`).
+        """
+        skip_connections = None
+        if self.enable_skip_connections_input:
+            x, skip_connections = inputs
+        else:
+            x = inputs
+
+        for level in range(self.number_of_levels):
+            if level == 3 and self.SA is not None:
+                x = self.SA(x)
+            x = self.upSampleBlocks[level](x)
+            if skip_connections is not None:
+                x = tf.keras.layers.concatenate([x, skip_connections[self.number_of_levels - (level + 1)]])
+            x = self.decoderBlocks[level](x)
+
+        return x
+
+    def get_config(self) -> Dict[str, Any]:
+        """Serialization of the object.
+
+        Returns:
+            Dictionary with the class' variable names as keys.
+        """
+        config = super(Decoder, self).get_config()
+        config.update(
+            {
+                "number_of_levels": self.number_of_levels,
+                "filters": self.filters,
+                "limit_filters": self.limit_filters,
+                "upsampling": self.upsampling,
+                "kernels": self.kernels,
+                "split_kernels": self.split_kernels,
+                "number_of_blocks": self.number_of_blocks,
+                "activation": self.activation,
+                "use_ResidualBlock": self.use_ResidualBlock,
+                "residual_cardinality": self.residual_cardinality,
+                "channel_list": self.channel_list,
+                "use_spec_norm": self.use_spec_norm,
+                "dropout_rate": self.dropout_rate,
+                "use_bias": self.use_bias,
+                "use_self_attention": self.use_self_attention,
+                "enable_skip_connections_input": self.enable_skip_connections_input,
+                "padding": self.padding,
+                "kernel_initializer": self.kernel_initializer,
+                "gamma_initializer": self.gamma_initializer,
+            }
+        )
+        return config
