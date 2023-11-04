@@ -2,77 +2,77 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://sascha-kirch.github.io/DeepSaki/develop/</loc>
-         <lastmod>2023-11-03</lastmod>
+         <lastmod>2023-11-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://sascha-kirch.github.io/DeepSaki/develop/CHANGELOG/</loc>
-         <lastmod>2023-11-03</lastmod>
+         <lastmod>2023-11-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://sascha-kirch.github.io/DeepSaki/develop/CONTRIBUTE/</loc>
-         <lastmod>2023-11-03</lastmod>
+         <lastmod>2023-11-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://sascha-kirch.github.io/DeepSaki/develop/reference/SUMMARY/</loc>
-         <lastmod>2023-11-03</lastmod>
+         <lastmod>2023-11-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://sascha-kirch.github.io/DeepSaki/develop/reference/DeepSaki/</loc>
-         <lastmod>2023-11-03</lastmod>
+         <lastmod>2023-11-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://sascha-kirch.github.io/DeepSaki/develop/reference/DeepSaki/activations/</loc>
-         <lastmod>2023-11-03</lastmod>
+         <lastmod>2023-11-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://sascha-kirch.github.io/DeepSaki/develop/reference/DeepSaki/augmentations/</loc>
-         <lastmod>2023-11-03</lastmod>
+         <lastmod>2023-11-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://sascha-kirch.github.io/DeepSaki/develop/reference/DeepSaki/constraints/</loc>
-         <lastmod>2023-11-03</lastmod>
+         <lastmod>2023-11-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://sascha-kirch.github.io/DeepSaki/develop/reference/DeepSaki/initializers/</loc>
-         <lastmod>2023-11-03</lastmod>
+         <lastmod>2023-11-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://sascha-kirch.github.io/DeepSaki/develop/reference/DeepSaki/layers/</loc>
-         <lastmod>2023-11-03</lastmod>
+         <lastmod>2023-11-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://sascha-kirch.github.io/DeepSaki/develop/reference/DeepSaki/losses/</loc>
-         <lastmod>2023-11-03</lastmod>
+         <lastmod>2023-11-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://sascha-kirch.github.io/DeepSaki/develop/reference/DeepSaki/models/</loc>
-         <lastmod>2023-11-03</lastmod>
+         <lastmod>2023-11-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://sascha-kirch.github.io/DeepSaki/develop/reference/DeepSaki/optimizers/</loc>
-         <lastmod>2023-11-03</lastmod>
+         <lastmod>2023-11-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://sascha-kirch.github.io/DeepSaki/develop/reference/DeepSaki/types/</loc>
-         <lastmod>2023-11-03</lastmod>
+         <lastmod>2023-11-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://sascha-kirch.github.io/DeepSaki/develop/reference/DeepSaki/utils/</loc>
-         <lastmod>2023-11-03</lastmod>
+         <lastmod>2023-11-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
