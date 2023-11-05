@@ -1,7 +1,19 @@
 
 # Changelog
 
-## :rocket: v1.0.0 Nov 5, 2023
+## v1.0.1 Nov 5, 2023
+GitHub Release Tag: [v1.0.1](https://github.com/sascha-kirch/DeepSaki/releases/tag/v1.0.1)
+
+**Changes:**
+
+- **Documentation:**
+    - changed logo font ([23](https://github.com/sascha-kirch/DeepSaki/issues/23))
+    - added feedback analytics to documentation page
+    - added social card ([23](https://github.com/sascha-kirch/DeepSaki/issues/23))
+    - updated metadata on pypi ([25](https://github.com/sascha-kirch/DeepSaki/issues/25))
+
+
+## :rocket: v1.0.0 Nov 4, 2023
 GitHub Release Tag: [v1.0.0](https://github.com/sascha-kirch/DeepSaki/releases/tag/v1.0.0)
 
 **Changes:**
