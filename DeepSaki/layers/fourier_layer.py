@@ -12,10 +12,12 @@ from DeepSaki.initializers.complex_initializer import ComplexInitializer
 from DeepSaki.types.layers_enums import FrequencyFilter
 from DeepSaki.types.layers_enums import MultiplicationType
 
+# TODO: refactor this base clase
 # Base class below has no init. so if subclass calls super().__init__ it takes the one of tf.keras.Layer.
 class FourierLayer(tf.keras.layers.Layer):
     """Base Class for Fourier Layers."""
 
+    # TODO: could be moved into layer_helper.py
     def _change_to_channel_first(self, input_tensor: tf.Tensor) -> tf.Tensor:
         rank = tf.rank(input_tensor)
         if rank == 4:
@@ -26,6 +28,7 @@ class FourierLayer(tf.keras.layers.Layer):
 
         raise ValueError(f"Only supported for rank 4 and 5 tensors but got {rank=}")
 
+    # TODO: could be moved into layer_helper.py
     def _change_to_channel_last(self, input_tensor: tf.Tensor) -> tf.Tensor:
         rank = tf.rank(input_tensor)
         if rank == 4:
@@ -36,6 +39,7 @@ class FourierLayer(tf.keras.layers.Layer):
 
         raise ValueError(f"Only supported for rank 4 and 5 tensors but got {rank=}")
 
+    # TODO: could be moved into math.???.py
     def _matrix_product(self, a: tf.Tensor, b: tf.Tensor) -> tf.Tensor:
         """Calculates the elementwise product for all batches and filters, by reshaping and taking the matrix product.
 
@@ -52,6 +56,7 @@ class FourierLayer(tf.keras.layers.Layer):
         c = tf.squeeze(c, axis=-2)
         return tf.einsum("bhwo->bohw", c)
 
+    # TODO: could be moved into math.???.py
     def _elementwise_product(self, a: tf.Tensor, b: tf.Tensor) -> tf.Tensor:
         """Calculates the element-wise product multiple times taking advantage of array broadcasting.
 

@@ -1,3 +1,7 @@
+# diffusion Enums
+from DeepSaki.types.diffusion_enums import ScheduleType
+from DeepSaki.types.diffusion_enums import variance_type
+
 # Layer Enums
 from DeepSaki.types.layers_enums import PaddingType
 from DeepSaki.types.layers_enums import InitializerFunc
@@ -15,6 +19,8 @@ from DeepSaki.types.losses_enums import LossCalcType
 from DeepSaki.types.optimizers_enums import CurrentOptimizer
 
 __all__ = [
+    "ScheduleType",
+    "variance_type",
     "PaddingType",
     "InitializerFunc",
     "MultiplicationType",
