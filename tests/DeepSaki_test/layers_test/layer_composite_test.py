@@ -10,13 +10,15 @@ from DeepSaki.layers.layer_composites import Conv2DBlock
 from DeepSaki.layers.layer_composites import Conv2DSplitted
 from DeepSaki.layers.layer_composites import DenseBlock
 from DeepSaki.layers.layer_composites import DownSampleBlock
-from DeepSaki.types.layers_enums import PaddingType, UpSampleType, DownSampleType
 from DeepSaki.layers.layer_composites import ResBlockDown
 from DeepSaki.layers.layer_composites import ResBlockUp
 from DeepSaki.layers.layer_composites import ResidualBlock
 from DeepSaki.layers.layer_composites import ScalarGatedSelfAttention
 from DeepSaki.layers.layer_composites import ScaleLayer
 from DeepSaki.layers.layer_composites import UpSampleBlock
+from DeepSaki.types.layers_enums import DownSampleType
+from DeepSaki.types.layers_enums import PaddingType
+from DeepSaki.types.layers_enums import UpSampleType
 from tests.DeepSaki_test.layers_test.layers_test import CommonLayerChecks
 from tests.DeepSaki_test.layers_test.layers_test import DeepSakiLayerChecks
 from tests.DeepSaki_test.layers_test.mocked_layers import _mock_scale_layer

@@ -9,6 +9,7 @@ import tensorflow as tf
 from DeepSaki.models.discriminators import LayoutContentDiscriminator
 from DeepSaki.models.discriminators import PatchDiscriminator
 from DeepSaki.models.discriminators import UNetDiscriminator
+from DeepSaki.types.layers_enums import LinearLayerType
 from tests.DeepSaki_test.layers_test.mocked_layers import _mock_bottleneck
 from tests.DeepSaki_test.layers_test.mocked_layers import _mock_decoder
 from tests.DeepSaki_test.layers_test.mocked_layers import _mock_encoder
@@ -16,7 +17,6 @@ from tests.DeepSaki_test.layers_test.mocked_layers import _mock_global_sum_pooli
 from tests.DeepSaki_test.layers_test.mocked_layers import _mock_scalar_gated_self_attention
 from tests.DeepSaki_test.models_test.models_test import CommonModelChecks
 from tests.DeepSaki_test.models_test.models_test import DeepSakiModelChecks
-from DeepSaki.types.layers_enums import LinearLayerType
 
 
 class TestLayoutContentDiscriminator(DeepSakiModelChecks):
