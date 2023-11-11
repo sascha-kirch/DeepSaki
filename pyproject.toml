@@ -149,8 +149,8 @@ exclude = ["examples","tests"]
 [tool.ruff]
 target-version = "py310"
 select = ["F", "E", "I", "D", "PL","N"]
-extend-select = ["W", "C90", "YTT", "ANN", "ASYNC", "A", "C4", "RET", "SIM", "PLC", "PLE", "PLR", "PLW", "FLY", "PERF", "RUF","ARG","ERA","TRY","NPY","FURB", "B","PYI","PT","Q","RET", "ICN","FIX","SLF","PIE","FBT","BLE","S"]
-ignore = ["E402","E501", "B905", "SIM300", "PD901","ANN101","FBT001","FBT002"]
+extend-select = ["W", "C90", "YTT", "ANN", "ASYNC", "A", "C4", "RET", "SIM", "PLC", "PLE", "PLR", "PLW", "FLY", "PERF", "RUF","ARG","ERA","TRY","NPY","FURB", "B","PYI","PT","Q","RET", "ICN","FIX","SLF","PIE","FBT","BLE","S","TCH"]
+ignore = ["E402","E501", "B905", "SIM300", "PD901","ANN101","FBT001","FBT002","D100"]
 fixable = ["W", "C90", "YTT", "ANN", "ASYNC", "A", "C4", "RET", "PLC", "PLE", "PLR", "PLW", "FLY", "PERF", "RUF", "F401", "D205", "D403", "D200", "D202", "D209","I001","E711","Q","Q002","PT"]
 unfixable = ["SIM"]
 line-length = 120
