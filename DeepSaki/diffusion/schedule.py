@@ -31,7 +31,13 @@ class BetaSchedule:
             k (float, optional): k term for P2 loss scaling. Defaults to 1.0.
             gamma (float, optional): gamma term for P2 loss scaling. Defaults to 1.0.
         """
-        self.config = {"schedule": schedule, "timesteps": timesteps, "start": start, "stop": stop}
+        self.schedule = schedule
+        self.timesteps = timesteps
+        self.start = start
+        self.stop = stop
+        self.k = k
+        self.gamma = gamma
+
         self.policy = tf.keras.mixed_precision.global_policy()
         self.betas = self._get_beta_schedule(schedule, timesteps, start, stop)
 

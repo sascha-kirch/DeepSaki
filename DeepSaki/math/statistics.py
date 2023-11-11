@@ -1,4 +1,3 @@
-
 import numpy as np
 import tensorflow as tf
 
@@ -61,7 +60,6 @@ def calc_log_likelihood_of_discretized_gaussian(
     log_probs = tf.where(xt < -0.999, log_cdf_plus, tf.where(xt > 0.999, log_one_minus_cdf_min, log_cdf_delta))
 
     # reduce all non-batch dimensions
-    # log_probs = tf.math.reduce_mean(log_probs,axis = list(range(1,len(log_probs.shape))))
     shape = tf.shape(log_probs)
     axis_to_reduce = list(range(1, len(shape)))
     log_probs = tf.math.reduce_mean(log_probs, axis=axis_to_reduce)
