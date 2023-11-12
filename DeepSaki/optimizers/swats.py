@@ -19,6 +19,7 @@ from tensorflow.python.training import gen_training_ops
 
 from DeepSaki.types.optimizers_enums import CurrentOptimizer
 
+
 class SwatsAdam(optimizer_v2.OptimizerV2):
     """Initializer that can switch from ADAM to SGD and vice versa.
 

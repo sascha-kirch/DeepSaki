@@ -10,6 +10,7 @@ from DeepSaki.layers.padding import ReflectionPadding2D
 from DeepSaki.types.layers_enums import InitializerFunc
 from DeepSaki.types.layers_enums import PaddingType
 
+
 def get_initializer(
     initializer: InitializerFunc,
     seed: Optional[int] = None,

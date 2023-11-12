@@ -19,6 +19,7 @@ from DeepSaki.types.layers_enums import DownSampleType
 from DeepSaki.types.layers_enums import PaddingType
 from DeepSaki.types.layers_enums import UpSampleType
 
+
 class Encoder(tf.keras.layers.Layer):
     """Combines conv blocks with down sample blocks.
 

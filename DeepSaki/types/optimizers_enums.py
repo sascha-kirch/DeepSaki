@@ -1,6 +1,7 @@
 from enum import Enum
 from enum import auto
 
+
 class CurrentOptimizer(Enum):
     """`Enum` used to define how two matrices shall be multiplied.
 

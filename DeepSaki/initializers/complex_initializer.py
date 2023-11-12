@@ -3,6 +3,7 @@ from typing import Optional
 
 import tensorflow as tf
 
+
 class ComplexInitializer(tf.keras.initializers.Initializer):
     """Wraps an initializer to generate a complex-valued tensor for initialization.
 
@@ -50,7 +51,7 @@ class ComplexInitializer(tf.keras.initializers.Initializer):
                 Defaults to None.
         """
         self.initializer_real = initializer_real
-        self.initializer_imag = initializer_imag if initializer_imag is not None else initializer_real
+        self.initializer_imag = initializer_imag or initializer_real
 
     def __call__(
         self,

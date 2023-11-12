@@ -6,10 +6,10 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # deactivate tensorflow warnings and i
 import tensorflow as tf
 
 from DeepSaki.losses.image_based_losses import ImageBasedLoss
-from DeepSaki.losses.image_based_losses import PixelDistanceLoss
-from DeepSaki.losses.image_based_losses import StructuralSimilarityLoss
 from DeepSaki.losses.image_based_losses import LossCalcType
 from DeepSaki.losses.image_based_losses import LossType
+from DeepSaki.losses.image_based_losses import PixelDistanceLoss
+from DeepSaki.losses.image_based_losses import StructuralSimilarityLoss
 
 
 class TestImageBasedLossAbstractBase:
