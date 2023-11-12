@@ -179,43 +179,45 @@ class DiffusionModel:
         return vlb
 
     @tf.function
-    def distributed_train_step(self, batch_train: tf.Tensor) -> tf.Tensor:
+    def distributed_train_step(self, train_data_batch: tf.distribute.DistributedValues) -> tf.Tensor:
         """Distributes the training step on all available workers.
 
         Args:
-            batch_train (tf.Tensor): Current batch of training data.
+            train_data_batch (tf.distribute.DistributedValues): Current batch of training data.
 
         Returns:
             tf.Tensor: Tensor containing the reduced (summation) losses from all workers.
         """
         per_replica_loss = self.strategy.run(
             self.train_step,
-            args=(batch_train,),
+            args=(train_data_batch,),
         )
         return self.strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_loss, axis=None)
 
     @tf.function
-    def distributed_test_step(self, batch_test: tf.Tensor) -> tf.Tensor:
+    def distributed_test_step(self, test_data_batch: tf.distribute.DistributedValues) -> tf.Tensor:
         """Distributes the testing step on all available workers.
 
         Args:
-            batch_test (tf.Tensor): Current batch of training data.
+            test_data_batch (tf.distribute.DistributedValues): Current batch of training data.
 
         Returns:
             tf.Tensor: Tensor containing the reduced (summation) losses from all workers.
         """
         per_replica_loss = self.strategy.run(
             self.test_step,
-            args=(batch_test,),
+            args=(test_data_batch,),
         )
         return self.strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_loss, axis=None)
 
     # @tf.function
-    def distributed_eval_step(self, batch_test: tf.Tensor, global_batchsize: int) -> tf.Tensor:
+    def distributed_eval_step(
+        self, test_data_batch: tf.distribute.DistributedValues, global_batchsize: int
+    ) -> tf.Tensor:
         """Distributes the evaluation step on all available workers.
 
         Args:
-            batch_test (tf.Tensor): Current batch of training data.
+            test_data_batch (tf.distribute.DistributedValues): Current batch of training data.
             global_batchsize (int): Batch size considering all workers running in parallel in a data parallel setup.
 
         Returns:
@@ -223,7 +225,7 @@ class DiffusionModel:
         """
         per_replica_metric = self.strategy.run(
             self.eval_step,
-            args=(batch_test, global_batchsize),
+            args=(test_data_batch, global_batchsize),
         )
         return self.strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_metric, axis=None)
 

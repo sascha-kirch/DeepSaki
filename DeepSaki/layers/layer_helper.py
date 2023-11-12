@@ -101,3 +101,19 @@ def plot_layer(
     model = tf.keras.Model(inputs=inputs, outputs=layer.call(inputs))
     model.summary()
     tf.keras.utils.plot_model(model, show_shapes=True, expand_nested=True, to_file=layer.name + ".png")
+
+
+# TODO: Not sure if that is a good idea to use the shape.... Should check for an alternative.
+def get_number_of_weights(list_of_layers: List[tf.Variable]) -> int:
+    """Counts the number parameters for a provided list of variables from tf.keras.layers.Layer.
+
+    Args:
+        list_of_layers (List[tf.Variable]): List of variables from a tf.keras.layers.Layer.
+
+    Returns:
+        Number of weights present in the list of variables from a layer.
+    """
+    num_of_weights = 0
+    for layer in list_of_layers:
+        num_of_weights += tf.reduce_prod(layer.shape)
+    return num_of_weights

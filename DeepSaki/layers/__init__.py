@@ -38,6 +38,7 @@ from DeepSaki.layers.layer_helper import plot_layer
 from DeepSaki.layers.layer_helper import get_initializer
 from DeepSaki.layers.layer_helper import pad_func
 from DeepSaki.layers.layer_helper import dropout_func
+from DeepSaki.layers.layer_helper import get_number_of_weights
 
 __all__ = [
     "GlobalSumPooling2D",
@@ -68,4 +69,5 @@ __all__ = [
     "plot_layer",
     "pad_func",
     "dropout_func",
+    "get_number_of_weights",
 ]
