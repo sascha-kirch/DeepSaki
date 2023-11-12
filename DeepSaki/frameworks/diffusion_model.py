@@ -30,12 +30,13 @@ class DiffusionModel:
             diffusion_input_shape (List[int]): Shape of the diffusion input. Used to generate the initial condition.
         """
         self.model = model
+        self.diffusion_process = diffusion_process
         self.diffusion_loss = diffusion_loss
         self.diffusion_input_shape = diffusion_input_shape
-        self.optimizer: tf.keras.optimizers.Optimizer = None
-        self.strategy = tf.distribute.get_strategy()
-        self.diffusion_process = diffusion_process
 
+        self.optimizer: tf.keras.optimizers.Optimizer = None
+
+        self.strategy = tf.distribute.get_strategy()
         policy = tf.keras.mixed_precision.global_policy()
         self.use_mixed_precission = policy.name in ["mixed_float16", "mixed_bfloat16"]
 
@@ -95,10 +96,10 @@ class DiffusionModel:
                 loss = self.diffusion_loss.simple_loss(noise, prediction, timestep)
 
             if self.use_mixed_precission:
-                scaled_loss = self.optimizer.get_scaled_loss(loss)
+                loss = self.optimizer.get_scaled_loss(loss)
 
         if self.use_mixed_precission:
-            scaled_grads = tape.gradient(scaled_loss, self.model.trainable_variables)
+            scaled_grads = tape.gradient(loss, self.model.trainable_variables)
             gradients = self.optimizer.get_unscaled_gradients(scaled_grads)
         else:
             gradients = tape.gradient(loss, self.model.trainable_variables)

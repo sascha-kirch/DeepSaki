@@ -11,9 +11,10 @@ from DeepSaki.models.model_helper import print_model_parameter_count
 # TODO: add param to controll the update rule of the discriminator and the generator. default is alternating!
 # TODO: think of general CycleGAN + VoloGAN?
 # TODO: mention the loss function and the lambda terms, etc.
+# TODO: create private functions for gradient calculation and weight update.
+#TODO: check wording of loss functions: adversarial loss vs. generator loss?
 
-
-# TODO: add graph for model
+# TODO: add graph for model to docstring
 class CycleGAN(tf.keras.Model):
     """Abstraction of a CycleGAN model.
 
@@ -28,23 +29,23 @@ class CycleGAN(tf.keras.Model):
 
     def __init__(
         self,
-        generator_source_to_target: tf.keras.Model,
-        generator_target_to_source: tf.keras.Model,
-        discriminator_target: tf.keras.Model,
-        discriminator_source: tf.keras.Model,
+        gen_s_to_t: tf.keras.Model,
+        gen_t_to_s: tf.keras.Model,
+        discr_t: tf.keras.Model,
+        discr_s: tf.keras.Model,
         lambda_cycle: float = 10.0,
         lambda_identity: float = 0.5,
     ) -> None:
         """Initializes the `CycleGAN` object.
 
         Args:
-            generator_source_to_target (tf.keras.Model): Generator model to translate a sample from the source-domain
+            gen_s_to_t (tf.keras.Model): Generator model to translate a sample from the source-domain
                 into the target-domain.
-            generator_target_to_source (tf.keras.Model): Generator model to translate a sample from the target-domain
+            gen_t_to_s (tf.keras.Model): Generator model to translate a sample from the target-domain
                 into the source-domain.
-            discriminator_target (tf.keras.Model): Discriminator model to predict weather a sample is a true or fake
+            discr_t (tf.keras.Model): Discriminator model to predict weather a sample is a true or fake
                 sample of the target domain.
-            discriminator_source (tf.keras.Model): Discriminator model to predict weather a sample is a true or fake
+            discr_s (tf.keras.Model): Discriminator model to predict weather a sample is a true or fake
                 sample of the source domain.
             lambda_cycle (float): Weighting factor to control the contribution of the cycle consistence loss term.
                 Defaults to 10.0.
@@ -53,58 +54,61 @@ class CycleGAN(tf.keras.Model):
         """
         super(CycleGAN, self).__init__()
 
-        self.modelType = "CycleGAN"  # TODO: check how this was used und change to model name and pass to base class
-        self.generator_source_to_target = generator_source_to_target
-        self.generator_target_to_source = generator_target_to_source
-        self.discriminator_source = discriminator_source
-        self.discriminator_target = discriminator_target
+        self.name = "CycleGAN"
+        self.gen_s_to_t = gen_s_to_t
+        self.gen_t_to_s = gen_t_to_s
+        self.discr_s = discr_s
+        self.discr_t = discr_t
         self.lambda_cycle = lambda_cycle
         self.lambda_identity = lambda_identity
+
         self.strategy = tf.distribute.get_strategy()
+        policy = tf.keras.mixed_precision.global_policy()
+        self.use_mixed_precission = policy.name in ["mixed_float16", "mixed_bfloat16"]
 
     def compile(
         self,
-        optimizer_generator_source_to_target: tf.keras.optimizers.Optimizer,
-        optimizer_generator_target_to_source: tf.keras.optimizers.Optimizer,
-        optimizer_discriminator_source: tf.keras.optimizers.Optimizer,
-        optimizer_discriminator_target: tf.keras.optimizers.Optimizer,
-        loss_fn_generator_loss: Callable[[tf.Tensor, tf.Tensor], tf.Tensor],
-        loss_fn_discriminator_loss: Callable[[tf.Tensor, tf.Tensor], tf.Tensor],
+        optim_gen_s_to_t: tf.keras.optimizers.Optimizer,
+        optim_gen_t_to_s: tf.keras.optimizers.Optimizer,
+        optim_discr_s: tf.keras.optimizers.Optimizer,
+        optim_discr_t: tf.keras.optimizers.Optimizer,
+        loss_fn_gen_loss: Callable[[tf.Tensor, tf.Tensor], tf.Tensor],
+        loss_fn_discr_loss: Callable[[tf.Tensor, tf.Tensor], tf.Tensor],
         loss_fn_cycle_loss: Callable[[tf.Tensor, tf.Tensor], tf.Tensor],
         loss_fn_identity_loss: Callable[[tf.Tensor, tf.Tensor], tf.Tensor],
     ) -> None:
         """Set the optimizer for each model and the loss functions for each loss term.
 
         Args:
-            optimizer_generator_source_to_target (tf.keras.optimizers.Optimizer): Optimizer for the source to target
+            optim_gen_s_to_t (tf.keras.optimizers.Optimizer): Optimizer for the source to target
                 generator model.
-            optimizer_generator_target_to_source (tf.keras.optimizers.Optimizer): Optimizer for the target to source
+            optim_gen_t_to_s (tf.keras.optimizers.Optimizer): Optimizer for the target to source
                 generator model.
-            optimizer_discriminator_source (tf.keras.optimizers.Optimizer): Optimizer for the source discriminator model.
-            optimizer_discriminator_target (tf.keras.optimizers.Optimizer): Optimizer for the target discriminator model.
-            loss_fn_generator_loss (Callable[[tf.Tensor, tf.Tensor], tf.Tensor]): Loss function for the generator loss.
-            loss_fn_discriminator_loss (Callable[[tf.Tensor, tf.Tensor], tf.Tensor]): Loss function for the discriminator loss.
+            optim_discr_s (tf.keras.optimizers.Optimizer): Optimizer for the source discriminator model.
+            optim_discr_t (tf.keras.optimizers.Optimizer): Optimizer for the target discriminator model.
+            loss_fn_gen_loss (Callable[[tf.Tensor, tf.Tensor], tf.Tensor]): Loss function for the generator loss.
+            loss_fn_discr_loss (Callable[[tf.Tensor, tf.Tensor], tf.Tensor]): Loss function for the discriminator loss.
             loss_fn_cycle_loss (Callable[[tf.Tensor, tf.Tensor], tf.Tensor]): Loss function for the cycle consistency loss.
             loss_fn_identity_loss (Callable[[tf.Tensor, tf.Tensor], tf.Tensor]): Loss function for the identity loss.
         """
         super(CycleGAN, self).compile()
-        self.optimizer_generator_source_to_target = optimizer_generator_source_to_target
-        self.optimizer_generator_target_to_source = optimizer_generator_target_to_source
-        self.optimizer_discriminator_source = optimizer_discriminator_source
-        self.optimizer_discriminator_target = optimizer_discriminator_target
-        self.loss_fn_generator_loss = loss_fn_generator_loss
-        self.loss_fn_discriminator_loss = loss_fn_discriminator_loss
+        self.optim_gen_s_to_t = optim_gen_s_to_t
+        self.optim_gen_t_to_s = optim_gen_t_to_s
+        self.optim_discr_s = optim_discr_s
+        self.optim_discr_t = optim_discr_t
+        self.loss_fn_gen_loss = loss_fn_gen_loss
+        self.loss_fn_discr_loss = loss_fn_discr_loss
         self.loss_fn_cycle_loss = loss_fn_cycle_loss
         self.loss_fn_identity_loss = loss_fn_identity_loss
 
     # TODO: check if makes sense? Should the discriminator also infere the generator output?
     def call(self, batch: tf.Tensor) -> Tuple[tf.Tensor, tf.Tensor, tf.Tensor, tf.Tensor]:
-        input_source, input_target = batch
-        generated_target = self.generator_source_to_target(input_source)
-        generated_source = self.generator_target_to_source(input_target)
-        discriminated_target = self.discriminator_target(input_target)
-        discriminated_source = self.discriminator_source(input_source)
-        return generated_target, generated_source, discriminated_target, discriminated_source
+        input_s, input_t = batch
+        generated_t = self.gen_s_to_t(input_s)
+        generated_s = self.gen_t_to_s(input_t)
+        discriminated_t = self.discr_t(input_t)
+        discriminated_s = self.discr_s(input_s)
+        return generated_t, generated_s, discriminated_t, discriminated_s
 
     # TODO: simplify method
     def print_short_summary(self) -> str:
@@ -116,10 +120,10 @@ class CycleGAN(tf.keras.Model):
         summary = "--------------------------------------------------\n"
         summary += f"---------------- Summary {self.modelType} ---------------\n"
         summary += "--------------------------------------------------\n"
-        summary += print_model_parameter_count(self.generator_source_to_target)
-        summary += print_model_parameter_count(self.generator_target_to_source)
-        summary += print_model_parameter_count(self.discriminator_target)
-        summary += print_model_parameter_count(self.discriminator_source)
+        summary += print_model_parameter_count(self.gen_s_to_t)
+        summary += print_model_parameter_count(self.gen_t_to_s)
+        summary += print_model_parameter_count(self.discr_t)
+        summary += print_model_parameter_count(self.discr_s)
 
         print(summary)
 
@@ -135,99 +139,101 @@ class CycleGAN(tf.keras.Model):
 
         Returns:
             loss: Returns list containing individual loss terms: <br>
-                \[0\]: total_gen_loss_target (tf.Tensor) <br>
-                \[1\]: total_gen_loss_source (tf.Tensor) <br>
-                \[2\]: discriminator_target_loss (tf.Tensor) <br>
-                \[3\]: discriminator_source_loss (tf.Tensor) <br>
-                \[4\]: generator_source_to_target_loss (tf.Tensor) <br>
-                \[5\]: generator_target_to_source_loss (tf.Tensor) <br>
-                \[6\]: cycle_loss_target (tf.Tensor) <br>
-                \[7\]: cycle_loss_source (tf.Tensor) <br>
-                \[8\]: identity_loss_target (tf.Tensor) <br>
-                \[9\]: identity_loss_source (tf.Tensor) <br>
+                \[0\]: total_gen_loss_t (tf.Tensor) <br>
+                \[1\]: total_gen_loss_s (tf.Tensor) <br>
+                \[2\]: discr_t_loss (tf.Tensor) <br>
+                \[3\]: discr_s_loss (tf.Tensor) <br>
+                \[4\]: gen_s_to_t_loss (tf.Tensor) <br>
+                \[5\]: gen_t_to_s_loss (tf.Tensor) <br>
+                \[6\]: cycle_loss_t (tf.Tensor) <br>
+                \[7\]: cycle_loss_s (tf.Tensor) <br>
+                \[8\]: identity_loss_t (tf.Tensor) <br>
+                \[9\]: identity_loss_s (tf.Tensor) <br>
         """
-        real_source, real_target = train_data_batch
+        real_s, real_t = train_data_batch
 
         with tf.GradientTape(persistent=True) as tape:
             # Generating fakes
-            generated_target = self.generator_source_to_target(real_source, training=True)
-            generated_source = self.generator_target_to_source(real_target, training=True)
+            generated_t = self.gen_s_to_t(real_s, training=True)
+            generated_s = self.gen_t_to_s(real_t, training=True)
 
             # Cycle mapping
-            cycled_source = self.generator_target_to_source(generated_target, training=True)
-            cycled_target = self.generator_source_to_target(generated_source, training=True)
+            cycled_s = self.gen_t_to_s(generated_t, training=True)
+            cycled_t = self.gen_s_to_t(generated_s, training=True)
 
             # Identity mapping
             # TODO: change naming
-            same_source = self.generator_target_to_source(real_source, training=True)
-            same_target = self.generator_source_to_target(real_target, training=True)
+            same_s = self.gen_t_to_s(real_s, training=True)
+            same_t = self.gen_s_to_t(real_t, training=True)
 
             # Discriminator output
-            disc_real_source = self.discriminator_source(real_source, training=True)
-            disc_generated_source = self.discriminator_source(generated_source, training=True)
+            disc_real_s = self.discr_s(real_s, training=True)
+            disc_generated_s = self.discr_s(generated_s, training=True)
 
-            disc_real_target = self.discriminator_target(real_target, training=True)
-            disc_generated_target = self.discriminator_target(generated_target, training=True)
+            disc_real_t = self.discr_t(real_t, training=True)
+            disc_generated_t = self.discr_t(generated_t, training=True)
 
             # Discriminator loss
-            discriminator_source_loss = self.loss_fn_discriminator_loss(disc_real_source, disc_generated_source)
-            discriminator_target_loss = self.loss_fn_discriminator_loss(disc_real_target, disc_generated_target)
+            discr_s_loss = self.loss_fn_discr_loss(disc_real_s, disc_generated_s)
+            discr_t_loss = self.loss_fn_discr_loss(disc_real_t, disc_generated_t)
 
             # Generator adverserial loss
-            generator_source_to_target_loss = self.loss_fn_generator_loss(disc_generated_target)
-            generator_target_to_source_loss = self.loss_fn_generator_loss(disc_generated_source)
+            gen_s_to_t_loss = self.loss_fn_gen_loss(disc_generated_t)
+            gen_t_to_s_loss = self.loss_fn_gen_loss(disc_generated_s)
 
             # Generator cycle loss
-            cycle_loss_target = self.loss_fn_cycle_loss(real_target, cycled_target) * self.lambda_cycle
-            cycle_loss_source = self.loss_fn_cycle_loss(real_source, cycled_source) * self.lambda_cycle
+            cycle_loss_t = self.loss_fn_cycle_loss(real_t, cycled_t) * self.lambda_cycle
+            cycle_loss_s = self.loss_fn_cycle_loss(real_s, cycled_s) * self.lambda_cycle
 
             # Generator identity loss
-            identity_loss_target = self.loss_fn_identity_loss(real_target, same_target) * self.lambda_identity
-            identity_loss_source = self.loss_fn_identity_loss(real_source, same_source) * self.lambda_identity
+            identity_loss_t = self.loss_fn_identity_loss(real_t, same_t) * self.lambda_identity
+            identity_loss_s = self.loss_fn_identity_loss(real_s, same_s) * self.lambda_identity
 
             # Total generator loss
-            total_gen_loss_target = generator_source_to_target_loss + cycle_loss_target + identity_loss_target
-            total_gen_loss_source = generator_target_to_source_loss + cycle_loss_source + identity_loss_source
+            total_gen_loss_t = gen_s_to_t_loss + cycle_loss_t + identity_loss_t
+            total_gen_loss_s = gen_t_to_s_loss + cycle_loss_s + identity_loss_s
 
-        # Get the gradients for the generators
-        grads_target = tape.gradient(total_gen_loss_target, self.generator_source_to_target.trainable_variables)
-        grads_source = tape.gradient(total_gen_loss_source, self.generator_target_to_source.trainable_variables)
+            if self.use_mixed_precission:
+                total_gen_loss_t = self.optim_gen_s_to_t.get_scaled_loss(total_gen_loss_t)
+                total_gen_loss_s = self.optim_gen_t_to_s.get_scaled_loss(total_gen_loss_s)
+                discr_s_loss = self.optim_discr_s.get_scaled_loss(discr_s_loss)
+                discr_t_loss = self.optim_discr_t.get_scaled_loss(discr_t_loss)
 
-        # Get the gradients for the discriminators
-        discriminator_source_grads = tape.gradient(
-            discriminator_source_loss, self.discriminator_source.trainable_variables
-        )
-        discriminator_target_grads = tape.gradient(
-            discriminator_target_loss, self.discriminator_target.trainable_variables
-        )
+        # Get the gradients
+        if self.use_mixed_precission:
+            scaled_grads_gen_t = tape.gradient(total_gen_loss_t, self.gen_s_to_t.trainable_variables)
+            scaled_grads_gen_s = tape.gradient(total_gen_loss_s, self.gen_t_to_s.trainable_variables)
+            scaled_grads_discr_s = tape.gradient(discr_s_loss, self.discr_s.trainable_variables)
+            scaled_grads_discr_t = tape.gradient(discr_t_loss, self.discr_t.trainable_variables)
 
-        # Update the weights of the generators
-        self.optimizer_generator_source_to_target.apply_gradients(
-            zip(grads_target, self.generator_source_to_target.trainable_variables)
-        )
-        self.optimizer_generator_target_to_source.apply_gradients(
-            zip(grads_source, self.generator_target_to_source.trainable_variables)
-        )
+            grads_gen_s_to_t = self.optim_gen_s_to_t.get_unscaled_gradients(scaled_grads_gen_t)
+            grads_gen_t_to_s = self.optim_gen_t_to_s.get_unscaled_gradients(scaled_grads_gen_s)
+            grads_discr_s = self.optim_discr_s.get_unscaled_gradients(scaled_grads_discr_s)
+            grads_discr_t = self.optim_discr_t.get_unscaled_gradients(scaled_grads_discr_t)
+        else:
+            grads_gen_s_to_t = tape.gradient(total_gen_loss_t, self.gen_s_to_t.trainable_variables)
+            grads_gen_t_to_s = tape.gradient(total_gen_loss_s, self.gen_t_to_s.trainable_variables)
+            grads_discr_s = tape.gradient(discr_s_loss, self.discr_s.trainable_variables)
+            grads_discr_t = tape.gradient(discr_t_loss, self.discr_t.trainable_variables)
 
-        # Update the weights of the discriminators
-        self.optimizer_discriminator_source.apply_gradients(
-            zip(discriminator_source_grads, self.discriminator_source.trainable_variables)
-        )
-        self.optimizer_discriminator_target.apply_gradients(
-            zip(discriminator_target_grads, self.discriminator_target.trainable_variables)
-        )
+        # Update the weights
+        self.optim_gen_s_to_t.apply_gradients(zip(grads_gen_s_to_t, self.gen_s_to_t.trainable_variables))
+        self.optim_gen_t_to_s.apply_gradients(zip(grads_gen_t_to_s, self.gen_t_to_s.trainable_variables))
+
+        self.optim_discr_s.apply_gradients(zip(grads_discr_s, self.discr_s.trainable_variables))
+        self.optim_discr_t.apply_gradients(zip(grads_discr_t, self.discr_t.trainable_variables))
 
         return [
-            total_gen_loss_target,
-            total_gen_loss_source,
-            discriminator_target_loss,
-            discriminator_source_loss,
-            generator_source_to_target_loss,
-            generator_target_to_source_loss,
-            cycle_loss_target,
-            cycle_loss_source,
-            identity_loss_target,
-            identity_loss_source,
+            total_gen_loss_t,
+            total_gen_loss_s,
+            discr_t_loss,
+            discr_s_loss,
+            gen_s_to_t_loss,
+            gen_t_to_s_loss,
+            cycle_loss_t,
+            cycle_loss_s,
+            identity_loss_t,
+            identity_loss_s,
         ]
 
     def test_step(self, test_data_batch: tf.Tensor) -> List[tf.Tensor]:
@@ -240,69 +246,69 @@ class CycleGAN(tf.keras.Model):
 
         Returns:
             loss: Returns list containing individual loss terms: <br>
-                \[0\]: total_gen_loss_target (tf.Tensor) <br>
-                \[1\]: total_gen_loss_source (tf.Tensor) <br>
-                \[2\]: discriminator_target_loss (tf.Tensor) <br>
-                \[3\]: discriminator_source_loss (tf.Tensor) <br>
-                \[4\]: generator_source_to_target_loss (tf.Tensor) <br>
-                \[5\]: generator_target_to_source_loss (tf.Tensor) <br>
-                \[6\]: cycle_loss_target (tf.Tensor) <br>
-                \[7\]: cycle_loss_source (tf.Tensor) <br>
-                \[8\]: identity_loss_target (tf.Tensor) <br>
-                \[9\]: identity_loss_source (tf.Tensor) <br>
+                \[0\]: total_gen_loss_t (tf.Tensor) <br>
+                \[1\]: total_gen_loss_s (tf.Tensor) <br>
+                \[2\]: discr_t_loss (tf.Tensor) <br>
+                \[3\]: discr_s_loss (tf.Tensor) <br>
+                \[4\]: gen_s_to_t_loss (tf.Tensor) <br>
+                \[5\]: gen_t_to_s_loss (tf.Tensor) <br>
+                \[6\]: cycle_loss_t (tf.Tensor) <br>
+                \[7\]: cycle_loss_s (tf.Tensor) <br>
+                \[8\]: identity_loss_t (tf.Tensor) <br>
+                \[9\]: identity_loss_s (tf.Tensor) <br>
         """
-        real_source, real_target = test_data_batch
+        real_s, real_t = test_data_batch
 
         # Generate fakes
-        generated_target = self.generator_source_to_target(real_source, training=False)
-        generated_source = self.generator_target_to_source(real_target, training=False)
+        generated_t = self.gen_s_to_t(real_s, training=False)
+        generated_s = self.gen_t_to_s(real_t, training=False)
 
         # Cycle mapping
-        cycled_source = self.generator_target_to_source(generated_target, training=False)
-        cycled_target = self.generator_source_to_target(generated_source, training=False)
+        cycled_s = self.gen_t_to_s(generated_t, training=False)
+        cycled_t = self.gen_s_to_t(generated_s, training=False)
 
         # Identity mapping
-        same_source = self.generator_target_to_source(real_source, training=False)
-        same_target = self.generator_source_to_target(real_target, training=False)
+        same_s = self.gen_t_to_s(real_s, training=False)
+        same_t = self.gen_s_to_t(real_t, training=False)
 
         # Discriminator output
-        disc_real_source = self.discriminator_source(real_source, training=False)
-        disc_generated_source = self.discriminator_source(generated_source, training=False)
+        disc_real_s = self.discr_s(real_s, training=False)
+        disc_generated_s = self.discr_s(generated_s, training=False)
 
-        disc_real_target = self.discriminator_target(real_target, training=False)
-        disc_generated_target = self.discriminator_target(generated_target, training=False)
+        disc_real_t = self.discr_t(real_t, training=False)
+        disc_generated_t = self.discr_t(generated_t, training=False)
 
         # Discriminator loss
-        discriminator_source_loss = self.loss_fn_discriminator_loss(disc_real_source, disc_generated_source)
-        discriminator_target_loss = self.loss_fn_discriminator_loss(disc_real_target, disc_generated_target)
+        discr_s_loss = self.loss_fn_discr_loss(disc_real_s, disc_generated_s)
+        discr_t_loss = self.loss_fn_discr_loss(disc_real_t, disc_generated_t)
 
         # Generator adverserial loss
-        generator_source_to_target_loss = self.loss_fn_generator_loss(disc_generated_target)
-        generator_target_to_source_loss = self.loss_fn_generator_loss(disc_generated_source)
+        gen_s_to_t_loss = self.loss_fn_gen_loss(disc_generated_t)
+        gen_t_to_s_loss = self.loss_fn_gen_loss(disc_generated_s)
 
         # Generator cycle loss
-        cycle_loss_target = self.loss_fn_cycle_loss(real_target, cycled_target) * self.lambda_cycle
-        cycle_loss_source = self.loss_fn_cycle_loss(real_source, cycled_source) * self.lambda_cycle
+        cycle_loss_t = self.loss_fn_cycle_loss(real_t, cycled_t) * self.lambda_cycle
+        cycle_loss_s = self.loss_fn_cycle_loss(real_s, cycled_s) * self.lambda_cycle
 
         # Generator identity loss
-        identity_loss_target = self.loss_fn_identity_loss(real_target, same_target) * self.lambda_identity
-        identity_loss_source = self.loss_fn_identity_loss(real_source, same_source) * self.lambda_identity
+        identity_loss_t = self.loss_fn_identity_loss(real_t, same_t) * self.lambda_identity
+        identity_loss_s = self.loss_fn_identity_loss(real_s, same_s) * self.lambda_identity
 
         # Total generator loss
-        total_gen_loss_target = generator_source_to_target_loss + cycle_loss_target + identity_loss_target
-        total_gen_loss_source = generator_target_to_source_loss + cycle_loss_source + identity_loss_source
+        total_gen_loss_t = gen_s_to_t_loss + cycle_loss_t + identity_loss_t
+        total_gen_loss_s = gen_t_to_s_loss + cycle_loss_s + identity_loss_s
 
         return [
-            total_gen_loss_target,
-            total_gen_loss_source,
-            discriminator_target_loss,
-            discriminator_source_loss,
-            generator_source_to_target_loss,
-            generator_target_to_source_loss,
-            cycle_loss_target,
-            cycle_loss_source,
-            identity_loss_target,
-            identity_loss_source,
+            total_gen_loss_t,
+            total_gen_loss_s,
+            discr_t_loss,
+            discr_s_loss,
+            gen_s_to_t_loss,
+            gen_t_to_s_loss,
+            cycle_loss_t,
+            cycle_loss_s,
+            identity_loss_t,
+            identity_loss_s,
         ]
 
     @tf.function
@@ -356,41 +362,33 @@ class CycleGAN(tf.keras.Model):
             base_directory (str): Directory where the models shall be saved. For each model, one directory is creacted.
         """
         save_options = tf.saved_model.SaveOptions(experimental_io_device="/job:localhost")
-        self.generator_target_to_source.save(
-            os.path.join(base_directory, "generator_target_to_source"), options=save_options
-        )
-        self.generator_source_to_target.save(
-            os.path.join(base_directory, "generator_source_to_target"), options=save_options
-        )
-        self.discriminator_source.save(os.path.join(base_directory, "discriminator_source"), options=save_options)
-        self.discriminator_target.save(os.path.join(base_directory, "discriminator_target"), options=save_options)
+        self.gen_t_to_s.save(os.path.join(base_directory, "gen_t_to_s"), options=save_options)
+        self.gen_s_to_t.save(os.path.join(base_directory, "gen_s_to_t"), options=save_options)
+        self.discr_s.save(os.path.join(base_directory, "discr_s"), options=save_options)
+        self.discr_t.save(os.path.join(base_directory, "discr_t"), options=save_options)
 
     def load_models(
         self,
-        path_generator_source_to_target: str,
-        path_generator_target_to_source: str,
-        path_discriminator_target: str,
-        path_discriminator_source: str,
+        path_gen_s_to_t: str,
+        path_gen_t_to_s: str,
+        path_discr_t: str,
+        path_discr_s: str,
         print_summary: bool = False,
     ) -> None:
         """Load weights for each of the models.
 
         Args:
-            path_generator_source_to_target (str): Path to the weights of the source-to-target generator.
-            path_generator_target_to_source (str): Path to the weights of the target-to-source generator.
-            path_discriminator_target (str): Path to the weights of the target discriminator.
-            path_discriminator_source (str): Path to the weights of the source discriminator.
+            path_gen_s_to_t (str): Path to the weights of the source-to-target generator.
+            path_gen_t_to_s (str): Path to the weights of the target-to-source generator.
+            path_discr_t (str): Path to the weights of the target discriminator.
+            path_discr_s (str): Path to the weights of the source discriminator.
             print_summary (bool, optional): Weathor or not to print the sumarry of the loaded models. Defaults to False.
         """
         load_options = tf.saved_model.LoadOptions(experimental_io_device="/job:localhost")
-        self.generator_source_to_target = tf.keras.models.load_model(
-            path_generator_source_to_target, options=load_options
-        )
-        self.generator_target_to_source = tf.keras.models.load_model(
-            path_generator_target_to_source, options=load_options
-        )
-        self.discriminator_target = tf.keras.models.load_model(path_discriminator_target, options=load_options)
-        self.discriminator_source = tf.keras.models.load_model(path_discriminator_source, options=load_options)
+        self.gen_s_to_t = tf.keras.models.load_model(path_gen_s_to_t, options=load_options)
+        self.gen_t_to_s = tf.keras.models.load_model(path_gen_t_to_s, options=load_options)
+        self.discr_t = tf.keras.models.load_model(path_discr_t, options=load_options)
+        self.discr_s = tf.keras.models.load_model(path_discr_s, options=load_options)
 
         if print_summary:
             self.print_short_summary()
@@ -400,10 +398,10 @@ class CycleGAN(tf.keras.Model):
 class VoloGAN(CycleGAN):
     def __init__(
         self,
-        generator_source_to_target: tf.keras.Model,
-        generator_target_to_source: tf.keras.Model,
-        discriminator_target: tf.keras.Model,
-        discriminator_source: tf.keras.Model,
+        gen_s_to_t: tf.keras.Model,
+        gen_t_to_s: tf.keras.Model,
+        discr_t: tf.keras.Model,
+        discr_s: tf.keras.Model,
         lambda_cycle: float = 10.0,
         lambda_identity: float = 0.5,
         lambda_ssim: float = 1.0,
@@ -411,14 +409,14 @@ class VoloGAN(CycleGAN):
         cutmix_probability: float = 0.2,
     ) -> None:
         super(VoloGAN, self).__init__(
-            generator_source_to_target,
-            generator_target_to_source,
-            discriminator_source,
-            discriminator_target,
+            gen_s_to_t,
+            gen_t_to_s,
+            discr_s,
+            discr_t,
             lambda_cycle,
             lambda_identity,
         )
-        self.modelType = "VoloGAN"  # TODO: check how this was used und change to model name and pass to base class
+        self.name = "VoloGAN"
         self.lambda_ssim = lambda_ssim
         self.useCutmix = use_cutmix
         self.cutmixProbability = cutmix_probability
@@ -428,399 +426,355 @@ class VoloGAN(CycleGAN):
 
     def compile(
         self,
-        optimizer_generator_source_to_target: tf.keras.optimizers.Optimizer,
-        optimizer_generator_target_to_source: tf.keras.optimizers.Optimizer,
-        optimizer_discriminator_source: tf.keras.optimizers.Optimizer,
-        optimizer_discriminator_target: tf.keras.optimizers.Optimizer,
-        loss_fn_generator_loss: Callable[[tf.Tensor, tf.Tensor], tf.Tensor],
-        loss_fn_discriminator_loss: Callable[[tf.Tensor, tf.Tensor], tf.Tensor],
+        optim_gen_s_to_t: tf.keras.optimizers.Optimizer,
+        optim_gen_t_to_s: tf.keras.optimizers.Optimizer,
+        optim_discr_s: tf.keras.optimizers.Optimizer,
+        optim_discr_t: tf.keras.optimizers.Optimizer,
+        loss_fn_gen_loss: Callable[[tf.Tensor, tf.Tensor], tf.Tensor],
+        loss_fn_discr_loss: Callable[[tf.Tensor, tf.Tensor], tf.Tensor],
         loss_fn_cycle_loss: Callable[[tf.Tensor, tf.Tensor], tf.Tensor],
         loss_fn_identity_loss: Callable[[tf.Tensor, tf.Tensor], tf.Tensor],
         ssim_loss_fn: Callable[[tf.Tensor, tf.Tensor], tf.Tensor],
     ) -> None:
         super(VoloGAN, self).compile(
-            optimizer_generator_source_to_target,
-            optimizer_generator_target_to_source,
-            optimizer_discriminator_source,
-            optimizer_discriminator_target,
-            loss_fn_generator_loss,
-            loss_fn_discriminator_loss,
+            optim_gen_s_to_t,
+            optim_gen_t_to_s,
+            optim_discr_s,
+            optim_discr_t,
+            loss_fn_gen_loss,
+            loss_fn_discr_loss,
             loss_fn_cycle_loss,
             loss_fn_identity_loss,
         )
         self.ssim_loss_fn = ssim_loss_fn
 
     def train_step(self, train_data_batch: tf.Tensor) -> List[tf.Tensor]:
-        real_source, real_target = train_data_batch
+        real_s, real_t = train_data_batch
 
         with tf.GradientTape(persistent=True) as tape:
             # Generating fakes
-            generated_target = self.generator_source_to_target(real_source, training=True)
-            generated_source = self.generator_target_to_source(real_target, training=True)
+            generated_t = self.gen_s_to_t(real_s, training=True)
+            generated_s = self.gen_t_to_s(real_t, training=True)
 
             # Cycle mapping
-            cycled_source = self.generator_target_to_source(generated_target, training=True)
-            cycled_target = self.generator_source_to_target(generated_source, training=True)
+            cycled_s = self.gen_t_to_s(generated_t, training=True)
+            cycled_t = self.gen_s_to_t(generated_s, training=True)
 
             # Identity mapping
-            same_source = self.generator_target_to_source(real_source, training=True)
-            same_target = self.generator_source_to_target(real_target, training=True)
+            same_s = self.gen_t_to_s(real_s, training=True)
+            same_t = self.gen_s_to_t(real_t, training=True)
 
             if DISCRIMINATOR_DESIGN == "PatchGAN":
                 # Discriminator output
-                disc_real_source = self.discriminator_source(real_source, training=True)
-                disc_generated_source = self.discriminator_source(generated_source, training=True)
+                disc_real_s = self.discr_s(real_s, training=True)
+                disc_generated_s = self.discr_s(generated_s, training=True)
 
-                disc_real_target = self.discriminator_target(real_target, training=True)
-                disc_generated_target = self.discriminator_target(generated_target, training=True)
+                disc_real_t = self.discr_t(real_t, training=True)
+                disc_generated_t = self.discr_t(generated_t, training=True)
 
                 # Discriminator loss
-                discriminator_source_loss = self.loss_fn_discriminator_loss(disc_real_source, disc_generated_source)
-                discriminator_target_loss = self.loss_fn_discriminator_loss(disc_real_target, disc_generated_target)
+                discr_s_loss = self.loss_fn_discr_loss(disc_real_s, disc_generated_s)
+                discr_t_loss = self.loss_fn_discr_loss(disc_real_t, disc_generated_t)
 
                 # Generator adverserial loss
-                generator_source_to_target_loss = self.loss_fn_generator_loss(disc_generated_target)
-                generator_target_to_source_loss = self.loss_fn_generator_loss(disc_generated_source)
+                gen_s_to_t_loss = self.loss_fn_gen_loss(disc_generated_t)
+                gen_t_to_s_loss = self.loss_fn_gen_loss(disc_generated_s)
 
             elif DISCRIMINATOR_DESIGN == "UNet":
                 # Discriminator output
-                disc_real_source_encoder, disc_real_source_decoder = self.discriminator_source(
-                    real_source, training=True
-                )
-                disc_generated_source_encoder, disc_generated_source_decoder = self.discriminator_source(
-                    generated_source, training=True
-                )
-                disc_real_target_encoder, disc_real_target_decoder = self.discriminator_target(
-                    real_target, training=True
-                )
-                disc_generated_target_encoder, disc_generated_target_decoder = self.discriminator_target(
-                    generated_target, training=True
-                )
+                disc_real_s_encoder, disc_real_s_decoder = self.discr_s(real_s, training=True)
+                disc_generated_s_encoder, disc_generated_s_decoder = self.discr_s(generated_s, training=True)
+                disc_real_t_encoder, disc_real_t_decoder = self.discr_t(real_t, training=True)
+                disc_generated_t_encoder, disc_generated_t_decoder = self.discr_t(generated_t, training=True)
 
                 if self.useCutmix and np.random.uniform(0, 1) < self.cutmixProbability:
                     batch_size, height, width, channel = rgbd_synthetic.shape
                     mixing_mask = GetCutmixMask(batch_size, height, width, channel)
-                    _, cutmix_source = CutMix(
-                        real_source, generated_source, ignoreBackground=True, mixing_mask=mixing_mask
-                    )
-                    _, cutmix_target = CutMix(
-                        real_target, generated_target, ignoreBackground=True, mixing_mask=mixing_mask
-                    )
+                    _, cutmix_s = CutMix(real_s, generated_s, ignoreBackground=True, mixing_mask=mixing_mask)
+                    _, cutmix_t = CutMix(real_t, generated_t, ignoreBackground=True, mixing_mask=mixing_mask)
 
                     # calculate discriminator output of cutmix images. Only decoder output relevant!
-                    _, disc_cutmix_source = self.discriminator_source(cutmix_source, training=True)
-                    _, disc_cutmix_target = self.discriminator_target(cutmix_target, training=True)
+                    _, disc_cutmix_s = self.discr_s(cutmix_s, training=True)
+                    _, disc_cutmix_t = self.discr_t(cutmix_t, training=True)
 
                     # calculate cutmix of discriminator output
-                    _, cutmix_disc_source = CutMix(
-                        disc_real_source_decoder,
-                        disc_generated_source_decoder,
+                    _, cutmix_disc_s = CutMix(
+                        disc_real_s_decoder,
+                        disc_generated_s_decoder,
                         ignoreBackground=True,
                         mixing_mask=mixing_mask,
                     )
-                    _, cutmix_disc_target = CutMix(
-                        disc_real_target_decoder,
-                        disc_generated_target_decoder,
+                    _, cutmix_disc_t = CutMix(
+                        disc_real_t_decoder,
+                        disc_generated_t_decoder,
                         ignoreBackground=True,
                         mixing_mask=mixing_mask,
                     )
 
                 else:
-                    disc_cutmix_source = None
-                    disc_cutmix_target = None
-                    cutmix_disc_source = None
-                    cutmix_disc_target = None
+                    disc_cutmix_s = None
+                    disc_cutmix_t = None
+                    cutmix_disc_s = None
+                    cutmix_disc_t = None
 
                 # Discriminator loss
-                discriminator_source_loss = self.loss_fn_discriminator_loss(
-                    disc_real_source_encoder,
-                    disc_real_source_decoder,
-                    disc_generated_source_encoder,
-                    disc_generated_source_decoder,
-                    disc_cutmix_source,
-                    cutmix_disc_source,
+                discr_s_loss = self.loss_fn_discr_loss(
+                    disc_real_s_encoder,
+                    disc_real_s_decoder,
+                    disc_generated_s_encoder,
+                    disc_generated_s_decoder,
+                    disc_cutmix_s,
+                    cutmix_disc_s,
                 )
-                discriminator_target_loss = self.loss_fn_discriminator_loss(
-                    disc_real_target_encoder,
-                    disc_real_target_decoder,
-                    disc_generated_target_encoder,
-                    disc_generated_target_decoder,
-                    disc_cutmix_target,
-                    cutmix_disc_target,
+                discr_t_loss = self.loss_fn_discr_loss(
+                    disc_real_t_encoder,
+                    disc_real_t_decoder,
+                    disc_generated_t_encoder,
+                    disc_generated_t_decoder,
+                    disc_cutmix_t,
+                    cutmix_disc_t,
                 )
 
                 # Generator adverserial loss
-                generator_source_to_target_loss = self.loss_fn_generator_loss(
-                    disc_generated_target_encoder, disc_generated_target_decoder
-                )
-                generator_target_to_source_loss = self.loss_fn_generator_loss(
-                    disc_generated_source_encoder, disc_generated_source_decoder
-                )
+                gen_s_to_t_loss = self.loss_fn_gen_loss(disc_generated_t_encoder, disc_generated_t_decoder)
+                gen_t_to_s_loss = self.loss_fn_gen_loss(disc_generated_s_encoder, disc_generated_s_decoder)
 
             elif DISCRIMINATOR_DESIGN == "OneShot_GAN":
                 # Discriminator output
                 (
-                    disc_real_source_low_level,
-                    disc_real_source_layout,
-                    disc_real_source_content,
-                ) = self.discriminator_source(real_source, training=True)
+                    disc_real_s_low_level,
+                    disc_real_s_layout,
+                    disc_real_s_content,
+                ) = self.discr_s(real_s, training=True)
                 (
-                    disc_generated_source_low_level,
-                    disc_generated_source_layout,
-                    disc_generated_source_content,
-                ) = self.discriminator_source(generated_source, training=True)
+                    disc_generated_s_low_level,
+                    disc_generated_s_layout,
+                    disc_generated_s_content,
+                ) = self.discr_s(generated_s, training=True)
 
                 (
-                    disc_real_target_low_level,
-                    disc_real_target_layout,
-                    disc_real_target_content,
-                ) = self.discriminator_target(real_target, training=True)
+                    disc_real_t_low_level,
+                    disc_real_t_layout,
+                    disc_real_t_content,
+                ) = self.discr_t(real_t, training=True)
                 (
-                    disc_generated_target_low_level,
-                    disc_generated_target_layout,
-                    disc_generated_target_content,
-                ) = self.discriminator_target(generated_target, training=True)
+                    disc_generated_t_low_level,
+                    disc_generated_t_layout,
+                    disc_generated_t_content,
+                ) = self.discr_t(generated_t, training=True)
 
                 # Discriminator loss
-                discriminator_source_loss = self.loss_fn_discriminator_loss(
-                    disc_real_source_low_level,
-                    disc_real_source_layout,
-                    disc_real_source_content,
-                    disc_generated_source_low_level,
-                    disc_generated_source_layout,
-                    disc_generated_source_content,
+                discr_s_loss = self.loss_fn_discr_loss(
+                    disc_real_s_low_level,
+                    disc_real_s_layout,
+                    disc_real_s_content,
+                    disc_generated_s_low_level,
+                    disc_generated_s_layout,
+                    disc_generated_s_content,
                 )
-                discriminator_target_loss = self.loss_fn_discriminator_loss(
-                    disc_real_target_low_level,
-                    disc_real_target_layout,
-                    disc_real_target_content,
-                    disc_generated_target_low_level,
-                    disc_generated_target_layout,
-                    disc_generated_target_content,
+                discr_t_loss = self.loss_fn_discr_loss(
+                    disc_real_t_low_level,
+                    disc_real_t_layout,
+                    disc_real_t_content,
+                    disc_generated_t_low_level,
+                    disc_generated_t_layout,
+                    disc_generated_t_content,
                 )
 
                 # Generator adverserial loss
-                generator_source_to_target_loss = self.loss_fn_generator_loss(
-                    disc_generated_target_low_level, disc_generated_target_layout, disc_generated_target_content
+                gen_s_to_t_loss = self.loss_fn_gen_loss(
+                    disc_generated_t_low_level, disc_generated_t_layout, disc_generated_t_content
                 )
-                generator_target_to_source_loss = self.loss_fn_generator_loss(
-                    disc_generated_source_low_level, disc_generated_source_layout, disc_generated_source_content
+                gen_t_to_s_loss = self.loss_fn_gen_loss(
+                    disc_generated_s_low_level, disc_generated_s_layout, disc_generated_s_content
                 )
 
             else:
                 raise Exception("Discriminator is not Defined")
 
             # Generator cycle loss
-            cycle_loss_target = self.loss_fn_cycle_loss(real_target, cycled_target) * self.lambda_cycle
-            cycle_loss_source = self.loss_fn_cycle_loss(real_source, cycled_source) * self.lambda_cycle
+            cycle_loss_t = self.loss_fn_cycle_loss(real_t, cycled_t) * self.lambda_cycle
+            cycle_loss_s = self.loss_fn_cycle_loss(real_s, cycled_s) * self.lambda_cycle
 
             # Generator identity loss
-            identity_loss_target = self.loss_fn_identity_loss(real_target, same_target) * self.lambda_identity
-            identity_loss_source = self.loss_fn_identity_loss(real_source, same_source) * self.lambda_identity
+            identity_loss_t = self.loss_fn_identity_loss(real_t, same_t) * self.lambda_identity
+            identity_loss_s = self.loss_fn_identity_loss(real_s, same_s) * self.lambda_identity
 
             # Generator SSIM Loss
-            ssim_loss_target = self.ssim_loss_fn(real_target, cycled_target) * self.lambda_ssim
-            ssim_loss_source = self.ssim_loss_fn(real_source, cycled_source) * self.lambda_ssim
+            ssim_loss_t = self.ssim_loss_fn(real_t, cycled_t) * self.lambda_ssim
+            ssim_loss_s = self.ssim_loss_fn(real_s, cycled_s) * self.lambda_ssim
 
             # Total generator loss
-            total_gen_loss_target = (
-                generator_source_to_target_loss + cycle_loss_target + identity_loss_target + ssim_loss_target
-            )
-            total_gen_loss_source = (
-                generator_target_to_source_loss + cycle_loss_source + identity_loss_source + ssim_loss_source
-            )
+            total_gen_loss_t = gen_s_to_t_loss + cycle_loss_t + identity_loss_t + ssim_loss_t
+            total_gen_loss_s = gen_t_to_s_loss + cycle_loss_s + identity_loss_s + ssim_loss_s
 
         # Get the gradients for the generators
-        grads_target = tape.gradient(total_gen_loss_target, self.generator_source_to_target.trainable_variables)
-        grads_source = tape.gradient(total_gen_loss_source, self.generator_target_to_source.trainable_variables)
+        grads_t = tape.gradient(total_gen_loss_t, self.gen_s_to_t.trainable_variables)
+        grads_s = tape.gradient(total_gen_loss_s, self.gen_t_to_s.trainable_variables)
 
         # Get the gradients for the discriminators
-        discriminator_source_grads = tape.gradient(
-            discriminator_source_loss, self.discriminator_source.trainable_variables
-        )
-        discriminator_target_grads = tape.gradient(
-            discriminator_target_loss, self.discriminator_target.trainable_variables
-        )
+        discr_s_grads = tape.gradient(discr_s_loss, self.discr_s.trainable_variables)
+        discr_t_grads = tape.gradient(discr_t_loss, self.discr_t.trainable_variables)
 
         # Update the weights of the generators
-        self.optimizer_generator_source_to_target.apply_gradients(
-            zip(grads_target, self.generator_source_to_target.trainable_variables)
-        )
-        self.optimizer_generator_target_to_source.apply_gradients(
-            zip(grads_source, self.generator_target_to_source.trainable_variables)
-        )
+        self.optim_gen_s_to_t.apply_gradients(zip(grads_t, self.gen_s_to_t.trainable_variables))
+        self.optim_gen_t_to_s.apply_gradients(zip(grads_s, self.gen_t_to_s.trainable_variables))
 
         # Update the weights of the discriminators
-        self.optimizer_discriminator_source.apply_gradients(
-            zip(discriminator_source_grads, self.discriminator_source.trainable_variables)
-        )
-        self.optimizer_discriminator_target.apply_gradients(
-            zip(discriminator_target_grads, self.discriminator_target.trainable_variables)
-        )
+        self.optim_discr_s.apply_gradients(zip(discr_s_grads, self.discr_s.trainable_variables))
+        self.optim_discr_t.apply_gradients(zip(discr_t_grads, self.discr_t.trainable_variables))
         return [
-            total_gen_loss_target,
-            total_gen_loss_source,
-            discriminator_target_loss,
-            discriminator_source_loss,
-            generator_source_to_target_loss,
-            generator_target_to_source_loss,
-            cycle_loss_target,
-            cycle_loss_source,
-            identity_loss_target,
-            identity_loss_source,
-            ssim_loss_target,
-            ssim_loss_source,
+            total_gen_loss_t,
+            total_gen_loss_s,
+            discr_t_loss,
+            discr_s_loss,
+            gen_s_to_t_loss,
+            gen_t_to_s_loss,
+            cycle_loss_t,
+            cycle_loss_s,
+            identity_loss_t,
+            identity_loss_s,
+            ssim_loss_t,
+            ssim_loss_s,
         ]
 
     def test_step(self, test_data_batch: tf.Tensor) -> List[tf.Tensor]:
-        real_source, real_target = test_data_batch
+        real_s, real_t = test_data_batch
 
         # Generate fakes
-        generated_target = self.generator_source_to_target(real_source, training=False)
-        generated_source = self.generator_target_to_source(real_target, training=False)
+        generated_t = self.gen_s_to_t(real_s, training=False)
+        generated_s = self.gen_t_to_s(real_t, training=False)
 
         # Cycle mapping
-        cycled_source = self.generator_target_to_source(generated_target, training=False)
-        cycled_target = self.generator_source_to_target(generated_source, training=False)
+        cycled_s = self.gen_t_to_s(generated_t, training=False)
+        cycled_t = self.gen_s_to_t(generated_s, training=False)
 
         # Identity mapping
-        same_source = self.generator_target_to_source(real_source, training=False)
-        same_target = self.generator_source_to_target(real_target, training=False)
+        same_s = self.gen_t_to_s(real_s, training=False)
+        same_t = self.gen_s_to_t(real_t, training=False)
 
         if DISCRIMINATOR_DESIGN == "PatchGAN":
             # Discriminator output
-            disc_real_source = self.discriminator_source(real_source, training=False)
-            disc_generated_source = self.discriminator_source(generated_source, training=False)
+            disc_real_s = self.discr_s(real_s, training=False)
+            disc_generated_s = self.discr_s(generated_s, training=False)
 
-            disc_real_target = self.discriminator_target(real_target, training=False)
-            disc_generated_target = self.discriminator_target(generated_target, training=False)
+            disc_real_t = self.discr_t(real_t, training=False)
+            disc_generated_t = self.discr_t(generated_t, training=False)
 
             # Discriminator loss
-            discriminator_source_loss = self.loss_fn_discriminator_loss(disc_real_source, disc_generated_source)
-            discriminator_target_loss = self.loss_fn_discriminator_loss(disc_real_target, disc_generated_target)
+            discr_s_loss = self.loss_fn_discr_loss(disc_real_s, disc_generated_s)
+            discr_t_loss = self.loss_fn_discr_loss(disc_real_t, disc_generated_t)
 
             # Generator adverserial loss
-            generator_source_to_target_loss = self.loss_fn_generator_loss(disc_generated_target)
-            generator_target_to_source_loss = self.loss_fn_generator_loss(disc_generated_source)
+            gen_s_to_t_loss = self.loss_fn_gen_loss(disc_generated_t)
+            gen_t_to_s_loss = self.loss_fn_gen_loss(disc_generated_s)
 
         elif DISCRIMINATOR_DESIGN == "UNet":
             # Discriminator output
-            disc_real_source_encoder, disc_real_source_decoder = self.discriminator_source(real_source, training=False)
-            disc_generated_source_encoder, disc_generated_source_decoder = self.discriminator_source(
-                generated_source, training=False
-            )
-            disc_real_target_encoder, disc_real_target_decoder = self.discriminator_target(real_target, training=False)
-            disc_generated_target_encoder, disc_generated_target_decoder = self.discriminator_target(
-                generated_target, training=False
-            )
+            disc_real_s_encoder, disc_real_s_decoder = self.discr_s(real_s, training=False)
+            disc_generated_s_encoder, disc_generated_s_decoder = self.discr_s(generated_s, training=False)
+            disc_real_t_encoder, disc_real_t_decoder = self.discr_t(real_t, training=False)
+            disc_generated_t_encoder, disc_generated_t_decoder = self.discr_t(generated_t, training=False)
 
             # Discriminator loss -> No Cutmix Regularization during Test!
-            discriminator_source_loss = self.loss_fn_discriminator_loss(
-                disc_real_source_encoder,
-                disc_real_source_decoder,
-                disc_generated_source_encoder,
-                disc_generated_source_decoder,
+            discr_s_loss = self.loss_fn_discr_loss(
+                disc_real_s_encoder,
+                disc_real_s_decoder,
+                disc_generated_s_encoder,
+                disc_generated_s_decoder,
                 None,
                 None,
             )
-            discriminator_target_loss = self.loss_fn_discriminator_loss(
-                disc_real_target_encoder,
-                disc_real_target_decoder,
-                disc_generated_target_encoder,
-                disc_generated_target_decoder,
+            discr_t_loss = self.loss_fn_discr_loss(
+                disc_real_t_encoder,
+                disc_real_t_decoder,
+                disc_generated_t_encoder,
+                disc_generated_t_decoder,
                 None,
                 None,
             )
 
             # Generator adverserial loss
-            generator_source_to_target_loss = self.loss_fn_generator_loss(
-                disc_generated_target_encoder, disc_generated_target_decoder
-            )
-            generator_target_to_source_loss = self.loss_fn_generator_loss(
-                disc_generated_source_encoder, disc_generated_source_decoder
-            )
+            gen_s_to_t_loss = self.loss_fn_gen_loss(disc_generated_t_encoder, disc_generated_t_decoder)
+            gen_t_to_s_loss = self.loss_fn_gen_loss(disc_generated_s_encoder, disc_generated_s_decoder)
 
         elif DISCRIMINATOR_DESIGN == "OneShot_GAN":
             # Discriminator output
 
-            disc_real_source_low_level, disc_real_source_layout, disc_real_source_content = self.discriminator_source(
-                real_source, training=False
+            disc_real_s_low_level, disc_real_s_layout, disc_real_s_content = self.discr_s(
+                real_s, training=False
             )
             (
-                disc_generated_source_low_level,
-                disc_generated_source_layout,
-                disc_generated_source_content,
-            ) = self.discriminator_source(generated_source, training=False)
+                disc_generated_s_low_level,
+                disc_generated_s_layout,
+                disc_generated_s_content,
+            ) = self.discr_s(generated_s, training=False)
 
-            disc_real_target_low_level, disc_real_target_layout, disc_real_target_content = self.discriminator_target(
-                real_target, training=False
+            disc_real_t_low_level, disc_real_t_layout, disc_real_t_content = self.discr_t(
+                real_t, training=False
             )
             (
-                disc_generated_target_low_level,
-                disc_generated_target_layout,
-                disc_generated_target_content,
-            ) = self.discriminator_target(generated_target, training=False)
+                disc_generated_t_low_level,
+                disc_generated_t_layout,
+                disc_generated_t_content,
+            ) = self.discr_t(generated_t, training=False)
 
             # Discriminator loss
-            discriminator_source_loss = self.loss_fn_discriminator_loss(
-                disc_real_source_low_level,
-                disc_real_source_layout,
-                disc_real_source_content,
-                disc_generated_source_low_level,
-                disc_generated_source_layout,
-                disc_generated_source_content,
+            discr_s_loss = self.loss_fn_discr_loss(
+                disc_real_s_low_level,
+                disc_real_s_layout,
+                disc_real_s_content,
+                disc_generated_s_low_level,
+                disc_generated_s_layout,
+                disc_generated_s_content,
             )
-            discriminator_target_loss = self.loss_fn_discriminator_loss(
-                disc_real_target_low_level,
-                disc_real_target_layout,
-                disc_real_target_content,
-                disc_generated_target_low_level,
-                disc_generated_target_layout,
-                disc_generated_target_content,
+            discr_t_loss = self.loss_fn_discr_loss(
+                disc_real_t_low_level,
+                disc_real_t_layout,
+                disc_real_t_content,
+                disc_generated_t_low_level,
+                disc_generated_t_layout,
+                disc_generated_t_content,
             )
 
             # Generator adverserial loss
-            generator_source_to_target_loss = self.loss_fn_generator_loss(
-                disc_generated_target_low_level, disc_generated_target_layout, disc_generated_target_content
+            gen_s_to_t_loss = self.loss_fn_gen_loss(
+                disc_generated_t_low_level, disc_generated_t_layout, disc_generated_t_content
             )
-            generator_target_to_source_loss = self.loss_fn_generator_loss(
-                disc_generated_source_low_level, disc_generated_source_layout, disc_generated_source_content
+            gen_t_to_s_loss = self.loss_fn_gen_loss(
+                disc_generated_s_low_level, disc_generated_s_layout, disc_generated_s_content
             )
 
         else:
             raise Exception("Discriminator is not Defined")
 
         # Generator cycle loss
-        cycle_loss_target = self.loss_fn_cycle_loss(real_target, cycled_target) * self.lambda_cycle
-        cycle_loss_source = self.loss_fn_cycle_loss(real_source, cycled_source) * self.lambda_cycle
+        cycle_loss_t = self.loss_fn_cycle_loss(real_t, cycled_t) * self.lambda_cycle
+        cycle_loss_s = self.loss_fn_cycle_loss(real_s, cycled_s) * self.lambda_cycle
 
         # Generator identity loss
-        identity_loss_target = self.loss_fn_identity_loss(real_target, same_target) * self.lambda_identity
-        identity_loss_source = self.loss_fn_identity_loss(real_source, same_source) * self.lambda_identity
+        identity_loss_t = self.loss_fn_identity_loss(real_t, same_t) * self.lambda_identity
+        identity_loss_s = self.loss_fn_identity_loss(real_s, same_s) * self.lambda_identity
 
         # Generator SSIM Loss
-        ssim_loss_target = self.ssim_loss_fn(real_target, cycled_target) * self.lambda_ssim
-        ssim_loss_source = self.ssim_loss_fn(real_source, cycled_source) * self.lambda_ssim
+        ssim_loss_t = self.ssim_loss_fn(real_t, cycled_t) * self.lambda_ssim
+        ssim_loss_s = self.ssim_loss_fn(real_s, cycled_s) * self.lambda_ssim
 
         # Total generator loss
-        total_gen_loss_target = (
-            generator_source_to_target_loss + cycle_loss_target + identity_loss_target + ssim_loss_target
-        )
-        total_gen_loss_source = (
-            generator_target_to_source_loss + cycle_loss_source + identity_loss_source + ssim_loss_source
-        )
+        total_gen_loss_t = gen_s_to_t_loss + cycle_loss_t + identity_loss_t + ssim_loss_t
+        total_gen_loss_s = gen_t_to_s_loss + cycle_loss_s + identity_loss_s + ssim_loss_s
 
         return [
-            total_gen_loss_target,
-            total_gen_loss_source,
-            discriminator_target_loss,
-            discriminator_source_loss,
-            generator_source_to_target_loss,
-            generator_target_to_source_loss,
-            cycle_loss_target,
-            cycle_loss_source,
-            identity_loss_target,
-            identity_loss_source,
-            ssim_loss_target,
-            ssim_loss_source,
+            total_gen_loss_t,
+            total_gen_loss_s,
+            discr_t_loss,
+            discr_s_loss,
+            gen_s_to_t_loss,
+            gen_t_to_s_loss,
+            cycle_loss_t,
+            cycle_loss_s,
+            identity_loss_t,
+            identity_loss_s,
+            ssim_loss_t,
+            ssim_loss_s,
         ]
