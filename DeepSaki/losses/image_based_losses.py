@@ -9,6 +9,7 @@ from DeepSaki.types.losses_enums import LossCalcType
 from DeepSaki.types.losses_enums import LossType
 
 
+# TODO: makes no sense to provide loss_reduction if I scale anyway!
 class ImageBasedLoss(tf.keras.losses.Loss, ABC):
     """Abstract base class for image based losses.
 

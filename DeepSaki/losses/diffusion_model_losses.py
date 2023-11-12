@@ -8,6 +8,7 @@ from DeepSaki.math.statistics import calc_kl_divergence_of_univariate_normal_dis
 from DeepSaki.math.statistics import calc_log_likelihood_of_discretized_gaussian
 from DeepSaki.tensor_ops.tensor_ops import sample_array_to_tensor
 from DeepSaki.types.losses_enums import LossWeightType
+from DeepSaki.losses.loss_helper import manually_reduce_loss
 
 
 class DiffusionLoss:
@@ -92,15 +93,7 @@ class DiffusionLoss:
         """
         loss = self._get_loss_weighting(timestep) * (real - generated) ** 2
 
-        # shape of loss: [batch, height, width, channel]
-        # TODO: Depends on image like data
-        loss = tf.math.reduce_mean(loss, axis=[1, 2, 3])  # mean reduce each batch individually
-
-        # manually mean reduce by global batchsize to enable multi-worker training e.g. multi-GPU
-        loss = tf.math.reduce_sum(loss)
-        loss *= 1.0 / self.global_batchsize
-
-        return loss
+        return manually_reduce_loss(loss, self.global_batchsize)
 
     def vlb_loss(
         self,
@@ -125,11 +118,7 @@ class DiffusionLoss:
             Variational lower bound loss term for a given timestep
         """
         loss = self.get_vlb_loss_term(prediction, x0, xt, timestep)  # shape: (batch,)
-
-        # shape of loss: [batch,] -> no reduce mean required as in L_simple
-        loss = tf.math.reduce_sum(loss)
-        loss *= 1.0 / self.global_batchsize
-        return loss
+        return manually_reduce_loss(loss, self.global_batchsize)
 
     def hybrid_loss(
         self,
