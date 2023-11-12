@@ -18,11 +18,11 @@
         <link rel="prev" href="../layers/">
       
       
-        <link rel="next" href="../models/">
+        <link rel="next" href="../math/">
       
       
       <link rel="icon" href="../../../assets/images/ds_logo_small.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.7">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.8">
     
     
       
@@ -102,7 +102,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#DeepSaki.losses.image_based_losses.ImageBasedLoss" class="md-skip">
+        <a href="#DeepSaki.losses.diffusion_model_losses.DiffusionLoss" class="md-skip">
           Skip to content
         </a>
       
@@ -529,6 +529,46 @@
   
   
     <li class="md-nav__item">
+      <a href="../diffusion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    diffusion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frameworks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    frameworks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../initializers/" class="md-nav__link">
         
   
@@ -611,6 +651,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#DeepSaki.losses.diffusion_model_losses.DiffusionLoss" class="md-nav__link">
+    DiffusionLoss
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#DeepSaki.losses.image_based_losses.ImageBasedLoss" class="md-nav__link">
     ImageBasedLoss
   </a>
@@ -635,6 +682,26 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../math/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    math
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -671,6 +738,26 @@
   
   <span class="md-ellipsis">
     optimizers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tensor_ops/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    tensor_ops
   </span>
   
 
@@ -792,6 +879,1163 @@
 
 
   <h1>losses</h1>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+  <div class="doc doc-contents first">
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+
+<h2 id="DeepSaki.losses.diffusion_model_losses.DiffusionLoss" class="doc doc-heading">
+          <span class="doc doc-object-name doc-class-name">DiffusionLoss</span>
+
+
+<a href="#DeepSaki.losses.diffusion_model_losses.DiffusionLoss" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">DiffusionLoss</span><span class="p">(</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">diffusion_process</span><span class="p">:</span> <span class="n">GaussianDiffusionProcess</span><span class="p">,</span>
+    <span class="n">loss_weighting_type</span><span class="p">:</span> <span class="n">LossWeightType</span> <span class="o">=</span> <span class="n">LossWeightType</span><span class="o">.</span><span class="n">SIMPLE</span><span class="p">,</span>
+    <span class="n">lambda_vlb</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+    <span class="n">return_bits</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">global_batchsize</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+
+  
+      <p>Object to group various loss definitions and configurations of a Diffusion model loss function.</p>
+  
+      <p>Initializes the <code>DiffusionLoss</code> object.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>batch_size</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Batch size used for training.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>diffusion_process</code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess" href="../diffusion/#DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess">GaussianDiffusionProcess</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The diffusion process object used for the forward diffusion.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>loss_weighting_type</code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="DeepSaki.types.losses_enums.LossWeightType" href="../types/#DeepSaki.types.losses_enums.LossWeightType">LossWeightType</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Type of weigthing applied to the simpliefied loss L_simple.
+Defaults to LossWeightType.SIMPLE.</p>
+            </div>
+          </td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="DeepSaki.types.losses_enums.LossWeightType" href="../types/#DeepSaki.types.losses_enums.LossWeightType">LossWeightType</a>.<span title="DeepSaki.types.losses_enums.LossWeightType.SIMPLE">SIMPLE</span></code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>lambda_vlb</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Weighting factor to controll the contribution of L_VLB in the L_hybrid.
+Defaults to 1e-3.</p>
+            </div>
+          </td>
+          <td>
+                <code>0.001</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_bits</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>If true, loglikelihood is given in bits, otherwise nats. Defaults to True.
+Defaults to True.</p>
+            </div>
+          </td>
+          <td>
+                <code>True</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>global_batchsize</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Batch size considering all workers running in parallel in a data parallel
+setup. If <code>None</code>, <code>batch_size</code> is set as global batch size. Defaults to None.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+                <details class="quote">
+                  <summary>Source code in <code>DeepSaki/losses/diffusion_model_losses.py</code></summary>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">diffusion_process</span><span class="p">:</span> <span class="n">GaussianDiffusionProcess</span><span class="p">,</span>
+    <span class="n">loss_weighting_type</span><span class="p">:</span> <span class="n">LossWeightType</span> <span class="o">=</span> <span class="n">LossWeightType</span><span class="o">.</span><span class="n">SIMPLE</span><span class="p">,</span>
+    <span class="n">lambda_vlb</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
+    <span class="n">return_bits</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">global_batchsize</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the `DiffusionLoss` object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        batch_size (int): Batch size used for training.</span>
+<span class="sd">        diffusion_process (GaussianDiffusionProcess): The diffusion process object used for the forward diffusion.</span>
+<span class="sd">        loss_weighting_type (LossWeightType, optional): Type of weigthing applied to the simpliefied loss L_simple.</span>
+<span class="sd">            Defaults to LossWeightType.SIMPLE.</span>
+<span class="sd">        lambda_vlb (float, optional): Weighting factor to controll the contribution of L_VLB in the L_hybrid.</span>
+<span class="sd">            Defaults to 1e-3.</span>
+<span class="sd">        return_bits (bool, optional): If true, loglikelihood is given in bits, otherwise nats. Defaults to True.</span>
+<span class="sd">            Defaults to True.</span>
+<span class="sd">        global_batchsize (int, optional): Batch size considering all workers running in parallel in a data parallel</span>
+<span class="sd">            setup. If `None`, `batch_size` is set as global batch size. Defaults to None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_process</span> <span class="o">=</span> <span class="n">diffusion_process</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">loss_weighting_type</span> <span class="o">=</span> <span class="n">loss_weighting_type</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lambda_vlb</span> <span class="o">=</span> <span class="n">lambda_vlb</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">return_bits</span> <span class="o">=</span> <span class="n">return_bits</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">global_batchsize</span> <span class="o">=</span> <span class="n">global_batchsize</span> <span class="ow">or</span> <span class="n">batch_size</span>
+</code></pre></div></td></tr></table></div>
+                </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.losses.diffusion_model_losses.DiffusionLoss.get_vlb_loss_term" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">get_vlb_loss_term</span>
+
+
+<a href="#DeepSaki.losses.diffusion_model_losses.DiffusionLoss.get_vlb_loss_term" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">get_vlb_loss_term</span><span class="p">(</span>
+    <span class="n">model_prediction</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">x0</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">xt</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">t</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Calculates the individual terms of L_VLB of a given timestep. vlb_loss = L0 + Lt + ... + LT.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>model_prediction</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Predicted noise of the noise prediction model.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>x0</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Unnoisy data at timestep 0.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>xt</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Noisy data at timestep t obtained in the forward diffusion process.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>t</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Indicies of the timesteps used to obtain the actual value from the beta schedule.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>tf.Tensor: Current VLB term Lt for a given timestep t.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/losses/diffusion_model_losses.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_vlb_loss_term</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">model_prediction</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">x0</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">xt</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">t</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates the individual terms of L_VLB of a given timestep. vlb_loss = L0 + Lt + ... + LT.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model_prediction (tf.Tensor): Predicted noise of the noise prediction model.</span>
+<span class="sd">        x0 (tf.Tensor): Unnoisy data at timestep 0.</span>
+<span class="sd">        xt (tf.Tensor): Noisy data at timestep t obtained in the forward diffusion process.</span>
+<span class="sd">        t (tf.Tensor): Indicies of the timesteps used to obtain the actual value from the beta schedule.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tf.Tensor: Current VLB term Lt for a given timestep t.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">q_xtm1_given_x0_xt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_process</span><span class="o">.</span><span class="n">q_xtm1_given_x0_xt_mean_var</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">xt</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="n">p_xtm1_given_xt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_process</span><span class="o">.</span><span class="n">p_xtm1_given_xt_mean_var</span><span class="p">(</span><span class="n">xt</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">model_prediction</span><span class="p">,</span> <span class="n">clip_denoised</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># log_var*0.5 is the same as sqrt(var), which is the standard deviation!</span>
+    <span class="n">descrete_log_likelihood</span> <span class="o">=</span> <span class="o">-</span><span class="n">calc_log_likelihood_of_discretized_gaussian</span><span class="p">(</span>
+        <span class="n">x0</span><span class="p">,</span> <span class="n">p_xtm1_given_xt</span><span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">],</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">p_xtm1_given_xt</span><span class="p">[</span><span class="s2">&quot;log_var&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_bits</span>
+    <span class="p">)</span>
+
+    <span class="n">kl_divergence</span> <span class="o">=</span> <span class="n">calc_kl_divergence_of_univariate_normal_distribution</span><span class="p">(</span>
+        <span class="n">q_xtm1_given_x0_xt</span><span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">],</span>
+        <span class="n">q_xtm1_given_x0_xt</span><span class="p">[</span><span class="s2">&quot;log_var&quot;</span><span class="p">],</span>
+        <span class="n">p_xtm1_given_xt</span><span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">],</span>
+        <span class="n">p_xtm1_given_xt</span><span class="p">[</span><span class="s2">&quot;log_var&quot;</span><span class="p">],</span>
+        <span class="n">variance_is_logarithmic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">return_bits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">return_bits</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># tf.where supports batched data. if t==0, log-likelihood is returned, otherwise the KL-divergence</span>
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">t</span> <span class="o">==</span> <span class="mi">0</span><span class="p">),</span> <span class="n">descrete_log_likelihood</span><span class="p">,</span> <span class="n">kl_divergence</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.losses.diffusion_model_losses.DiffusionLoss.get_vlb_prior" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">get_vlb_prior</span>
+
+
+<a href="#DeepSaki.losses.diffusion_model_losses.DiffusionLoss.get_vlb_prior" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">get_vlb_prior</span><span class="p">(</span><span class="n">x0</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Get the prior KL term for the variational lower-bound.</p>
+<p>This term can't be optimized, as it only depends on the encoder.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x0</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Unnoisy data at timestep 0.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>tf.Tensor: Prior KL term for the variational lower-bound</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/losses/diffusion_model_losses.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_vlb_prior</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">x0</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the prior KL term for the variational lower-bound.</span>
+
+<span class="sd">    This term can&#39;t be optimized, as it only depends on the encoder.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x0 (tf.Tensor): Unnoisy data at timestep 0.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tf.Tensor: Prior KL term for the variational lower-bound</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diffusion_process</span><span class="o">.</span><span class="n">diffusion_steps</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">q_xt_given_x0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_process</span><span class="o">.</span><span class="n">q_xt_given_x0_mean_var</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">calc_kl_divergence_of_univariate_normal_distribution</span><span class="p">(</span>
+        <span class="n">mean1</span><span class="o">=</span><span class="n">q_xt_given_x0</span><span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">],</span>
+        <span class="n">var1</span><span class="o">=</span><span class="n">q_xt_given_x0</span><span class="p">[</span><span class="s2">&quot;log_var&quot;</span><span class="p">],</span>
+        <span class="n">mean2</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">var2</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">variance_is_logarithmic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">return_bits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">return_bits</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.losses.diffusion_model_losses.DiffusionLoss.hybrid_loss" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">hybrid_loss</span>
+
+
+<a href="#DeepSaki.losses.diffusion_model_losses.DiffusionLoss.hybrid_loss" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">hybrid_loss</span><span class="p">(</span>
+    <span class="n">real_noise</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">prediction</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">x0</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">xt</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">t</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Calculates the hybrid loss defined as the sum of the simple loss and the VLB loss.</p>
+<p>hybrid_loss = simple_loss + vlb_loss.</p>
+
+<details class="note" open>
+  <summary>Note</summary>
+  <p>Expects the diffusion model to not only predict the noise but also the variance.</p>
+</details>
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>real_noise</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Actual noise added to a sample in the forward diffusion.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>prediction</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Predicted noise and variance of of the diffusion model.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>x0</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Unnoisy data at timestep 0.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>xt</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Noisy data at timestep t obtained in the forward diffusion process.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>t</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Indicies of the timesteps used to obtain the actual value from the beta schedule.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Hybrid loss term.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/losses/diffusion_model_losses.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">hybrid_loss</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">real_noise</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">prediction</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">x0</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">xt</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">t</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates the hybrid loss defined as the sum of the simple loss and the VLB loss.</span>
+
+<span class="sd">    hybrid_loss = simple_loss + vlb_loss.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        Expects the diffusion model to not only predict the noise but also the variance.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        real_noise (tf.Tensor): Actual noise added to a sample in the forward diffusion.</span>
+<span class="sd">        prediction (tf.Tensor): Predicted noise and variance of of the diffusion model.</span>
+<span class="sd">        x0 (tf.Tensor): Unnoisy data at timestep 0.</span>
+<span class="sd">        xt (tf.Tensor): Noisy data at timestep t obtained in the forward diffusion process.</span>
+<span class="sd">        t (tf.Tensor): Indicies of the timesteps used to obtain the actual value from the beta schedule.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Hybrid loss term.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># split prediction into noise and var</span>
+    <span class="c1"># recombine it with applying tf.stop_gradient to the noise value</span>
+    <span class="n">pred_noise</span><span class="p">,</span> <span class="n">pred_var</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">prediction</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">pred_stopped_noise</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">tf</span><span class="o">.</span><span class="n">stop_gradient</span><span class="p">(</span><span class="n">pred_noise</span><span class="p">),</span> <span class="n">pred_var</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">loss_simple</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simple_loss</span><span class="p">(</span><span class="n">real_noise</span><span class="p">,</span> <span class="n">pred_noise</span><span class="p">)</span>
+    <span class="n">loss_vlb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_vlb</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">vlb_loss</span><span class="p">(</span><span class="n">pred_stopped_noise</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">xt</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">loss_simple</span> <span class="o">+</span> <span class="n">loss_vlb</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.losses.diffusion_model_losses.DiffusionLoss.simple_loss" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">simple_loss</span>
+
+
+<a href="#DeepSaki.losses.diffusion_model_losses.DiffusionLoss.simple_loss" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">simple_loss</span><span class="p">(</span>
+    <span class="n">real</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">generated</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">timestep</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Simplified loss objective as introduced by DDPM paper.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>real</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Actual noise added to a sample in the forward diffusion.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>generated</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Predicted Noise added to a sample.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>timestep</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Indicies of the timesteps used to obtain the actual value from the beta schedule.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Loss between real and generated data.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/losses/diffusion_model_losses.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">simple_loss</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">real</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">generated</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">timestep</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simplified loss objective as introduced by DDPM paper.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        real (tf.Tensor): Actual noise added to a sample in the forward diffusion.</span>
+<span class="sd">        generated (tf.Tensor): Predicted Noise added to a sample.</span>
+<span class="sd">        timestep (tf.Tensor): Indicies of the timesteps used to obtain the actual value from the beta schedule.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Loss between real and generated data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_loss_weighting</span><span class="p">(</span><span class="n">timestep</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">real</span> <span class="o">-</span> <span class="n">generated</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+    <span class="c1"># shape of loss: [batch, height, width, channel]</span>
+    <span class="c1"># TODO: Depends on image like data</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>  <span class="c1"># mean reduce each batch individually</span>
+
+    <span class="c1"># manually mean reduce by global batchsize to enable multi-worker training e.g. multi-GPU</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">*=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_batchsize</span>
+
+    <span class="k">return</span> <span class="n">loss</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.losses.diffusion_model_losses.DiffusionLoss.vlb_loss" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">vlb_loss</span>
+
+
+<a href="#DeepSaki.losses.diffusion_model_losses.DiffusionLoss.vlb_loss" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">vlb_loss</span><span class="p">(</span>
+    <span class="n">prediction</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">x0</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">xt</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">timestep</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Calculates the Variational Lower Bound loss term for a given timestep as used in improved DDPM.</p>
+
+<details class="info" open>
+  <summary>Info</summary>
+  <p><a href="http://arxiv.org/abs/2102.09672">Improved Denoising Diffusion Probabilistic Models, Nichol et. al., 2021</a></p>
+</details>
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>prediction</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Predicted noise of the noise prediction model.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>x0</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Unnoisy data at timestep 0.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>xt</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Noisy data at timestep t obtained in the forward diffusion process.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>timestep</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Indicies of the timesteps used to obtain the actual value from
+the beta schedule.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Variational lower bound loss term for a given timestep</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/losses/diffusion_model_losses.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">vlb_loss</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">prediction</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">x0</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">xt</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">timestep</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates the Variational Lower Bound loss term for a given timestep as used in improved DDPM.</span>
+
+<span class="sd">    Info:</span>
+<span class="sd">        [Improved Denoising Diffusion Probabilistic Models, Nichol et. al., 2021](http://arxiv.org/abs/2102.09672)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        prediction (tf.Tensor): Predicted noise of the noise prediction model.</span>
+<span class="sd">        x0 (tf.Tensor): Unnoisy data at timestep 0.</span>
+<span class="sd">        xt (tf.Tensor): Noisy data at timestep t obtained in the forward diffusion process.</span>
+<span class="sd">        timestep (tf.Tensor): Indicies of the timesteps used to obtain the actual value from</span>
+<span class="sd">            the beta schedule.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Variational lower bound loss term for a given timestep</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_vlb_loss_term</span><span class="p">(</span><span class="n">prediction</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">xt</span><span class="p">,</span> <span class="n">timestep</span><span class="p">)</span>  <span class="c1"># shape: (batch,)</span>
+
+    <span class="c1"># shape of loss: [batch,] -&gt; no reduce mean required as in L_simple</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">*=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_batchsize</span>
+    <span class="k">return</span> <span class="n">loss</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
 
 <div class="doc doc-object doc-module">
 
@@ -946,8 +2190,7 @@ tf.keras.losses.Reduction.AUTO.</p>
 
                 <details class="quote">
                   <summary>Source code in <code>DeepSaki/losses/image_based_losses.py</code></summary>
-                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
-<span class="normal">19</span>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
@@ -978,7 +2221,8 @@ tf.keras.losses.Reduction.AUTO.</p>
 <span class="normal">47</span>
 <span class="normal">48</span>
 <span class="normal">49</span>
-<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">50</span>
+<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">global_batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">calculation_type</span><span class="p">:</span> <span class="n">LossCalcType</span> <span class="o">=</span> <span class="n">LossCalcType</span><span class="o">.</span><span class="n">PER_IMAGE</span><span class="p">,</span>
@@ -1114,8 +2358,7 @@ tf.keras.losses.Reduction.AUTO.</p>
 
           <details class="quote">
             <summary>Source code in <code>DeepSaki/losses/image_based_losses.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">84</span>
-<span class="normal">85</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">85</span>
 <span class="normal">86</span>
 <span class="normal">87</span>
 <span class="normal">88</span>
@@ -1127,7 +2370,8 @@ tf.keras.losses.Reduction.AUTO.</p>
 <span class="normal">94</span>
 <span class="normal">95</span>
 <span class="normal">96</span>
-<span class="normal">97</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img1</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">img2</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="normal">97</span>
+<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img1</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">img2</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates the image loss between `img1` and `img2` using the overriden `error_func` from the sub-class.</span>
 
 <span class="sd">    Args:</span>
@@ -1305,8 +2549,7 @@ tf.keras.losses.Reduction.AUTO.</p>
 
                 <details class="quote">
                   <summary>Source code in <code>DeepSaki/losses/image_based_losses.py</code></summary>
-                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">106</span>
-<span class="normal">107</span>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
 <span class="normal">108</span>
 <span class="normal">109</span>
 <span class="normal">110</span>
@@ -1341,7 +2584,8 @@ tf.keras.losses.Reduction.AUTO.</p>
 <span class="normal">139</span>
 <span class="normal">140</span>
 <span class="normal">141</span>
-<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">142</span>
+<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">global_batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">calculation_type</span><span class="p">:</span> <span class="n">LossCalcType</span> <span class="o">=</span> <span class="n">LossCalcType</span><span class="o">.</span><span class="n">PER_IMAGE</span><span class="p">,</span>
@@ -1602,8 +2846,7 @@ tf.keras.losses.Reduction.AUTO.</p>
 
                 <details class="quote">
                   <summary>Source code in <code>DeepSaki/losses/image_based_losses.py</code></summary>
-                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">169</span>
-<span class="normal">170</span>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">170</span>
 <span class="normal">171</span>
 <span class="normal">172</span>
 <span class="normal">173</span>
@@ -1642,7 +2885,8 @@ tf.keras.losses.Reduction.AUTO.</p>
 <span class="normal">206</span>
 <span class="normal">207</span>
 <span class="normal">208</span>
-<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">209</span>
+<span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">global_batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">calculation_type</span><span class="p">:</span> <span class="n">LossCalcType</span> <span class="o">=</span> <span class="n">LossCalcType</span><span class="o">.</span><span class="n">PER_IMAGE</span><span class="p">,</span>
@@ -1800,13 +3044,13 @@ tf.keras.losses.Reduction.AUTO.</p>
         
         
           
-          <a href="../models/" class="md-footer__link md-footer__link--next" aria-label="Next: models">
+          <a href="../math/" class="md-footer__link md-footer__link--next" aria-label="Next: math">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                models
+                math
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -1891,7 +3135,7 @@ tf.keras.losses.Reduction.AUTO.</p>
     <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.path", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "toc.follow", "toc.integrate", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.aecac24b.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.81fa17fe.min.js"></script>
       
         <script src="../../../javascripts/katex.js"></script>
       

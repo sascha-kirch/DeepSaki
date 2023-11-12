@@ -12,22 +12,28 @@
         <meta name="author" content="Sascha Kirch">
       
       
+        <link rel="canonical" href="https://sascha-kirch.github.io/DeepSaki/develop/reference/DeepSaki/tensor_ops/">
       
       
+        <link rel="prev" href="../optimizers/">
       
-      <link rel="icon" href="/DeepSaki/develop/assets/images/ds_logo_small.png">
+      
+        <link rel="next" href="../types/">
+      
+      
+      <link rel="icon" href="../../../assets/images/ds_logo_small.png">
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.8">
     
     
       
-        <title>DeepSaki</title>
+        <title>tensor_ops - DeepSaki</title>
       
     
     
-      <link rel="stylesheet" href="/DeepSaki/develop/assets/stylesheets/main.4b4a2bd9.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.4b4a2bd9.min.css">
       
         
-        <link rel="stylesheet" href="/DeepSaki/develop/assets/stylesheets/palette.356b1318.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.356b1318.min.css">
       
       
 
@@ -46,11 +52,11 @@
       
     
     
-      <link rel="stylesheet" href="/DeepSaki/develop/assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css">
     
-    <script>__md_scope=new URL("/DeepSaki/develop",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -95,6 +101,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#DeepSaki.tensor_ops.tensor_ops.sample_array_to_tensor" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -111,9 +122,9 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/DeepSaki/develop/." title="DeepSaki" class="md-header__button md-logo" aria-label="DeepSaki" data-md-component="logo">
+    <a href="../../.." title="DeepSaki" class="md-header__button md-logo" aria-label="DeepSaki" data-md-component="logo">
       
-  <img src="/DeepSaki/develop/assets/images/ds_logo_small_white.png" alt="logo">
+  <img src="../../../assets/images/ds_logo_small_white.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -130,7 +141,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              tensor_ops
             
           </span>
         </div>
@@ -228,7 +239,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="/DeepSaki/develop/." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
     
@@ -243,11 +254,13 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="/DeepSaki/develop/reference/DeepSaki/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
           
   
   Code Reference
@@ -263,7 +276,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="/DeepSaki/develop/CONTRIBUTE/" class="md-tabs__link">
+      <a href="../../../CONTRIBUTE/" class="md-tabs__link">
         
   
     
@@ -280,7 +293,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="/DeepSaki/develop/CHANGELOG/" class="md-tabs__link">
+      <a href="../../../CHANGELOG/" class="md-tabs__link">
         
   
     
@@ -322,9 +335,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/DeepSaki/develop/." title="DeepSaki" class="md-nav__button md-logo" aria-label="DeepSaki" data-md-component="logo">
+    <a href="../../.." title="DeepSaki" class="md-nav__button md-logo" aria-label="DeepSaki" data-md-component="logo">
       
-  <img src="/DeepSaki/develop/assets/images/ds_logo_small_white.png" alt="logo">
+  <img src="../../../assets/images/ds_logo_small_white.png" alt="logo">
 
     </a>
     DeepSaki
@@ -350,7 +363,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/DeepSaki/develop/." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -367,6 +380,8 @@
       
   
   
+    
+  
   
     
     
@@ -376,12 +391,12 @@
       
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
           <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
@@ -395,7 +410,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             Code Reference
@@ -406,23 +421,25 @@
                 
   
   
+    
+  
   
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" checked>
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="/DeepSaki/develop/reference/DeepSaki/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -439,7 +456,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2_1">
             <span class="md-nav__icon md-icon"></span>
             DeepSaki
@@ -452,7 +469,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/DeepSaki/develop/reference/DeepSaki/activations/" class="md-nav__link">
+      <a href="../activations/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -472,7 +489,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/DeepSaki/develop/reference/DeepSaki/augmentations/" class="md-nav__link">
+      <a href="../augmentations/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -492,7 +509,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/DeepSaki/develop/reference/DeepSaki/constraints/" class="md-nav__link">
+      <a href="../constraints/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -512,7 +529,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/DeepSaki/develop/reference/DeepSaki/diffusion/" class="md-nav__link">
+      <a href="../diffusion/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -532,7 +549,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/DeepSaki/develop/reference/DeepSaki/frameworks/" class="md-nav__link">
+      <a href="../frameworks/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -552,7 +569,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/DeepSaki/develop/reference/DeepSaki/initializers/" class="md-nav__link">
+      <a href="../initializers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -572,7 +589,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/DeepSaki/develop/reference/DeepSaki/layers/" class="md-nav__link">
+      <a href="../layers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -592,7 +609,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/DeepSaki/develop/reference/DeepSaki/losses/" class="md-nav__link">
+      <a href="../losses/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -612,7 +629,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/DeepSaki/develop/reference/DeepSaki/math/" class="md-nav__link">
+      <a href="../math/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -632,7 +649,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/DeepSaki/develop/reference/DeepSaki/models/" class="md-nav__link">
+      <a href="../models/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -652,7 +669,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/DeepSaki/develop/reference/DeepSaki/optimizers/" class="md-nav__link">
+      <a href="../optimizers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -670,9 +687,27 @@
                 
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="/DeepSaki/develop/reference/DeepSaki/tensor_ops/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    tensor_ops
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -681,6 +716,31 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.tensor_ops.tensor_ops.sample_array_to_tensor" class="md-nav__link">
+    sample_array_to_tensor()
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -692,7 +752,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/DeepSaki/develop/reference/DeepSaki/types/" class="md-nav__link">
+      <a href="../types/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -712,7 +772,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/DeepSaki/develop/reference/DeepSaki/utils/" class="md-nav__link">
+      <a href="../utils/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -747,7 +807,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/DeepSaki/develop/CONTRIBUTE/" class="md-nav__link">
+      <a href="../../../CONTRIBUTE/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -766,7 +826,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/DeepSaki/develop/CHANGELOG/" class="md-nav__link">
+      <a href="../../../CHANGELOG/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -791,8 +851,270 @@
             <div class="md-content" data-md-component="content">
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+  
+  
+
+
+  <h1>tensor_ops</h1>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+  <div class="doc doc-contents first">
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h2 id="DeepSaki.tensor_ops.tensor_ops.sample_array_to_tensor" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">sample_array_to_tensor</span>
+
+
+<a href="#DeepSaki.tensor_ops.tensor_ops.sample_array_to_tensor" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">sample_array_to_tensor</span><span class="p">(</span>
+    <span class="n">array</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">DType</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Takes a sample from a given <code>array</code> at a given <code>index</code> and creates a tensor of shape <code>shape</code>.</p>
+<p>The shape (-1,1,1,1) creates a tensor of said shape, which is then prodcasted to the shape of the operand</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>array</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Array from which sample is taken.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>index</code></td>
+          <td>
+                <code><span title="typing.Union">Union</span>[<span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span>, <span title="typing.Iterable">Iterable</span>[int], int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Index at which sample is taken from <code>array</code>.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>shape</code></td>
+          <td>
+                <code><span title="typing.Tuple">Tuple</span>[int, int, int, int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Shape of the resulting tensor. Is used for a reshape operation,
+hence the shape must reflect how many values are provided. -1 can be used for a given axis to consider the
+remaining values not yet assigned to an axis Defaults to (-1, 1, 1, 1).</p>
+            </div>
+          </td>
+          <td>
+                <code>(-1, 1, 1, 1)</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>dtype</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Dtype">Dtype</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>dtype the data shall be casted to. Defaults to tf.float32.</p>
+            </div>
+          </td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.float32">float32</span></code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>tf.Tensor: New tensor of shape <code>shape</code></p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/tensor_ops/tensor_ops.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">sample_array_to_tensor</span><span class="p">(</span>
+    <span class="n">array</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">DType</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Takes a sample from a given `array` at a given `index` and creates a tensor of shape `shape`.</span>
+
+<span class="sd">    The shape (-1,1,1,1) creates a tensor of said shape, which is then prodcasted to the shape of the operand</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        array (tf.Tensor): Array from which sample is taken.</span>
+<span class="sd">        index (Union[tf.Tensor, Iterable[int], int]): Index at which sample is taken from `array`.</span>
+<span class="sd">        shape (Tuple[int, int, int, int], optional): Shape of the resulting tensor. Is used for a reshape operation,</span>
+<span class="sd">            hence the shape must reflect how many values are provided. -1 can be used for a given axis to consider the</span>
+<span class="sd">            remaining values not yet assigned to an axis Defaults to (-1, 1, 1, 1).</span>
+<span class="sd">        dtype (tf.Dtype): dtype the data shall be casted to. Defaults to tf.float32.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tf.Tensor: New tensor of shape `shape`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># for whatever reason when I reshape, the tensor is casted to float64 and then the multiplication bellow throws</span>
+    <span class="c1"># an exception. Therefore I cast it to float32.</span>
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">numpy</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span> <span class="n">shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+  
+
+
+
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page was helpful" data-md-value="1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8m2 0a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10M10 9.5c0 .8-.7 1.5-1.5 1.5S7 10.3 7 9.5 7.7 8 8.5 8s1.5.7 1.5 1.5m7 0c0 .8-.7 1.5-1.5 1.5S14 10.3 14 9.5 14.7 8 15.5 8s1.5.7 1.5 1.5m-5 7.73c-1.75 0-3.29-.73-4.19-1.81L9.23 14c.45.72 1.52 1.23 2.77 1.23s2.32-.51 2.77-1.23l1.42 1.42c-.9 1.08-2.44 1.81-4.19 1.81Z"/></svg>
+            </button>
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page could be improved" data-md-value="0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8m2 0a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10m-6.5-4c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5-1.5-.7-1.5-1.5.7-1.5 1.5-1.5M10 9.5c0 .8-.7 1.5-1.5 1.5S7 10.3 7 9.5 7.7 8 8.5 8s1.5.7 1.5 1.5m2 4.5c1.75 0 3.29.72 4.19 1.81l-1.42 1.42C14.32 16.5 13.25 16 12 16s-2.32.5-2.77 1.23l-1.42-1.42C8.71 14.72 10.25 14 12 14Z"/></svg>
+            </button>
+          
+        </div>
+        <div class="md-feedback__note">
+          
+            <div data-md-value="1" hidden>
+              
+              
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+            <div data-md-value="0" hidden>
+              
+              
+                
+              
+              Thanks for your feedback! Help us improve this page by <a href="https://github.com/sascha-kirch/DeepSaki/issues/new/?title=[Feedback]+tensor_ops+-+/reference/DeepSaki/tensor_ops/&labels=documentation" target="_blank" rel="noopener">telling us what you are missing</a>.
+            </div>
+          
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+
+                
               </article>
             </div>
           
@@ -809,6 +1131,44 @@
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../optimizers/" class="md-footer__link md-footer__link--prev" aria-label="Previous: optimizers">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                optimizers
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../types/" class="md-footer__link md-footer__link--next" aria-label="Next: types">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                types
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
     
   
   <div class="md-footer-meta md-typeset">
@@ -881,12 +1241,12 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "/DeepSaki/develop", "features": ["navigation.path", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "toc.follow", "toc.integrate", "content.code.copy"], "search": "/DeepSaki/develop/assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.path", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "toc.follow", "toc.integrate", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="/DeepSaki/develop/assets/javascripts/bundle.81fa17fe.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.81fa17fe.min.js"></script>
       
-        <script src="/DeepSaki/develop/javascripts/katex.js"></script>
+        <script src="../../../javascripts/katex.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js"></script>
       

@@ -1,0 +1,3817 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="DeepSaki - Deep Learning Extension for TensorFlow">
+      
+      
+        <meta name="author" content="Sascha Kirch">
+      
+      
+        <link rel="canonical" href="https://sascha-kirch.github.io/DeepSaki/develop/reference/DeepSaki/diffusion/">
+      
+      
+        <link rel="prev" href="../constraints/">
+      
+      
+        <link rel="next" href="../frameworks/">
+      
+      
+      <link rel="icon" href="../../../assets/images/ds_logo_small.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.8">
+    
+    
+      
+        <title>diffusion - DeepSaki</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.4b4a2bd9.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-HR2FT6EVBQ"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-HR2FT6EVBQ",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-HR2FT6EVBQ",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+<meta property="og:title" content="DeepSaki - Deep Learning Extension for TensorFlow" />
+<meta property="og:description" content="DeepSaki is an add-on to TensorFlow. It provides a variaty of custom classes ranging from activation functions to entire models, helper functions to facilitate connectiong to your, compute HW and many more!" />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://sascha-kirch.github.io/DeepSaki/latest/assets/images/social_card.png" />
+<meta property="og:url" content="https://sascha-kirch.github.io/DeepSaki/latest/" />
+<meta name="twitter:card" content="summary_large_image">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-orange" data-md-color-accent="deep-orange">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#DeepSaki.diffusion.sampler.DDIMSampler" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="DeepSaki" class="md-header__button md-logo" aria-label="DeepSaki" data-md-component="logo">
+      
+  <img src="../../../assets/images/ds_logo_small_white.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            DeepSaki
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              diffusion
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-orange" data-md-color-accent="deep-orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-orange" data-md-color-accent="deep-orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/sascha-kirch/DeepSaki" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sascha-kirch/DeepSaki
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+    
+  
+  Start
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  Code Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../CONTRIBUTE/" class="md-tabs__link">
+        
+  
+    
+  
+  Contribute
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../CHANGELOG/" class="md-tabs__link">
+        
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="DeepSaki" class="md-nav__button md-logo" aria-label="DeepSaki" data-md-component="logo">
+      
+  <img src="../../../assets/images/ds_logo_small_white.png" alt="logo">
+
+    </a>
+    DeepSaki
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/sascha-kirch/DeepSaki" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sascha-kirch/DeepSaki
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Code Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Code Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    DeepSaki
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            DeepSaki
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../activations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    activations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../augmentations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    augmentations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../constraints/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    constraints
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    diffusion
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    diffusion
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.diffusion.sampler.DDIMSampler" class="md-nav__link">
+    DDIMSampler
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.diffusion.sampler.DDPMSampler" class="md-nav__link">
+    DDPMSampler
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.diffusion.sampler.Sampler" class="md-nav__link">
+    Sampler
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.diffusion.sampler.SamplerResult" class="md-nav__link">
+    SamplerResult
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.diffusion.schedule.BetaSchedule" class="md-nav__link">
+    BetaSchedule
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess" class="md-nav__link">
+    GaussianDiffusionProcess
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frameworks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    frameworks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../initializers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    initializers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../layers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    layers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../losses/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    losses
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../math/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    math
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../optimizers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    optimizers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tensor_ops/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    tensor_ops
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../types/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    types
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribute
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CHANGELOG/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>diffusion</h1>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+  <div class="doc doc-contents first">
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+
+<h2 id="DeepSaki.diffusion.sampler.DDIMSampler" class="doc doc-heading">
+          <span class="doc doc-object-name doc-class-name">DDIMSampler</span>
+
+
+<a href="#DeepSaki.diffusion.sampler.DDIMSampler" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">DDIMSampler</span><span class="p">(</span>
+    <span class="n">sampling_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">diffusion_model</span><span class="p">:</span> <span class="n">DiffusionModel</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+          <p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="DeepSaki.diffusion.sampler.Sampler" href="#DeepSaki.diffusion.sampler.Sampler">Sampler</a></code></p>
+
+  
+      <p>Sampler object to use the DDIM sampling technique.</p>
+<p>DDIM accelerates the sampling process by skipping timesteps in the reverse diffusion process.
+$$
+    x_{t-1} = \sqrt{\alpha_{t-1}}(\frac{x_t - \sqrt{1-\alpha_t}\epsilon_{\theta}(x_t)}{\sqrt{\alpha_t}})
+            + \sqrt{1- \alpha_{t-1} - \sigma_t^2} \epsilon_{\theta}(x_t)
+            + \sigma_t \epsilon_t
+$$</p>
+<p>If <span class="arithmatex">\(\sigma_t = 0\)</span>, the DDIM sampler becomes deterministic.</p>
+
+<details class="note" open>
+  <summary>Note</summary>
+  <p>DDIM paper uses <span class="arithmatex">\(\alpha_t\)</span> to reffer to <span class="arithmatex">\(\bar{\alpha}_t\)</span> from the DDPM paper.</p>
+</details>
+<details class="info" open>
+  <summary>Info</summary>
+  <p>DDIM was introduced in <a href="https://arxiv.org/abs/2010.02502">Denoising Diffusion Implicit Models, Song et. al., 2020</a></p>
+</details>  
+      <p>Initializes the <code>DDIMSample</code> object.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>sampling_steps</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Number of steps to divide the reverse diffusion process into.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>diffusion_model</code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="DeepSaki.frameworks.diffusion_model.DiffusionModel" href="../frameworks/#DeepSaki.frameworks.diffusion_model.DiffusionModel">DiffusionModel</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Diffusion model that shall be sampled from.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+                <details class="quote">
+                  <summary>Source code in <code>DeepSaki/diffusion/sampler.py</code></summary>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">sampling_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">diffusion_model</span><span class="p">:</span> <span class="n">DiffusionModel</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the `DDIMSample` object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        sampling_steps (int): Number of steps to divide the reverse diffusion process into.</span>
+<span class="sd">        diffusion_model (DiffusionModel): Diffusion model that shall be sampled from.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_process</span> <span class="o">=</span> <span class="n">diffusion_model</span><span class="o">.</span><span class="n">diffusion_process</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_model</span> <span class="o">=</span> <span class="n">diffusion_model</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_input_shape</span> <span class="o">=</span> <span class="n">diffusion_model</span><span class="o">.</span><span class="n">diffusion_input_shape</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">sampling_steps</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">sampling_steps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_process</span><span class="o">.</span><span class="n">diffusion_steps</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+                </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.diffusion.sampler.DDIMSampler.sample" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">sample</span>
+
+
+<a href="#DeepSaki.diffusion.sampler.DDIMSampler.sample" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">sample</span><span class="p">(</span><span class="n">x0_condition</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SamplerResult</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Sample the diffusion model using DDPM Sampler.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x0_condition</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Condition input for the conditional diffusion model.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>SamplerResult</code></td>          <td>
+                <code><a class="autorefs autorefs-internal" title="DeepSaki.diffusion.sampler.SamplerResult" href="#DeepSaki.diffusion.sampler.SamplerResult">SamplerResult</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Object containing the denoised sample <code>x0</code>, a tensor of intermediate results <code>xt_frames</code> and
+a tensor with the corresponding timesteps <code>t_frames</code>.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/diffusion/sampler.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0_condition</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SamplerResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sample the diffusion model using DDPM Sampler.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x0_condition (tf.Tensor): Condition input for the conditional diffusion model.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        SamplerResult: Object containing the denoised sample `x0`, a tensor of intermediate results `xt_frames` and</span>
+<span class="sd">            a tensor with the corresponding timesteps `t_frames`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xt_sample_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">timestep_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="n">x0_condition</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># First sample is random noise</span>
+    <span class="n">xt_sample</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">((</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">diffusion_input_shape</span><span class="p">))</span>
+
+    <span class="c1"># Iterate over samplesteps</span>
+    <span class="n">step_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_process</span><span class="o">.</span><span class="n">diffusion_steps</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_steps</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diffusion_process</span><span class="o">.</span><span class="n">diffusion_steps</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">step_size</span><span class="p">),</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;DDIM sampling&quot;</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># TODO: to be indipendent from the condition input etc. I could re-write the models to take 1 input (list of all other inputs) and 1 timestep input.</span>
+        <span class="n">model_prediction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_model</span><span class="p">(</span><span class="n">x0_condition</span><span class="p">,</span> <span class="n">xt_sample</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">xt_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ddim_sample</span><span class="p">(</span>
+            <span class="n">xt_sample</span><span class="p">,</span> <span class="n">model_prediction</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">t</span> <span class="o">-</span> <span class="n">step_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_process</span><span class="o">.</span><span class="n">beta_schedule</span>
+        <span class="p">)</span>
+
+        <span class="n">xt_sample_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xt_sample</span><span class="p">)</span>
+        <span class="n">timestep_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">SamplerResult</span><span class="p">(</span><span class="n">x0</span><span class="o">=</span><span class="n">xt_sample</span><span class="p">,</span> <span class="n">xt_frame_list</span><span class="o">=</span><span class="n">xt_sample_list</span><span class="p">,</span> <span class="n">timestep_list</span><span class="o">=</span><span class="n">timestep_list</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+
+<h2 id="DeepSaki.diffusion.sampler.DDPMSampler" class="doc doc-heading">
+          <span class="doc doc-object-name doc-class-name">DDPMSampler</span>
+
+
+<a href="#DeepSaki.diffusion.sampler.DDPMSampler" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">DDPMSampler</span><span class="p">(</span>
+    <span class="n">diffusion_model</span><span class="p">:</span> <span class="n">DiffusionModel</span><span class="p">,</span> <span class="n">save_rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+          <p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="DeepSaki.diffusion.sampler.Sampler" href="#DeepSaki.diffusion.sampler.Sampler">Sampler</a></code></p>
+
+  
+      <p>Sampler object to use the DDPM sampling technique.</p>
+  
+      <p>Initializes the <code>DDPMSample</code> object.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>diffusion_model</code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="DeepSaki.frameworks.diffusion_model.DiffusionModel" href="../frameworks/#DeepSaki.frameworks.diffusion_model.DiffusionModel">DiffusionModel</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Diffusion model that shall be sampled from.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>save_rate</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Rate at which images shall be stored for returning. E.g. 20 means every 20th
+image is returned. Defaults to 20.</p>
+            </div>
+          </td>
+          <td>
+                <code>20</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+                <details class="quote">
+                  <summary>Source code in <code>DeepSaki/diffusion/sampler.py</code></summary>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">diffusion_model</span><span class="p">:</span> <span class="n">DiffusionModel</span><span class="p">,</span>
+    <span class="n">save_rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the `DDPMSample` object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        diffusion_model (DiffusionModel): Diffusion model that shall be sampled from.</span>
+<span class="sd">        save_rate (int, optional): Rate at which images shall be stored for returning. E.g. 20 means every 20th</span>
+<span class="sd">            image is returned. Defaults to 20.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_model</span> <span class="o">=</span> <span class="n">diffusion_model</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_process</span> <span class="o">=</span> <span class="n">diffusion_model</span><span class="o">.</span><span class="n">diffusion_process</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_input_shape</span> <span class="o">=</span> <span class="n">diffusion_model</span><span class="o">.</span><span class="n">diffusion_input_shape</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">save_rate</span> <span class="o">=</span> <span class="n">save_rate</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">sampling_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_process</span><span class="o">.</span><span class="n">diffusion_steps</span>
+</code></pre></div></td></tr></table></div>
+                </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.diffusion.sampler.DDPMSampler.sample" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">sample</span>
+
+
+<a href="#DeepSaki.diffusion.sampler.DDPMSampler.sample" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">sample</span><span class="p">(</span><span class="n">x0_condition</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SamplerResult</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Sample the diffusion model using DDPM Sampler.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x0_condition</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Condition input for the conditional diffusion model.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>SamplerResult</code></td>          <td>
+                <code><a class="autorefs autorefs-internal" title="DeepSaki.diffusion.sampler.SamplerResult" href="#DeepSaki.diffusion.sampler.SamplerResult">SamplerResult</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Object containing the denoised sample <code>x0</code>, a tensor of intermediate results <code>xt_frames</code> and
+a tensor with the corresponding timesteps <code>t_frames</code>.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/diffusion/sampler.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0_condition</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SamplerResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sample the diffusion model using DDPM Sampler.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x0_condition (tf.Tensor): Condition input for the conditional diffusion model.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        SamplerResult: Object containing the denoised sample `x0`, a tensor of intermediate results `xt_frames` and</span>
+<span class="sd">            a tensor with the corresponding timesteps `t_frames`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xt_sample_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">timestep_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="n">x0_condition</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># First sample is random noise</span>
+    <span class="n">xt_sample</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">((</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">diffusion_input_shape</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sampling_steps</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;DDPM sampling&quot;</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">model_prediction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_model</span><span class="p">(</span><span class="n">x0_condition</span><span class="p">,</span> <span class="n">xt_sample</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">xt_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_process</span><span class="o">.</span><span class="n">p_sample_xtm1_given_xt</span><span class="p">(</span><span class="n">xt_sample</span><span class="p">,</span> <span class="n">model_prediction</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_rate</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_steps</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="n">xt_sample_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xt_sample</span><span class="p">)</span>
+            <span class="n">timestep_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">SamplerResult</span><span class="p">(</span><span class="n">x0</span><span class="o">=</span><span class="n">xt_sample</span><span class="p">,</span> <span class="n">xt_frame_list</span><span class="o">=</span><span class="n">xt_sample_list</span><span class="p">,</span> <span class="n">timestep_list</span><span class="o">=</span><span class="n">timestep_list</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+
+<h2 id="DeepSaki.diffusion.sampler.Sampler" class="doc doc-heading">
+          <span class="doc doc-object-name doc-class-name">Sampler</span>
+
+
+<a href="#DeepSaki.diffusion.sampler.Sampler" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="abc.ABC">ABC</span></code></p>
+
+  
+      <p>Abstract base class for a sampler object.</p>
+<p>can be overridden to develop a custom Sampler.</p>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.diffusion.sampler.Sampler.sample" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">sample</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+<a href="#DeepSaki.diffusion.sampler.Sampler.sample" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">sample</span><span class="p">(</span><span class="n">x0_condition</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SamplerResult</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Abstract method to sample a diffusion model.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x0_condition</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Condition input for the conditional diffusion model.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/diffusion/sampler.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0_condition</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SamplerResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract method to sample a diffusion model.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x0_condition (tf.Tensor): Condition input for the conditional diffusion model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="o">...</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+
+<h2 id="DeepSaki.diffusion.sampler.SamplerResult" class="doc doc-heading">
+          <span class="doc doc-object-name doc-class-name">SamplerResult</span>
+
+
+<a href="#DeepSaki.diffusion.sampler.SamplerResult" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">SamplerResult</span><span class="p">(</span>
+    <span class="n">x0</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">xt_frame_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
+    <span class="n">timestep_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+
+  
+      <p>Class holding and post processing the output of a Sampler.</p>
+  
+      <p>Initialize the <code>SamplerResult</code> instance.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x0</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Denoised sample.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>xt_frame_list</code></td>
+          <td>
+                <code><span title="typing.List">List</span>[<span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>List of tf.Tensors with the intermediate sampler outputs.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>timestep_list</code></td>
+          <td>
+                <code><span title="typing.List">List</span>[<span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>List of timestamps.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+                <details class="quote">
+                  <summary>Source code in <code>DeepSaki/diffusion/sampler.py</code></summary>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">x0</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">xt_frame_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
+    <span class="n">timestep_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize the `SamplerResult` instance.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x0 (tf.Tensor): Denoised sample.</span>
+<span class="sd">        xt_frame_list (List[tf.Tensor]): List of tf.Tensors with the intermediate sampler outputs.</span>
+<span class="sd">        timestep_list (List[tf.Tensor]): List of timestamps.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">x0</span> <span class="o">=</span> <span class="n">x0</span>
+    <span class="c1"># swapping shape from (frame, batch, ...) to (batch, frame, ...)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">xt_frames</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">numpy</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">convert_to_tensor</span><span class="p">(</span><span class="n">xt_frame_list</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">t_frames</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">convert_to_tensor</span><span class="p">(</span><span class="n">timestep_list</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+                </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+  <div class="doc doc-contents first">
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+
+<h2 id="DeepSaki.diffusion.schedule.BetaSchedule" class="doc doc-heading">
+          <span class="doc doc-object-name doc-class-name">BetaSchedule</span>
+
+
+<a href="#DeepSaki.diffusion.schedule.BetaSchedule" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">BetaSchedule</span><span class="p">(</span>
+    <span class="n">schedule</span><span class="p">:</span> <span class="n">ScheduleType</span> <span class="o">=</span> <span class="n">ScheduleType</span><span class="o">.</span><span class="n">LINEAR</span><span class="p">,</span>
+    <span class="n">timesteps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">start</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0001</span><span class="p">,</span>
+    <span class="n">stop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.02</span><span class="p">,</span>
+    <span class="n">k</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+
+  
+      <p>Abstraction of the beta schedule modulating the timesteps in the diffusion process.</p>
+  
+      <p>Abstraction of the beta schedule modulating the timesteps in the diffusion process.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>schedule</code></td>
+          <td>
+                <code><span title="DeepSaki.types.diffusion_enums.ScheduleType">ScheduleType</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Type of function the schedule shall follow. Defaults to ScheduleType.LINEAR.</p>
+            </div>
+          </td>
+          <td>
+                <code><span title="DeepSaki.types.diffusion_enums.ScheduleType">ScheduleType</span>.<span title="DeepSaki.types.diffusion_enums.ScheduleType.LINEAR">LINEAR</span></code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>timesteps</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Number of timesteps the schedule shall have. Defaults to 1000.</p>
+            </div>
+          </td>
+          <td>
+                <code>1000</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>start</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Start value of the schedule. Defaults to 1e-4.</p>
+            </div>
+          </td>
+          <td>
+                <code>0.0001</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>stop</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Stop value of the schedule. Defaults to 2e-2.</p>
+            </div>
+          </td>
+          <td>
+                <code>0.02</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>k</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>k term for P2 loss scaling. Defaults to 1.0.</p>
+            </div>
+          </td>
+          <td>
+                <code>1.0</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>gamma</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>gamma term for P2 loss scaling. Defaults to 1.0.</p>
+            </div>
+          </td>
+          <td>
+                <code>1.0</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+                <details class="quote">
+                  <summary>Source code in <code>DeepSaki/diffusion/schedule.py</code></summary>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">schedule</span><span class="p">:</span> <span class="n">ScheduleType</span> <span class="o">=</span> <span class="n">ScheduleType</span><span class="o">.</span><span class="n">LINEAR</span><span class="p">,</span>
+    <span class="n">timesteps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">start</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">,</span>
+    <span class="n">stop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2e-2</span><span class="p">,</span>
+    <span class="n">k</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstraction of the beta schedule modulating the timesteps in the diffusion process.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        schedule (ScheduleType, optional): Type of function the schedule shall follow. Defaults to ScheduleType.LINEAR.</span>
+<span class="sd">        timesteps (int, optional): Number of timesteps the schedule shall have. Defaults to 1000.</span>
+<span class="sd">        start (float, optional): Start value of the schedule. Defaults to 1e-4.</span>
+<span class="sd">        stop (float, optional): Stop value of the schedule. Defaults to 2e-2.</span>
+<span class="sd">        k (float, optional): k term for P2 loss scaling. Defaults to 1.0.</span>
+<span class="sd">        gamma (float, optional): gamma term for P2 loss scaling. Defaults to 1.0.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span> <span class="o">=</span> <span class="n">schedule</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">timesteps</span> <span class="o">=</span> <span class="n">timesteps</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">stop</span> <span class="o">=</span> <span class="n">stop</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">policy</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">mixed_precision</span><span class="o">.</span><span class="n">global_policy</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">betas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_beta_schedule</span><span class="p">(</span><span class="n">schedule</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">alphas</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">betas</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">alpha_bar</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alphas</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># shifts all elements by 1 to the right and adds 1 at the first position. last element is dropped due to [:-1]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">alpha_bar_prev</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">variable_dtype</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_bar</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
+    <span class="p">)</span>
+    <span class="c1"># shifts all elements by 1 to the right and adds 1 at the first position. last element is dropped due to [:-1]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">alpha_bar_next</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_bar</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">variable_dtype</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Pre-calculated alpha coefficients</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">one_minus_alpha_bar</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_bar</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">sqrt_alpha_bar</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_bar</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">sqrt_one_minus_alpha_bar</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">one_minus_alpha_bar</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">log_one_minus_alpha_bar</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">one_minus_alpha_bar</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">sqrt_recip_alpha_bar</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_bar</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">sqrt_recip_alpha_bar_minus_one</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_bar</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Posterior Calculations q(x_{t-1} | xt, x0)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">posterior_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">betas</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_bar_prev</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">one_minus_alpha_bar</span>
+
+    <span class="c1"># [1:2] returs the element 1 in form of an tensor keeping the dimensions</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">posterior_log_var_clipped</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">posterior_var</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">posterior_var</span><span class="p">[</span><span class="mi">1</span><span class="p">:]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="c1"># Coefficients of Equation 7 of DDPM paper</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">posterior_mean_coef1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">betas</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_bar_prev</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">one_minus_alpha_bar</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">posterior_mean_coef2</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_bar_prev</span><span class="p">)</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alphas</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">one_minus_alpha_bar</span>
+
+    <span class="c1"># Loss coefficients P2 Paper: https://arxiv.org/abs/2204.00227</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lambda_t</span> <span class="o">=</span> <span class="p">((</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">betas</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_bar</span><span class="p">))</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">betas</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">SNR_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_bar</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_bar</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lambda_t_tick</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_t</span> <span class="o">/</span> <span class="p">((</span><span class="n">k</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">SNR_t</span><span class="p">)</span> <span class="o">**</span> <span class="n">gamma</span><span class="p">)</span>
+
+    <span class="c1"># used in combination with the simplified loss, since the weighting of L_simple is allready 1, meaning it has</span>
+    <span class="c1"># been multiplied with lambda_t already.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lambda_t_tick_simple</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">((</span><span class="n">k</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">SNR_t</span><span class="p">)</span> <span class="o">**</span> <span class="n">gamma</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+                </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+  <div class="doc doc-contents first">
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+
+<h2 id="DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess" class="doc doc-heading">
+          <span class="doc doc-object-name doc-class-name">GaussianDiffusionProcess</span>
+
+
+<a href="#DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">GaussianDiffusionProcess</span><span class="p">(</span>
+    <span class="n">schedule_type</span><span class="p">:</span> <span class="n">ScheduleType</span><span class="p">,</span>
+    <span class="n">variance_type</span><span class="p">:</span> <span class="n">variance_type</span><span class="p">,</span>
+    <span class="n">diffusion_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+
+  
+      <p>Abstraction of a gausian diffusion process.</p>
+  
+      <p>Initialize the <code>GaussianDiffusionProcess</code> object.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>schedule_type</code></td>
+          <td>
+                <code><span title="DeepSaki.types.diffusion_enums.ScheduleType">ScheduleType</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>type of beta schedule for the forward diffusion process.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>variance_type</code></td>
+          <td>
+                <code><span title="DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess.variance_type">variance_type</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Type of variance estimation.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>diffusion_steps</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Number of timesteps <code>T</code> of the forward diffusion process.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+                <details class="quote">
+                  <summary>Source code in <code>DeepSaki/diffusion/diffusion_process.py</code></summary>
+                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">schedule_type</span><span class="p">:</span> <span class="n">ScheduleType</span><span class="p">,</span>
+    <span class="n">variance_type</span><span class="p">:</span> <span class="n">variance_type</span><span class="p">,</span>
+    <span class="n">diffusion_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize the `GaussianDiffusionProcess` object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        schedule_type (ScheduleType): type of beta schedule for the forward diffusion process.</span>
+<span class="sd">        variance_type (variance_type): Type of variance estimation.</span>
+<span class="sd">        diffusion_steps (int): Number of timesteps `T` of the forward diffusion process.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_steps</span> <span class="o">=</span> <span class="n">diffusion_steps</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">schedule_type</span> <span class="o">=</span> <span class="n">schedule_type</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span> <span class="o">=</span> <span class="n">BetaSchedule</span><span class="p">(</span><span class="n">schedule</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schedule_type</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">diffusion_steps</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">policy</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">mixed_precision</span><span class="o">.</span><span class="n">global_policy</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">variance_type</span> <span class="o">=</span> <span class="n">variance_type</span>
+</code></pre></div></td></tr></table></div>
+                </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess.draw_random_timestep" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">draw_random_timestep</span>
+
+
+<a href="#DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess.draw_random_timestep" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">draw_random_timestep</span><span class="p">(</span><span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Draws a random timestep from a uniform distribution. One for each element within a batch.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>num</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Batchsize and number of samples drawn from the distribution</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>tf.Tensor: Random timestep</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/diffusion/diffusion_process.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">draw_random_timestep</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Draws a random timestep from a uniform distribution. One for each element within a batch.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        num (int): Batchsize and number of samples drawn from the distribution</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tf.Tensor: Random timestep</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">num</span><span class="p">],</span> <span class="n">minval</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span><span class="o">.</span><span class="n">timesteps</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess.get_random_sample_forward_diffusion" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">get_random_sample_forward_diffusion</span>
+
+
+<a href="#DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess.get_random_sample_forward_diffusion" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">get_random_sample_forward_diffusion</span><span class="p">(</span>
+    <span class="n">x0</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Generates a random sample using the forward diffusion process.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x0</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Unnoisy data sample.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>xt</code></td>          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Noised sample at a random timestep t.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>timestep</code></td>          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Random timesteps generated to construct xt.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>noise</code></td>          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Noise tensor used to construct xt.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/diffusion/diffusion_process.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_random_sample_forward_diffusion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates a random sample using the forward diffusion process.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x0 (tf.Tensor): Unnoisy data sample.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        xt: Noised sample at a random timestep t.</span>
+<span class="sd">        timestep: Random timesteps generated to construct xt.</span>
+<span class="sd">        noise: Noise tensor used to construct xt.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="n">x0</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># 1 value for each sample in the batch</span>
+    <span class="n">timestep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">draw_random_timestep</span><span class="p">(</span><span class="n">batch_size</span><span class="p">)</span>
+
+    <span class="n">xt</span><span class="p">,</span> <span class="n">noise</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_sample_xt</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">timestep</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">xt</span><span class="p">,</span> <span class="n">timestep</span><span class="p">,</span> <span class="n">noise</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess.p_sample_xtm1_given_xt" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">p_sample_xtm1_given_xt</span>
+
+
+<a href="#DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess.p_sample_xtm1_given_xt" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">p_sample_xtm1_given_xt</span><span class="p">(</span>
+    <span class="n">xt</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">model_prediction</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Generates a sample <span class="arithmatex">\(x_{t-1} \sim p(x_{t-1}|x_t)\)</span>, the approximated intractible posterior distr. at timestep <code>t</code>.</p>
+<p>Used by the DDPM sampler.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>xt</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Noisy data sample at timestep t.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>model_prediction</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Output of the network predicting the noise and optionally the variance.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>t</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>timestep</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Less noisy sample <span class="arithmatex">\(x_{t-1}\)</span></p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/diffusion/diffusion_process.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">p_sample_xtm1_given_xt</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">xt</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">model_prediction</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">t</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generates a sample $x_{t-1} \sim p(x_{t-1}|x_t)$, the approximated intractible posterior distr. at timestep `t`.</span>
+
+<span class="sd">    Used by the DDPM sampler.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        xt (tf.Tensor): Noisy data sample at timestep t.</span>
+<span class="sd">        model_prediction (tf.Tensor): Output of the network predicting the noise and optionally the variance.</span>
+<span class="sd">        t (tf.Tensor): timestep</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Less noisy sample $x_{t-1}$</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">p_xtm1_given_xt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_xtm1_given_xt_mean_var</span><span class="p">(</span><span class="n">xt</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">model_prediction</span><span class="p">)</span>
+
+    <span class="n">z</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">xt</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="c1"># only add noise if t&gt;0</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="n">p_xtm1_given_xt</span><span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">mask</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">p_xtm1_given_xt</span><span class="p">[</span><span class="s2">&quot;var&quot;</span><span class="p">])</span> <span class="o">*</span> <span class="n">z</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess.p_xtm1_given_xt_mean_var" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">p_xtm1_given_xt_mean_var</span>
+
+
+<a href="#DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess.p_xtm1_given_xt_mean_var" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">p_xtm1_given_xt_mean_var</span><span class="p">(</span>
+    <span class="n">xt</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">t</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">model_prediction</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">clip_denoised</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">denoised_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+        <span class="n">Callable</span><span class="p">[[</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Aproximated intractible posterior distribution <span class="arithmatex">\(p(x_{t-1}|x_t)\)</span>.</p>
+<p>The real posterior distribution <span class="arithmatex">\(q(x_{t-1}|x_t)\)</span> is intractible, hence it is aproximated by a neural network that
+learnes the approximated intractible posterior distribution <span class="arithmatex">\(p(x_{t-1}|x_t)\)</span>.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>xt</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Noisy data sample at timestep t.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>t</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>timestep.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>model_prediction</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Output of the network predicting the noise and optionally the variance.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>clip_denoised</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>If true <code>pred_x0</code> is clipped [-1,1]. Defaults to True.</p>
+            </div>
+          </td>
+          <td>
+                <code>True</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>denoised_fn</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[<span title="typing.Callable">Callable</span>[[<span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span>], <span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Function to call upon a prediction of
+<code>x0</code>. Defaults to None.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Raises:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>ValueError</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>if provided <code>self.variance_type</code> is not specified.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns a dictionary with key names:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>mean</code></td>          <td>
+                <code><span title="typing.Dict">Dict</span>[str, <span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Mean value of the distribution</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>var</code></td>          <td>
+                <code><span title="typing.Dict">Dict</span>[str, <span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Variance value of the distribution</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>log_var</code></td>          <td>
+                <code><span title="typing.Dict">Dict</span>[str, <span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Logarithmic value of the variance</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>pred_x0</code></td>          <td>
+                <code><span title="typing.Dict">Dict</span>[str, <span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>prediction of the initial x0</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/diffusion/diffusion_process.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">p_xtm1_given_xt_mean_var</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">xt</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">t</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">model_prediction</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">clip_denoised</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">denoised_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Aproximated intractible posterior distribution $p(x_{t-1}|x_t)$.</span>
+
+<span class="sd">    The real posterior distribution $q(x_{t-1}|x_t)$ is intractible, hence it is aproximated by a neural network that</span>
+<span class="sd">    learnes the approximated intractible posterior distribution $p(x_{t-1}|x_t)$.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        xt (tf.Tensor): Noisy data sample at timestep t.</span>
+<span class="sd">        t (tf.Tensor): timestep.</span>
+<span class="sd">        model_prediction (tf.Tensor): Output of the network predicting the noise and optionally the variance.</span>
+<span class="sd">        clip_denoised (bool, optional): If true `pred_x0` is clipped [-1,1]. Defaults to True.</span>
+<span class="sd">        denoised_fn (Optional[Callable[[tf.Tensor], tf.Tensor]], optional): Function to call upon a prediction of</span>
+<span class="sd">            `x0`. Defaults to None.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: if provided `self.variance_type` is not specified.</span>
+
+<span class="sd">    Returns: Returns a dictionary with key names:</span>
+<span class="sd">        mean: Mean value of the distribution</span>
+<span class="sd">        var: Variance value of the distribution</span>
+<span class="sd">        log_var: Logarithmic value of the variance</span>
+<span class="sd">        pred_x0: prediction of the initial x0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Variance</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">variance_type</span> <span class="o">==</span> <span class="n">variance_type</span><span class="o">.</span><span class="n">LEARNED_RANGE</span><span class="p">:</span>
+        <span class="c1"># assumes that model has two outputs when variance is learned</span>
+        <span class="n">pred_noise</span><span class="p">,</span> <span class="n">pred_var</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">model_prediction</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># LEARN_VARIANCE learns a range, not the final value! Was proposed by improved DDPM paper</span>
+        <span class="n">log_lower_bound</span> <span class="o">=</span> <span class="n">sample_array_to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span><span class="o">.</span><span class="n">posterior_log_var_clipped</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+        <span class="n">log_upper_bound</span> <span class="o">=</span> <span class="n">sample_array_to_tensor</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span><span class="o">.</span><span class="n">betas</span><span class="p">),</span> <span class="n">t</span><span class="p">)</span>
+        <span class="c1"># pred_var is [-1, 1] for [log_lower_bound, log_upper_bound]. -&gt; scaling to [0,1]</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="n">pred_var</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">log_var</span> <span class="o">=</span> <span class="n">v</span> <span class="o">*</span> <span class="n">log_upper_bound</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">v</span><span class="p">)</span> <span class="o">*</span> <span class="n">log_lower_bound</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_var</span><span class="p">)</span>  <span class="c1"># = Sigma_theta from the paper</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">variance_type</span> <span class="o">==</span> <span class="n">variance_type</span><span class="o">.</span><span class="n">LEARNED</span><span class="p">:</span>
+        <span class="c1"># assumes that model has two outputs when variance is learned</span>
+        <span class="n">pred_noise</span><span class="p">,</span> <span class="n">pred_var</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">model_prediction</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">log_var</span> <span class="o">=</span> <span class="n">pred_var</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">pred_var</span><span class="p">)</span>  <span class="c1"># = Sigma_theta from the paper</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">variance_type</span> <span class="o">==</span> <span class="n">variance_type</span><span class="o">.</span><span class="n">LOWER_BOUND</span><span class="p">:</span>
+        <span class="n">pred_noise</span> <span class="o">=</span> <span class="n">model_prediction</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span><span class="o">.</span><span class="n">posterior_var</span>
+        <span class="n">log_var</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span><span class="o">.</span><span class="n">posterior_var</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">variance_type</span> <span class="o">==</span> <span class="n">variance_type</span><span class="o">.</span><span class="n">UPPER_BOUND</span><span class="p">:</span>
+        <span class="n">pred_noise</span> <span class="o">=</span> <span class="n">model_prediction</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span><span class="o">.</span><span class="n">betas</span>
+        <span class="n">log_var</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span><span class="o">.</span><span class="n">betas</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variance type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">variance_type</span><span class="si">}</span><span class="s2"> is not defined.&quot;</span><span class="p">)</span>
+
+    <span class="n">var</span> <span class="o">=</span> <span class="n">sample_array_to_tensor</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="n">log_var</span> <span class="o">=</span> <span class="n">sample_array_to_tensor</span><span class="p">(</span><span class="n">log_var</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
+    <span class="c1"># predicted x0</span>
+    <span class="k">def</span> <span class="nf">_process_x0</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">denoised_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">denoised_fn</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">clip_denoised</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">clip_by_value</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+    <span class="n">pred_x0</span> <span class="o">=</span> <span class="n">_process_x0</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predict_x0_from_eps</span><span class="p">(</span><span class="n">xt</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">pred_noise</span><span class="p">))</span>
+
+    <span class="c1"># mean</span>
+    <span class="n">q_xtm1_given_x0_xt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_xtm1_given_x0_xt_mean_var</span><span class="p">(</span><span class="n">pred_x0</span><span class="p">,</span> <span class="n">xt</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="n">q_xtm1_given_x0_xt</span><span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">],</span> <span class="s2">&quot;var&quot;</span><span class="p">:</span> <span class="n">var</span><span class="p">,</span> <span class="s2">&quot;log_var&quot;</span><span class="p">:</span> <span class="n">log_var</span><span class="p">,</span> <span class="s2">&quot;pred_x0&quot;</span><span class="p">:</span> <span class="n">pred_x0</span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess.predict_x0_from_eps" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">predict_x0_from_eps</span>
+
+
+<a href="#DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess.predict_x0_from_eps" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">predict_x0_from_eps</span><span class="p">(</span>
+    <span class="n">xt</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">eps</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Approximates the initial data sample <code>x0</code> from a noise prediction, the beta schedule and the noisy sample.</p>
+<p>Equation 15 DDPM paper: <span class="arithmatex">\(x_0 \approx \frac{x_t - \sqrt{1-\bar{\alpha}_t}\epsilon_{\theta}(x_t)}{\sqrt{\bar{\alpha}_t}}\)</span></p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>xt</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Noisy data sample at timestep t</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>t</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>timestep</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>eps</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Output of the network predicting the noise</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Approximation of x0</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/diffusion/diffusion_process.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">predict_x0_from_eps</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">xt</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">t</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">eps</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Approximates the initial data sample `x0` from a noise prediction, the beta schedule and the noisy sample.</span>
+
+<span class="sd">    Equation 15 DDPM paper: $x_0 \approx \frac{x_t - \sqrt{1-\bar{\alpha}_t}\epsilon_{\theta}(x_t)}{\sqrt{\bar{\alpha}_t}}$</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        xt (tf.Tensor): Noisy data sample at timestep t</span>
+<span class="sd">        t (tf.Tensor): timestep</span>
+<span class="sd">        eps (tf.Tensor): Output of the network predicting the noise</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Approximation of x0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tensor_sqrt_recip_alpha_bar</span> <span class="o">=</span> <span class="n">sample_array_to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span><span class="o">.</span><span class="n">sqrt_recip_alpha_bar</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="n">tensor_sqrt_recip_alpha_bar_minus_one</span> <span class="o">=</span> <span class="n">sample_array_to_tensor</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span><span class="o">.</span><span class="n">sqrt_recip_alpha_bar_minus_one</span><span class="p">,</span> <span class="n">t</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">tensor_sqrt_recip_alpha_bar</span> <span class="o">*</span> <span class="n">xt</span> <span class="o">-</span> <span class="n">tensor_sqrt_recip_alpha_bar_minus_one</span> <span class="o">*</span> <span class="n">eps</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess.q_sample_xt" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">q_sample_xt</span>
+
+
+<a href="#DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess.q_sample_xt" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">q_sample_xt</span><span class="p">(</span>
+    <span class="n">x0</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Generates a noisy sample <span class="arithmatex">\(x_t \sim q(x_t|x_0)\)</span> at timestep <code>t</code> using the reparameterization trick.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x0</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Original data sample</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>t</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>timestep for which noisy sample shall be created.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>xt</code></td>          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Noisy sample at timestep t.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>noise</code></td>          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>applied noise to x0 to construct the noisy sample xt.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/diffusion/diffusion_process.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">q_sample_xt</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">x0</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">t</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generates a noisy sample $x_t \sim q(x_t|x_0)$ at timestep `t` using the reparameterization trick.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x0 (tf.Tensor): Original data sample</span>
+<span class="sd">        t (tf.Tensor): timestep for which noisy sample shall be created.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        xt: Noisy sample at timestep t.</span>
+<span class="sd">        noise: applied noise to x0 to construct the noisy sample xt.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">noise</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">x0</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">variable_dtype</span><span class="p">)</span>
+    <span class="n">sqrt_alpha_bar_t</span> <span class="o">=</span> <span class="n">sample_array_to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span><span class="o">.</span><span class="n">sqrt_alpha_bar</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="n">sqrt_one_minus_alpha_bar_t</span> <span class="o">=</span> <span class="n">sample_array_to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span><span class="o">.</span><span class="n">sqrt_one_minus_alpha_bar</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="n">xt</span> <span class="o">=</span> <span class="n">sqrt_alpha_bar_t</span> <span class="o">*</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">sqrt_one_minus_alpha_bar_t</span> <span class="o">*</span> <span class="n">noise</span>
+    <span class="k">return</span> <span class="n">xt</span><span class="p">,</span> <span class="n">noise</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess.q_xt_given_x0_mean_var" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">q_xt_given_x0_mean_var</span>
+
+
+<a href="#DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess.q_xt_given_x0_mean_var" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">q_xt_given_x0_mean_var</span><span class="p">(</span>
+    <span class="n">x0</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Forward diffusion kernel <span class="arithmatex">\(q(x_t|x_0)\)</span>.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x0</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Original data sample.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>t</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>timestep</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns a dictionary with key names:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>mean</code></td>          <td>
+                <code><span title="typing.Dict">Dict</span>[str, <span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Mean value of the distribution</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>var</code></td>          <td>
+                <code><span title="typing.Dict">Dict</span>[str, <span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Variance value of the distribution</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>log_var</code></td>          <td>
+                <code><span title="typing.Dict">Dict</span>[str, <span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Logarithmic value of the variance</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/diffusion/diffusion_process.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">q_xt_given_x0_mean_var</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">x0</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">t</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Forward diffusion kernel $q(x_t|x_0)$.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x0 (tf.Tensor): Original data sample.</span>
+<span class="sd">        t (tf.Tensor): timestep</span>
+
+<span class="sd">    Returns: Returns a dictionary with key names:</span>
+<span class="sd">        mean: Mean value of the distribution</span>
+<span class="sd">        var: Variance value of the distribution</span>
+<span class="sd">        log_var: Logarithmic value of the variance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mean</span> <span class="o">=</span> <span class="n">sample_array_to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span><span class="o">.</span><span class="n">sqrt_alpha_bar</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">x0</span>
+    <span class="n">var</span> <span class="o">=</span> <span class="n">sample_array_to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span><span class="o">.</span><span class="n">one_minus_alpha_bar</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="n">log_var</span> <span class="o">=</span> <span class="n">sample_array_to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span><span class="o">.</span><span class="n">log_one_minus_alpha_bar</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="n">mean</span><span class="p">,</span> <span class="s2">&quot;var&quot;</span><span class="p">:</span> <span class="n">var</span><span class="p">,</span> <span class="s2">&quot;log_var&quot;</span><span class="p">:</span> <span class="n">log_var</span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess.q_xtm1_given_x0_xt_mean_var" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">q_xtm1_given_x0_xt_mean_var</span>
+
+
+<a href="#DeepSaki.diffusion.diffusion_process.GaussianDiffusionProcess.q_xtm1_given_x0_xt_mean_var" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">q_xtm1_given_x0_xt_mean_var</span><span class="p">(</span>
+    <span class="n">x0</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">xt</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Tractible posterior distribution <span class="arithmatex">\(q(x_{t-1}|x_t,x_0)\)</span>.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>x0</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Original data sample</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>xt</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Noisy data sample at timestep t.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>t</code></td>
+          <td>
+                <code><span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>timestep.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns a dictionary with key names:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>mean</code></td>          <td>
+                <code><span title="typing.Dict">Dict</span>[str, <span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Mean value of the distribution</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>var</code></td>          <td>
+                <code><span title="typing.Dict">Dict</span>[str, <span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Variance value of the distribution</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>log_var</code></td>          <td>
+                <code><span title="typing.Dict">Dict</span>[str, <span title="tensorflow">tf</span>.<span title="tensorflow.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Logarithmic value of the variance</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>DeepSaki/diffusion/diffusion_process.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">q_xtm1_given_x0_xt_mean_var</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">x0</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">xt</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">t</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tractible posterior distribution $q(x_{t-1}|x_t,x_0)$.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x0 (tf.Tensor): Original data sample</span>
+<span class="sd">        xt (tf.Tensor): Noisy data sample at timestep t.</span>
+<span class="sd">        t (tf.Tensor): timestep.</span>
+
+<span class="sd">    Returns: Returns a dictionary with key names:</span>
+<span class="sd">        mean: Mean value of the distribution</span>
+<span class="sd">        var: Variance value of the distribution</span>
+<span class="sd">        log_var: Logarithmic value of the variance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mean</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">sample_array_to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span><span class="o">.</span><span class="n">posterior_mean_coef1</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">x0</span>
+        <span class="o">+</span> <span class="n">sample_array_to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span><span class="o">.</span><span class="n">posterior_mean_coef2</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">xt</span>
+    <span class="p">)</span>
+    <span class="n">var</span> <span class="o">=</span> <span class="n">sample_array_to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span><span class="o">.</span><span class="n">posterior_var</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="n">log_var</span> <span class="o">=</span> <span class="n">sample_array_to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_schedule</span><span class="o">.</span><span class="n">posterior_log_var_clipped</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="n">mean</span><span class="p">,</span> <span class="s2">&quot;var&quot;</span><span class="p">:</span> <span class="n">var</span><span class="p">,</span> <span class="s2">&quot;log_var&quot;</span><span class="p">:</span> <span class="n">log_var</span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+  
+
+
+
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page was helpful" data-md-value="1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8m2 0a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10M10 9.5c0 .8-.7 1.5-1.5 1.5S7 10.3 7 9.5 7.7 8 8.5 8s1.5.7 1.5 1.5m7 0c0 .8-.7 1.5-1.5 1.5S14 10.3 14 9.5 14.7 8 15.5 8s1.5.7 1.5 1.5m-5 7.73c-1.75 0-3.29-.73-4.19-1.81L9.23 14c.45.72 1.52 1.23 2.77 1.23s2.32-.51 2.77-1.23l1.42 1.42c-.9 1.08-2.44 1.81-4.19 1.81Z"/></svg>
+            </button>
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page could be improved" data-md-value="0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8m2 0a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10m-6.5-4c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5-1.5-.7-1.5-1.5.7-1.5 1.5-1.5M10 9.5c0 .8-.7 1.5-1.5 1.5S7 10.3 7 9.5 7.7 8 8.5 8s1.5.7 1.5 1.5m2 4.5c1.75 0 3.29.72 4.19 1.81l-1.42 1.42C14.32 16.5 13.25 16 12 16s-2.32.5-2.77 1.23l-1.42-1.42C8.71 14.72 10.25 14 12 14Z"/></svg>
+            </button>
+          
+        </div>
+        <div class="md-feedback__note">
+          
+            <div data-md-value="1" hidden>
+              
+              
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+            <div data-md-value="0" hidden>
+              
+              
+                
+              
+              Thanks for your feedback! Help us improve this page by <a href="https://github.com/sascha-kirch/DeepSaki/issues/new/?title=[Feedback]+diffusion+-+/reference/DeepSaki/diffusion/&labels=documentation" target="_blank" rel="noopener">telling us what you are missing</a>.
+            </div>
+          
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../constraints/" class="md-footer__link md-footer__link--prev" aria-label="Previous: constraints">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                constraints
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../frameworks/" class="md-footer__link md-footer__link--next" aria-label="Next: frameworks">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                frameworks
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://sascha-kirch.github.io/" target="_blank" rel="noopener" title="sascha-kirch.github.io" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M256 8C119.252 8 8 119.252 8 256s111.252 248 248 248 248-111.252 248-248S392.748 8 256 8zm163.97 114.366c29.503 36.046 47.369 81.957 47.835 131.955-6.984-1.477-77.018-15.682-147.502-6.818-5.752-14.041-11.181-26.393-18.617-41.614 78.321-31.977 113.818-77.482 118.284-83.523zM396.421 97.87c-3.81 5.427-35.697 48.286-111.021 76.519-34.712-63.776-73.185-116.168-79.04-124.008 67.176-16.193 137.966 1.27 190.061 47.489zm-230.48-33.25c5.585 7.659 43.438 60.116 78.537 122.509-99.087 26.313-186.36 25.934-195.834 25.809C62.38 147.205 106.678 92.573 165.941 64.62zM44.17 256.323c0-2.166.043-4.322.108-6.473 9.268.19 111.92 1.513 217.706-30.146 6.064 11.868 11.857 23.915 17.174 35.949-76.599 21.575-146.194 83.527-180.531 142.306C64.794 360.405 44.17 310.73 44.17 256.323zm81.807 167.113c22.127-45.233 82.178-103.622 167.579-132.756 29.74 77.283 42.039 142.053 45.189 160.638-68.112 29.013-150.015 21.053-212.768-27.882zm248.38 8.489c-2.171-12.886-13.446-74.897-41.152-151.033 66.38-10.626 124.7 6.768 131.947 9.055-9.442 58.941-43.273 109.844-90.795 141.978z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/sascha-kirch/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/sascha-kirch" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://medium.com/@SaschaKirch" target="_blank" rel="noopener" title="medium.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M180.5 74.262C80.813 74.262 0 155.633 0 256s80.819 181.738 180.5 181.738S361 356.373 361 256 280.191 74.262 180.5 74.262Zm288.25 10.646c-49.845 0-90.245 76.619-90.245 171.095s40.406 171.1 90.251 171.1 90.251-76.619 90.251-171.1H559c0-94.503-40.4-171.095-90.248-171.095Zm139.506 17.821c-17.526 0-31.735 68.628-31.735 153.274s14.2 153.274 31.735 153.274S640 340.631 640 256c0-84.649-14.215-153.271-31.742-153.271Z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.path", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer", "toc.follow", "toc.integrate", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.81fa17fe.min.js"></script>
+      
+        <script src="../../../javascripts/katex.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js"></script>
+      
+    
+  </body>
+</html>
