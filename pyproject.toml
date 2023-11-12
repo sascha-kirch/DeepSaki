@@ -159,7 +159,7 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 [tool.ruff.isort]
 force-single-line = true
 force-sort-within-sections = false
-lines-after-imports = 1
+lines-after-imports = 2
 section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
 known-third-party = [
     "numpy",
