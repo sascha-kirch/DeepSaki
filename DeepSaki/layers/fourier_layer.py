@@ -12,6 +12,7 @@ from DeepSaki.initializers.complex_initializer import ComplexInitializer
 from DeepSaki.types.layers_enums import FrequencyFilter
 from DeepSaki.types.layers_enums import MultiplicationType
 
+
 # TODO: refactor this base clase
 # Base class below has no init. so if subclass calls super().__init__ it takes the one of tf.keras.Layer.
 class FourierLayer(tf.keras.layers.Layer):

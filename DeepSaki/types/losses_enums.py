@@ -1,6 +1,7 @@
 from enum import Enum
 from enum import auto
 
+
 class LossCalcType(Enum):
     """`Enum` to define the loss calculation type used for image based losses derived from `ImageBasedLoss`.
 

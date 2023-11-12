@@ -10,6 +10,7 @@ from DeepSaki.tensor_ops.tensor_ops import sample_array_to_tensor
 from DeepSaki.types.diffusion_enums import ScheduleType
 from DeepSaki.types.diffusion_enums import variance_type
 
+
 class GaussianDiffusionProcess:
     """Abstraction of a gausian diffusion process."""
 

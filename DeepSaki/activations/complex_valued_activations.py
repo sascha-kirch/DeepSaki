@@ -3,6 +3,7 @@ from typing import Dict
 
 import tensorflow as tf
 
+
 class ComplexActivation(tf.keras.layers.Layer):
     """Wrapper to apply a given `activation` to a complex input individually for the real and imaginary part.
 

@@ -9,6 +9,7 @@ from DeepSaki.math.statistics import calc_log_likelihood_of_discretized_gaussian
 from DeepSaki.tensor_ops.tensor_ops import sample_array_to_tensor
 from DeepSaki.types.losses_enums import LossWeightType
 
+
 class DiffusionLoss:
     """Object to group various loss definitions and configurations of a Diffusion model loss function."""
 
@@ -64,7 +65,12 @@ class DiffusionLoss:
             return sample_array_to_tensor(
                 self.diffusion_process.beta_schedule.lambda_t_tick_simple,
                 timestep,
-                shape=(self.batch_size, 1, 1, 1), # TODO: shape is still very specific to 4D like data like a batched image
+                shape=(
+                    self.batch_size,
+                    1,
+                    1,
+                    1,
+                ),  # TODO: shape is still very specific to 4D like data like a batched image
             )
         raise ValueError(f"Undefined loss_weighting_type provided: {self.loss_weighting_type}")
 

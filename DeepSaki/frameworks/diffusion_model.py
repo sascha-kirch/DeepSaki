@@ -8,6 +8,7 @@ from DeepSaki.diffusion.diffusion_process import GaussianDiffusionProcess
 from DeepSaki.losses.diffusion_model_losses import DiffusionLoss
 from DeepSaki.types.diffusion_enums import variance_type
 
+
 # TODO: For now it is an image conditioned Diffusion model. In a future that should change to be able to support unconditional or token conditional diffuision
 class DiffusionModel:
     """Abstraction of a diffusion model including relevant settings."""

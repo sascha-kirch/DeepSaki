@@ -1,6 +1,7 @@
 from enum import Enum
 from enum import auto
 
+
 class ScheduleType(Enum):
     LINEAR = auto()
     SIGMOID = auto()

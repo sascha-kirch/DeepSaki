@@ -3,6 +3,7 @@ from typing import Optional
 
 import tensorflow as tf
 
+
 class ComplexInitializer(tf.keras.initializers.Initializer):
     """Wraps an initializer to generate a complex-valued tensor for initialization.
 

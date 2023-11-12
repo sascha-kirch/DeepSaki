@@ -11,6 +11,7 @@ from DeepSaki.frameworks.diffusion_model import DiffusionModel
 from DeepSaki.tensor_ops.tensor_ops import sample_array_to_tensor
 from DeepSaki.types.diffusion_enums import variance_type
 
+
 class SamplerResult:
     """Class holding and post processing the output of a Sampler."""
 

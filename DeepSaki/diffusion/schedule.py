@@ -6,6 +6,7 @@ import tensorflow as tf
 
 from DeepSaki.types.diffusion_enums import ScheduleType
 
+
 class BetaSchedule:
     """Abstraction of the beta schedule modulating the timesteps in the diffusion process."""
 

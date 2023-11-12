@@ -4,6 +4,7 @@ from typing import Union
 
 import tensorflow as tf
 
+
 def sample_array_to_tensor(
     array: tf.Tensor,
     index: Union[tf.Tensor, Iterable[int], int],
@@ -17,7 +18,10 @@ def sample_array_to_tensor(
     Args:
         array (tf.Tensor): Array from which sample is taken.
         index (Union[tf.Tensor, Iterable[int], int]): Index at which sample is taken from `array`.
-        shape (Tuple[int, int, int, int], optional): Shape of the resulting tensor. Defaults to (-1, 1, 1, 1).
+        shape (Tuple[int, int, int, int], optional): Shape of the resulting tensor. Is used for a reshape operation,
+            hence the shape must reflect how many values are provided. -1 can be used for a given axis to consider the
+            remaining values not yet assigned to an axis Defaults to (-1, 1, 1, 1).
+        dtype (tf.Dtype): dtype the data shall be casted to. Defaults to tf.float32.
 
     Returns:
         tf.Tensor: New tensor of shape `shape`

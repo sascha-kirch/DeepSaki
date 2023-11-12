@@ -13,6 +13,7 @@ from DeepSaki.types.layers_enums import DownSampleType
 from DeepSaki.types.layers_enums import PaddingType
 from DeepSaki.types.layers_enums import UpSampleType
 
+
 class Conv2DSplitted(tf.keras.layers.Layer):
     """Convolution layer where a single convolution is splitted into two consecutive convolutions.
 

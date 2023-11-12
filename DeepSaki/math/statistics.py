@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 
+
 def calc_approximated_standard_normal_cdf(x: tf.Tensor) -> tf.Tensor:
     """A fast approximation of the cumulative distribution function of the standard normal.
 
